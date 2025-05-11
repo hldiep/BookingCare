@@ -5,7 +5,7 @@ const Footer = () => {
         <div>
             <footer className="bg-footer text-black p-6 shadow-lg font-sans flex justify-center">
                 <div className="container">
-                    <div className="mx-auto grid grid-cols-3 gap-3">
+                    <div className="mx-auto grid grid-cols-3 gap-5">
                         <div>
                             <div className="text-3xl font-bold">
                                 <div>
@@ -45,7 +45,7 @@ const Footer = () => {
                         <div>
                             <h2 className="font-bold text-lg uppercase text-center font-georgia">GIỜ LÀM VIỆC</h2>
                             <ul className="ml-4 list-disc">
-                                <li>Thứ 2 - 6: 09h00 đến 21h30</li>
+                                <li>Thứ 2 - 6: 08h00 đến 21h30</li>
                                 <li>Thứ 7: 08h00 đến 21h30</li>
                                 <li>Chủ nhật: 08h00 đến 13h30</li>
                             </ul>

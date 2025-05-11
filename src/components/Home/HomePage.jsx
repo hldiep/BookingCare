@@ -10,11 +10,11 @@ const HomePage = () => {
         <div className="min-h-screen pt-28 bg-main flex justify-center">
             <div className={"container"}>
                 <Slider />
-                <div className="bg-header bg-center h-40 flex items-center justify-center text-white text-4xl font-bold">
+                <div className="bg-header bg-center h-40 flex items-center font-georgia justify-center text-white text-4xl font-bold">
                     TRUNG TÂM KHÁM BỆNH STAR
 
                 </div>
-                <div className="bg-white py-16 px-4 lg:px-20 flex flex-col lg:flex-row items-center justify-between space-y-10 lg:space-y-0">
+                <div className="py-16 px-4 lg:px-20 flex flex-col lg:flex-row items-center justify-between space-y-10 lg:space-y-0">
                     {/* Left text */}
                     <div className="lg:w-1/2 space-y-4">
                         <p className="text-lg text-highlight mr-5">
@@ -39,28 +39,28 @@ const HomePage = () => {
                     <div className="lg:w-1/3 space-y-6 text-highlight">
                         <div>
                             <div className="flex items-center space-x-3">
-                                <img src="https://sudospaces.com/karofi-com/images/content/content_s609.jpg" alt="Standard" className="w-12 h-12 rounded-full border border-nav" />
+                                <img src="https://sudospaces.com/karofi-com/images/content/content_s609.jpg" alt="Standard" className="w-20 h-20 rounded-full border border-nav" />
                                 <p>Khám theo tiêu chuẩn quốc tế.</p>
                             </div>
                         </div>
 
-                        <div className="ml-7 flex items-start space-x-3">
-                            <img src="https://free.vector6.com/wp-content/uploads/2020/04/Corona-qbvngz0056.jpg" alt="Doctors" className="w-12 h-12 rounded-full object-cover border border-nav" />
+                        <div className="ml-14 flex items-start space-x-3">
+                            <img src="https://free.vector6.com/wp-content/uploads/2020/04/Corona-qbvngz0056.jpg" alt="Doctors" className="w-20 h-20 rounded-full object-cover border border-nav" />
                             <p>Đội ngũ bác sĩ trên 15 năm kinh nghiệm từng tu nghiệp nước ngoài.</p>
                         </div>
 
-                        <div className="ml-7 flex items-start space-x-3">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmC2muMHXlURBAisAMdwz8SR8f0DfXMGM0gg&s" alt="Facility" className="w-12 h-12 rounded-full object-cover border border-nav" />
+                        <div className="ml-14 flex items-start space-x-3">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmC2muMHXlURBAisAMdwz8SR8f0DfXMGM0gg&s" alt="Facility" className="w-20 h-20 rounded-full object-cover border border-nav" />
                             <p>Cơ sở vật chất khang trang, không gian thoáng đãng.</p>
                         </div>
 
                         <div className="flex items-start space-x-3">
-                            <img src="https://indochinapost.com/wp-content/uploads/van-chuyen-may-moc-thiet-bi-y-te.jpg" alt="Equipment" className="w-12 h-12 rounded-full object-cover border border-nav" />
+                            <img src="https://indochinapost.com/wp-content/uploads/van-chuyen-may-moc-thiet-bi-y-te.jpg" alt="Equipment" className="w-20 h-20 rounded-full object-cover border border-nav" />
                             <p>Máy móc, Thiết bị tối tân được nhập khẩu từ Nhật và Hoa Kỳ.</p>
                         </div>
                     </div>
                 </div>
-                <section className="bg-gray-100 py-10 px-4">
+                <section className="py-10 px-4">
                     <div className="max-w-6xl mx-auto">
                         <h2 className="text-highlight text-3xl font-bold text-center mb-8">Đội ngũ bác sĩ</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -95,7 +95,7 @@ const HomePage = () => {
                     </div>
                 </section>
                 <Service />
-                {/* <section className="py-10 px-4 bg-gray-50">
+                {/* <section className="py-10 px-4">
                     <div className="max-w-6xl mx-auto text-center">
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -144,7 +144,7 @@ const HomePage = () => {
                     <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8">
                         <div className="md:w-1/2">
                             <img
-                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ79OQkGafyel079HyL-9r0eZ7kTmaKvjkbJQ&s"
+                                src="https://ecopharma.com.vn/wp-content/uploads/2024/09/giuong-benh-phong-kham-da-khoa-tam-anh-quan-7.jpg"
                                 alt="Star"
                                 className="rounded-xl shadow-lg w-full object-cover"
                             />

@@ -1,8 +1,8 @@
 import React from 'react'
 const services = [
     {
-        title: "Khám sức khỏe tổng quát định kỳ",
-        desc: "Tầm soát bệnh lý sớm, chăm sóc sức khỏe toàn diện.",
+        title: "Khám lâm sàng",
+        desc: "Bác sĩ thực hiện Khám lâm sàng đánh giá sức khỏe tổng quan. Các hạng mục như: Nội tổng quát, Răng hàm mặt, Mắt, Tai-mũi-họng, Phụ khoa - tuyến vú (với nữ), Tim mạch...",
         image: "https://benhvienbacha.vn/wp-content/uploads/2023/01/chuyen-gia-giai-dap-kham-suc-khoe-tong-quat-gom-nhung-gi.jpg",
     },
     {

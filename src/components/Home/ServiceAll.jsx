@@ -1,8 +1,8 @@
 import React from 'react'
 const services = [
     {
-        title: "Khám sức khỏe tổng quát định kỳ",
-        desc: "Tầm soát bệnh lý sớm, chăm sóc sức khỏe toàn diện.",
+        title: "Khám lâm sàng",
+        desc: "Bác sĩ thực hiện Khám lâm sàng đánh giá sức khỏe tổng quan. Các hạng mục như: Nội tổng quát, Răng hàm mặt, Mắt, Tai-mũi-họng, Phụ khoa - tuyến vú (với nữ), Tim mạch...",
         image: "https://benhvienbacha.vn/wp-content/uploads/2023/01/chuyen-gia-giai-dap-kham-suc-khoe-tong-quat-gom-nhung-gi.jpg",
     },
     {
@@ -34,9 +34,9 @@ const services = [
 const ServiceAll = () => {
     return (
         <div className="min-h-screen pt-28 bg-main flex justify-center">
-            <div className='container justify-center items-center pt-10 p-5'>
-                <section className="py-12 px-4 bg-white">
-                    <h2 className="text-3xl font-bold mb-8 text-highlight text-center">Các dịch vụ khám tại trung tâm</h2>
+            <div className='container justify-center items-center pt-20 p-5'>
+                <section className="px-4 bg-white">
+                    <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight text-center">Các dịch vụ khám tại trung tâm</h2>
                     <div className="px-32 max-w-6xl mx-auto space-y-16">
                         {services.map((service, index) => (
                             <div

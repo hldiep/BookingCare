@@ -5,8 +5,8 @@ import { Autoplay, Navigation } from "swiper/modules";
 const Slider = () => {
 
     const promotions = [
-        { id: 1, image: "https://digimedical.vn/wp-content/uploads/2023/08/bai-viet-quang-cao-phong-kham-san-phu-khoa.jpg", link: "/promo1" },
-        { id: 2, image: "https://digimedical.vn/wp-content/uploads/2023/08/mau-bai-viet-quang-cao-phong-kham-da-khoa-1.jpg", link: "/promo2" },
+        { id: 1, image: "https://hn.medcare.vn/wp-content/uploads/sites/4/2022/03/Banner-Kham-benh-hieu-qua-scaled.jpg", link: "/promo1" },
+        { id: 2, image: "https://bizweb.dktcdn.net/100/378/435/themes/755692/assets/slider_1.png?1663489820792", link: "/promo2" },
     ];
 
     return (

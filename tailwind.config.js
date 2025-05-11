@@ -10,7 +10,7 @@ module.exports = {
         header: "#0099cc",
         logo: "#FFFF66",
         nav: "#336666",
-        footer: "#66CCFF",
+        footer: "#87CEFF",
         highlight: "#000099",
       },
       fontFamily: {
@@ -26,12 +26,19 @@ module.exports = {
           '10%': { opacity: 1, transform: 'translateY(0)' },
           '90%': { opacity: 1, transform: 'translateY(0)' },
           '100%': { opacity: 0, transform: 'translateY(20px)' },
-        }
+        },
+        shake: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(-15deg)' },
+          '50%': { transform: 'rotate(15deg)' },
+          '75%': { transform: 'rotate(-15deg)' },
+        },
       },
       animation: {
         buttonHover: "button_hover 1s ease-in-out infinite",
         'fade-in-out': 'fadeInOut 5s ease-in-out forwards',
         'button-hover': 'button_hover 1s ease-in-out forwards',
+        shake: 'shake 1s infinite',
       },
     }
   },
