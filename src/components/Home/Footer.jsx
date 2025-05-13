@@ -1,36 +1,37 @@
-import { NavLink, Link } from "react-router-dom";
-import { FaFacebook, FaInstagram, FaYoutube, FaTiktok } from 'react-icons/fa';
+import { Link } from "react-router-dom";
+import { FaFacebook } from 'react-icons/fa';
+
 const Footer = () => {
     return (
         <div>
-            <footer className="bg-footer text-black p-6 shadow-lg font-sans flex justify-center">
+            <footer className="bg-[#dce5ef] text-black px-4 py-6 shadow-lg font-sans flex justify-center">
                 <div className="container">
-                    <div className="mx-auto grid grid-cols-3 gap-5">
+                    <div className="mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div>
-                            <div className="text-3xl font-bold">
-                                <div>
-                                    <img src="https://img.pikbest.com/origin/09/19/05/37upIkbEsTQ4z.png!sw800" alt="logo" className='w-[50px] h-[50px]' />
-                                </div>
-                                <Link to="/home" className="flex items-center space-x-2">
-                                    <span className="text-2xl text-black font-georgia">Trung tâm khám bệnh</span>
-                                    <span className="text-logo uppercase font-georgia">Star</span>
+                            <div className="flex items-center space-x-3 mb-5">
+                                <img
+                                    src="https://img.pikbest.com/origin/09/19/05/37upIkbEsTQ4z.png!sw800"
+                                    alt="logo"
+                                    className='w-[50px] h-[50px]'
+                                />
+                                <Link to="/" className="flex items-center space-x-2 font-georgia text-center">
+                                    <p className="text-3xl font-bold text-highlight">Health<strong className='uppercase text-3xl text-logo'>Care</strong></p>
                                 </Link>
                             </div>
-                            <div className="flex space-x-3 mt-3 text-center items-center">
+                            <div className="flex space-x-3 mt-3 text-center items-center hover:scale-105 transition-all duration-300">
                                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
                                     className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-800 transition duration-300">
                                     <FaFacebook className="w-4 h-4" />
                                 </a>
-                                <button className="ml-2">
-                                    Truy cập Facebook để theo dõi thêm
-                                </button>
+                                <button className="ml-2 text-sm ">Truy cập Facebook để theo dõi thêm</button>
                             </div>
                         </div>
-                        <div className=''>
-                            <h2 className="font-bold text-lg uppercase text-center font-georgia">Trung tâm khám bệnh Star</h2>
+
+                        <div>
+                            <h2 className="font-bold text-lg text-highlight uppercase text-center font-georgia mb-5">Trung tâm khám bệnh HealthCare</h2>
                             <p><strong>Địa chỉ:</strong> 97 Đường Man Thiện, Phường Hiệp Phú, Quận 9, TP. Hồ Chí Minh</p>
                             <p><strong>Điện thoại:</strong> 0923 456 453</p>
-                            <p><strong>Email:</strong> khambenhstar@gmail.com</p>
+                            <p><strong>Email:</strong> khambenhhealthcare@gmail.com</p>
                             <div className="w-full mt-3">
                                 <iframe
                                     title="Map"
@@ -42,23 +43,23 @@ const Footer = () => {
                             </div>
                         </div>
 
+                        {/* Giờ làm việc */}
                         <div>
-                            <h2 className="font-bold text-lg uppercase text-center font-georgia">GIỜ LÀM VIỆC</h2>
+                            <h2 className="font-bold text-lg text-highlight uppercase text-center font-georgia mb-5">GIỜ LÀM VIỆC</h2>
                             <ul className="ml-4 list-disc">
                                 <li>Thứ 2 - 6: 08h00 đến 21h30</li>
                                 <li>Thứ 7: 08h00 đến 21h30</li>
                                 <li>Chủ nhật: 08h00 đến 13h30</li>
                             </ul>
                         </div>
-
                     </div>
                 </div>
             </footer>
-            <div className="bg-[#006c94] py-4 text-center text-xs">
-                Copyright © 2025 <a href="https://khambenhstar.com" className="underline hover:text-gray-300">khambenhstar.com</a>
+            <div className="bg-highlight py-2 text-center text-xs text-white">
+                Copyright © 2025 <a href="https://khambenhstar.com" className="underline hover:text-gray-300">khambenhhealthcare.com</a>
             </div>
         </div>
     )
 }
 
-export default Footer
+export default Footer;

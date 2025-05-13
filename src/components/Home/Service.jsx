@@ -33,7 +33,7 @@ const services = [
 ];
 const Service = () => {
     return (
-        <section className="py-12 px-4 bg-white">
+        <section className="py-12 px-4 bg-main">
             <h2 className="text-3xl font-bold mb-8 text-highlight text-center">Dịch vụ khám nổi bật</h2>
             <div className="px-32 max-w-6xl mx-auto space-y-16">
                 {services.map((service, index) => (
@@ -46,7 +46,7 @@ const Service = () => {
                             <img
                                 src={service.image}
                                 alt={service.title}
-                                className="h-64 rounded-xl shadow-lg w-full object-cover"
+                                className="h-64 rounded-xl shadow-lg w-full object-cover hover:scale-105 transition-all duration-300"
                             />
                         </div>
                         <div className="md:w-1/2">
@@ -57,9 +57,6 @@ const Service = () => {
                         </div>
                     </div>
                 ))}
-            </div>
-            <div className='text-center mt-10'>
-                <button className='px-3 py-2 border border-nav rounded-full hover:bg-nav hover:text-white transition-all duration-500 hover:animate-button-hover'>Xem thêm</button>
             </div>
 
         </section>

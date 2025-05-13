@@ -5,12 +5,8 @@ module.exports = {
     extend: {
       colors: {
         main: "#ffffff",
-        bar: "#1d2021",
-        icon: "#181a1b",
-        header: "#0099cc",
-        logo: "#FFFF66",
-        nav: "#336666",
-        footer: "#87CEFF",
+        logo: "#b47c2c",
+        nav: "#0499c3",
         highlight: "#000099",
       },
       fontFamily: {
@@ -33,6 +29,11 @@ module.exports = {
           '50%': { transform: 'rotate(15deg)' },
           '75%': { transform: 'rotate(-15deg)' },
         },
+        transitionProperty: {
+          'height': 'height',
+          'spacing': 'margin, padding',
+          'transform': 'transform',
+        },
       },
       animation: {
         buttonHover: "button_hover 1s ease-in-out infinite",
@@ -40,8 +41,24 @@ module.exports = {
         'button-hover': 'button_hover 1s ease-in-out forwards',
         shake: 'shake 1s infinite',
       },
-    }
+    },
+    container: {
+      center: true,
+      padding: {
+        DEFAULT: '1rem',
+        sm: '2rem',
+        lg: '4rem',
+        xl: '5rem',
+        '2xl': '6rem',
+      },
+      screens: {
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1536px',
+      },
+    },
   },
   plugins: [],
 }
-

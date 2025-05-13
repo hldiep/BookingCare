@@ -34,37 +34,38 @@ const services = [
 const ServiceAll = () => {
     return (
         <div className="min-h-screen pt-28 bg-main flex justify-center">
-            <div className='container justify-center items-center pt-20 p-5'>
-                <section className="px-4 bg-white">
-                    <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight text-center">Các dịch vụ khám tại trung tâm</h2>
-                    <div className="px-32 max-w-6xl mx-auto space-y-16">
-                        {services.map((service, index) => (
-                            <div
-                                key={index}
-                                className={`flex flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
-                                    } items-center gap-6`}
-                            >
-                                <div className="md:w-1/2">
-                                    <img
-                                        src={service.image}
-                                        alt={service.title}
-                                        className="h-64 rounded-xl shadow-lg w-full object-cover"
-                                    />
+            <div className='container flex justify-center items-center pt-20 p-5'>
+                <div className='w-full max-w-5xl px-4'>
+                    <section className="px-4 bg-white">
+                        <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight text-center uppercase">Các dịch vụ khám tại trung tâm</h2>
+                        <div className="px-32 max-w-6xl mx-auto space-y-16">
+                            {services.map((service, index) => (
+                                <div
+                                    key={index}
+                                    className={`flex flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
+                                        } items-center gap-6`}
+                                >
+                                    <div className="md:w-1/2">
+                                        <img
+                                            src={service.image}
+                                            alt={service.title}
+                                            className="h-64 rounded-xl shadow-lg w-full object-cover hover:scale-105 transition-all duration-300"
+                                        />
+                                    </div>
+                                    <div className="md:w-1/2">
+                                        <h3 className="text-2xl font-semibold text-highlight mb-4">
+                                            {service.title}
+                                        </h3>
+                                        <p className="text-gray-700 text-base">{service.desc}</p>
+                                    </div>
                                 </div>
-                                <div className="md:w-1/2">
-                                    <h3 className="text-2xl font-semibold text-highlight mb-4">
-                                        {service.title}
-                                    </h3>
-                                    <p className="text-gray-700 text-base">{service.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
 
-                </section>
+                    </section>
+                </div>
             </div>
         </div>
-
     )
 }
 
