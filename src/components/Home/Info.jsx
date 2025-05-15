@@ -101,15 +101,15 @@ const Info = () => {
                         <p><strong>Xét nghiệm máu, nước tiểu, sinh hóa, miễn dịch...:</strong> Được thực hiện bằng hệ thống máy móc hiện đại, cho kết quả nhanh chóng và chính xác.</p>
                         <p><strong>Tư vấn và quản lý bệnh mạn tính lâu dài:</strong> Cá nhân hóa phác đồ điều trị, theo dõi sức khỏe định kỳ bằng phần mềm quản lý chuyên dụng.</p>
                         <div className='flex flex-wrap gap-4 justify-center mt-4'>
-                            <img src="https://cdn.diag.vn/2025/03/2b48b664-chuyen-khoa-noi-tong-quat-1.jpg" alt="" className='w-[280px] h-[200px]' />
-                            <img src="https://cdn.benhvienthucuc.vn/wp-content/uploads/2016/09/IMG_2703-2.jpg" alt="" className='w-[280px] h-[200px]' />
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjiTK23F9b1N8HuXaglkGpF6XB6hn33eI1gg&s" alt="" className='w-[280px] h-[200px]' />
+                            <img src="https://cdn.diag.vn/2025/03/2b48b664-chuyen-khoa-noi-tong-quat-1.jpg" alt="" className='w-[280px] h-[200px] hover:scale-105 transition-all duration-300' />
+                            <img src="https://cdn.benhvienthucuc.vn/wp-content/uploads/2016/09/IMG_2703-2.jpg" alt="" className='w-[280px] h-[200px] hover:scale-105 transition-all duration-300' />
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjiTK23F9b1N8HuXaglkGpF6XB6hn33eI1gg&s" alt="" className='w-[280px] h-[200px] hover:scale-105 transition-all duration-300' />
                         </div>
                     </div>
                     <div className='p-10'>
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight">Đặt lịch khám tại trung tâm</h2>
                         <p>Vì phòng khám khá đông nên bệnh nhân cần phải đặt lịch hẹn qua tổng đài trước ít nhất 2 tuần hoặc tới phòng khám ngồi đợi lấy số.
-                            Bệnh nhân có thể đặt lịch hẹn khám qua tổng đài 1080 hoặc <a href="" className='text-highlight italic'>tại đây</a></p>
+                            Bệnh nhân có thể đặt lịch hẹn khám qua tổng đài 1080 hoặc <a href="/dat-lich" className='text-highlight italic'>tại đây</a></p>
                     </div>
                     <div className='px-10 mb-10'>
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight">Các bước khám bệnh tại phòng khám</h2>

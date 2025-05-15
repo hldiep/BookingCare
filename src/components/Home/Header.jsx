@@ -82,6 +82,7 @@ const Header = () => {
                     <Link to="/" onClick={handleLinkClick} className="block md:inline px-4 py-2 hover:scale-105 text-gray-100 hover:text-white">TRANG CHỦ</Link>
                     <Link to="/gioi-thieu" onClick={handleLinkClick} className="block md:inline px-4 py-2 hover:scale-105 text-gray-100 hover:text-white">GIỚI THIỆU</Link>
                     <Link to="/dich-vu" onClick={handleLinkClick} className="block md:inline px-4 py-2 hover:scale-105 text-gray-100 hover:text-white">DỊCH VỤ ĐIỀU TRỊ</Link>
+                    <Link to="/chuyen-khoa" onClick={handleLinkClick} className="block md:inline px-4 py-2 hover:scale-105 text-gray-100 hover:text-white">CHUYÊN KHOA</Link>
                     <Link to="/bac-si" onClick={handleLinkClick} className="block md:inline px-4 py-2 hover:scale-105 text-gray-100 hover:text-white">BÁC SĨ</Link>
                     <Link to="/lien-he" onClick={handleLinkClick} className="block md:inline px-4 py-2 hover:scale-105 text-gray-100 hover:text-white">LIÊN HỆ</Link>
                 </div>

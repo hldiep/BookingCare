@@ -15,7 +15,7 @@ const HomePage = () => {
             <div className="w-full">
                 <div className="container mx-auto">
                     <Slider />
-                    <h2 className="text-4xl font-bold mb-8 font-georgia text-center text-logo">Trung Tâm Khám Bệnh HealthCare</h2>
+                    <h2 className="text-4xl font-bold mb-8 font-georgia text-center text-logo">Trung Tâm Khám Bệnh HealthCARE</h2>
                     <SectionIntro />
                 </div>
 

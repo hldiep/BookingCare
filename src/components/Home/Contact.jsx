@@ -7,7 +7,7 @@ const Contact = () => {
                 <div className='w-full max-w-5xl px-4'>
                     <div className='grid md:grid-cols-2 gap-8'>
                         <div>
-                            <h2 className="font-bold text-3xl text-highlight uppercase text-center font-georgia mb-5">Trung tâm khám bệnh Star</h2>
+                            <h2 className="font-bold text-3xl text-highlight uppercase text-center font-georgia mb-5">Trung tâm khám bệnh HealthCARE</h2>
                             <p><strong>Địa chỉ:</strong> 97 Đường Man Thiện, Phường Hiệp Phú, Quận 9, TP. Hồ Chí Minh</p>
                             <p><strong>Điện thoại:</strong> 0923 456 453</p>
                             <p><strong>Email:</strong> khambenhstar@gmail.com</p>
@@ -20,20 +20,20 @@ const Contact = () => {
                                     name="ten"
                                     placeholder="Nhập họ và tên *"
                                     required
-                                    className="border rounded-full px-4 py-2 w-full text-black outline-none"
+                                    className="border rounded-md px-4 py-2 w-full text-black outline-none"
                                 />
                                 <input
                                     type="email"
                                     name="email"
                                     placeholder="Nhập email *"
                                     required
-                                    className="mt-5 border rounded-full px-4 py-2 w-full text-black outline-none"
+                                    className="mt-5 border rounded-md px-4 py-2 w-full text-black outline-none"
                                 />
-                                <input
+                                <textarea
                                     type="text"
                                     name="noiDung"
                                     placeholder="Nhập nội dung"
-                                    className="mt-5 border rounded-full px-4 py-2 w-full text-black outline-none"
+                                    className="mt-5 border rounded-md px-4 py-2 w-full text-black outline-none"
                                 />
                                 <div className='text-center mt-10'>
                                     <button className='font-bold text-white px-3 py-2 rounded-full bg-logo border border-transparent hover:border-logo hover:bg-transparent hover:text-logo transition-all duration-300'>GỬI NGAY</button>
