@@ -34,3 +34,23 @@ Hình ảnh các trang
 ![image](https://github.com/user-attachments/assets/bf638f40-e9e1-43c0-aff9-1be85081bab6)
 
 
+8. Trang quản lý
+
+Quản lý bác sĩ
+![image](https://github.com/user-attachments/assets/e4ebaea8-51a7-49bd-b04c-7f8e3df0bb35)
+
+Quản lý lịch khám
+![image](https://github.com/user-attachments/assets/c40b04b4-4313-4654-bd53-7144f26b300b)
+
+Quản lý dịch vụ
+![image](https://github.com/user-attachments/assets/85398a9f-d8ac-499c-b3d5-7dc28e73177d)
+
+Quản lý phòng khám
+![image](https://github.com/user-attachments/assets/5a027e2d-4ff1-4ad9-8eeb-76dfef14d3bc)
+
+Quản lý chuyên khoa
+![image](https://github.com/user-attachments/assets/c4d62975-b86f-4e17-b7c0-13c1369a0280)
+
+Phê duyệt lịch hẹn
+![image](https://github.com/user-attachments/assets/60fb3967-3b71-477d-acce-92a6164b4d20)
+
