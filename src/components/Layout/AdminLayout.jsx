@@ -1,10 +1,12 @@
 import React from 'react'
-import Header from '../Manager/Header'
+import Header from '../ManagerDoctor/Header'
 import { Outlet } from "react-router-dom";
-import Nav from '../Manager/Nav';
+import Nav from '../ManagerDoctor/Nav';
+import ScrollToTop from '../../ScrollToTop';
 const AdminLayout = () => {
     return (
         <>
+            <ScrollToTop />
             <Header />
             <Nav />
             <main>
