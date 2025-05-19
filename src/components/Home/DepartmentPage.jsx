@@ -52,20 +52,21 @@ const DepartmentPage = () => {
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight text-center uppercase">
                             Giới thiệu chuyên khoa
                         </h2>
-                        <div className="px-32 max-w-6xl mx-auto space-y-16">
+                        <div className="max-w-6xl mx-auto space-y-16">
                             {departments.map((dept, index) => (
                                 <div
                                     key={index}
-                                    className={`flex flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""} items-center gap-6`}
+                                    className={`flex rounded-xl shadow-lg bg-gray-100 flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
+                                        } items-stretch gap-6 h-[320px]`}
                                 >
                                     <div className="md:w-1/2">
                                         <img
                                             src={dept.image}
                                             alt={dept.name}
-                                            className="h-64 rounded-xl shadow-lg w-full object-cover hover:scale-105 transition-all duration-300"
+                                            className="h-full w-full object-cover rounded-xl shadow-lg"
                                         />
                                     </div>
-                                    <div className="md:w-1/2">
+                                    <div className="md:w-1/2 p-6 overflow-auto h-full flex flex-col justify-center text-justify">
                                         <h3 className="text-2xl font-semibold text-highlight mb-2">{dept.name}</h3>
                                         <p className="text-gray-700 mb-2">{dept.desc}</p>
                                         <p className="font-medium text-black">Các bác sĩ:</p>

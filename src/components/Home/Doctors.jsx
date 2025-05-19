@@ -42,36 +42,39 @@ const Doctors = () => {
     const navigate = useNavigate();
     return (
         <div className="min-h-screen pt-28 bg-main flex justify-center">
-            <div className='container flex justify-center pt-20 p-5'>
+            <div className='container flex justify-center items-center pt-20 p-5'>
                 <div className='w-full max-w-5xl px-4'>
-                    <h2 className="text-3xl font-bold mb-8 font-georgia text-center uppercase text-highlight">Danh sách bác sĩ</h2>
-                    <div className="max-w-6xl mx-auto px-4 py-10 space-y-12">
-
-                        {doctors.map((doc, index) => (
-                            <div key={index} onClick={() => navigate('/bac-si/detail')}
-                                className="flex flex-col md:flex-row items-start gap-6">
-                                <div className="w-full md:w-1/3 flex flex-col items-center">
-                                    <img
-                                        src={doc.image}
-                                        alt={doc.name}
-                                        className="w-64 h-64 object-cover rounded shadow hover:scale-105 transition-all duration-300"
-                                    />
-                                    <p className="italic text-gray-600 mt-2 text-center">{doc.footer}</p>
+                    <section className="px-4 bg-white mb-10">
+                        <h2 className="text-3xl font-bold mb-8 font-georgia text-center uppercase text-highlight">Danh sách bác sĩ</h2>
+                        <div className=" max-w-6xl mx-auto space-y-16">
+                            {doctors.map((doc, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => navigate('/bac-si/detail')}
+                                    className="flex rounded-xl shadow-lg bg-gray-100 flex-col md:flex-row items-stretch gap-0 h-[300px] overflow-hidden"
+                                >
+                                    <div className="md:w-1/3 w-full h-full">
+                                        <img
+                                            src={doc.image}
+                                            alt={doc.name}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="md:w-2/3 p-6 overflow-auto h-full flex flex-col justify-center text-justify">
+                                        <h2 className="text-2xl font-bold text-logo mb-4">{doc.name}</h2>
+                                        <ul className="list-disc list-inside text-gray-800 space-y-1 text-sm md:text-base leading-relaxed">
+                                            {doc.description.map((item, i) => (
+                                                <li key={i}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h2 className="text-2xl font-bold text-logo mb-4">{doc.name}</h2>
-                                    <ul className="list-disc list-inside text-gray-800 space-y-1">
-                                        {doc.description.map((item, i) => (
-                                            <li key={i}>{item}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    </section>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

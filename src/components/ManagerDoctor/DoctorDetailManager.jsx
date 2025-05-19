@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 
 const DoctorDetail = () => {
     const navigate = useNavigate();
-    const [doctor, setDoctor] = useState({
+    const [doctor] = useState({
         name: 'Nguyễn Thị Thu Trang',
         gender: 'female',
         birthday: '1985-06-15',
@@ -15,111 +16,111 @@ const DoctorDetail = () => {
     });
 
     return (
-        <div className="flex">
-            <div className="flex-1 pt-[65px] ml-64 min-h-screen bg-main">
-                <div className='items-center p-2 border-b space-x-2 font-bold'>
-                    <button
-                        onClick={() => navigate("/admin")}>Dashboard</button>
-                    <span>{'>'}</span>
-                    <button
-                        onClick={() => navigate("/doctor")}>Bác sĩ</button>
-                    <span>{'>'}</span>
-                    <button>Thông tin</button>
+        <ClippedDrawer>
+            <div>
+                <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
+                    <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
+                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">
+                            Dashboard
+                        </button>
+                        <span>/</span>
+                        <button onClick={() => navigate('/doctor')} className="hover:underline text-blue-600">
+                            Bác sĩ
+                        </button>
+                        <span>/</span>
+                        <span className="text-gray-700 font-medium">Thông tin</span>
+                    </div>
+                    <h2 className="text-xl font-semibold p-4">Thông tin bác sĩ</h2>
                 </div>
-                <h2 className="text-2xl p-2 font-semibold border-b">Thông tin bác sĩ</h2>
-                <div className='p-6 flex space-x-4 justify-around'>
-                    <div className="w-1/5 flex flex-col items-center  text-center">
-                        <div className="pt-4">
-                            <img
-                                src={doctor.image}
-                                alt="Avatar"
-                                className="w-32 h-32 object-cover rounded-full border"
-                            />
-                        </div>
-                        <div className="mt-2 font-semibold">BS. {doctor.name}</div>
+
+                <div className="p-6 max-w-7xl mx-auto  bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
+
+                    <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
+                        <img
+                            src={doctor.image}
+                            alt="Avatar bác sĩ"
+                            className="w-32 h-32 object-cover rounded-full border"
+                        />
+                        <div className="mt-4 font-semibold text-lg">BS. {doctor.name}</div>
                     </div>
 
-                    <form className=" max-w-2xl mx-auto p-6 space-y-4 bg-main rounded border shadow">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className=''>
-                                <p>Họ tên </p>
-                                <input
-                                    name="name"
-                                    className="mt-2 w-full p-2 border rounded outline-none"
-                                    placeholder="Họ tên"
-                                    value={doctor.name}
-                                    readOnly
-                                />
-                            </div>
-                            <div className=''>
-                                <p>Chuyên khoa </p>
-                                <input
-                                    name="specialty"
-                                    className="mt-2 w-full p-2 border rounded outline-none"
-                                    placeholder="Chuyên khoa"
-                                    value={doctor.specialty}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="">
-                                <p>Giới tính</p>
-                                <select
-                                    name="gender"
-                                    className="w-1/2 p-2 border rounded outline-none mt-2"
-                                    value={doctor.gender}
-                                    disabled
-                                >
-                                    <option value="male">Nam</option>
-                                    <option value="female">Nữ</option>
-                                </select>
-                            </div>
-                            <div className="">
-                                <p>Ngày sinh</p>
-                                <input
-                                    name="birthday"
-                                    type="date"
-                                    className="w-full p-2 border rounded outline-none mt-2"
-                                    value={doctor.birthday}
-                                    readOnly
-                                />
-                            </div>
-                            <div>
-                                <p>Số điện thoại</p>
-                                <input
-                                    name="phone"
-                                    className="w-full p-2 border rounded outline-none mt-2"
-                                    placeholder="Số điện thoại"
-                                    value={doctor.phone}
-                                    readOnly
-                                />
-                            </div>
-                            <div>
-                                <p>Email</p>
-                                <input
-                                    name="email"
-                                    type="email"
-                                    className="w-full p-2 border rounded outline-none mt-2"
-                                    placeholder="Email"
-                                    value={doctor.email}
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-
+                    <form className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <p>Địa chỉ</p>
+                            <label className="block text-sm font-medium text-gray-700">Họ tên</label>
                             <input
+                                type="text"
+                                name="name"
+                                value={doctor.name}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Chuyên khoa</label>
+                            <input
+                                type="text"
+                                name="specialty"
+                                value={doctor.specialty}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Giới tính</label>
+                            <select
+                                name="gender"
+                                value={doctor.gender}
+                                disabled
+                                className="mt-1 block w-full rounded border-gray-300 bg-gray-100 cursor-not-allowed shadow-sm"
+                            >
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Ngày sinh</label>
+                            <input
+                                type="date"
+                                name="birthday"
+                                value={doctor.birthday}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={doctor.phone}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={doctor.email}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
+                            <input
+                                type="text"
                                 name="address"
-                                className="w-full p-2 border rounded outline-none mt-2"
-                                placeholder="Địa chỉ"
                                 value={doctor.address}
                                 readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
+        </ClippedDrawer>
     );
 };
 

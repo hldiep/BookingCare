@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 
 const Appointment = () => {
     const navigate = useNavigate();
-    const [appointments, setAppointments] = useState([
+    const [appointments] = useState([
         {
             id: 1,
             customerName: 'Nguyễn Văn A',
@@ -23,92 +24,109 @@ const Appointment = () => {
             clinicName: 'PK Da liễu Q1',
             date: '2025-05-22',
             time: '10:00 - 11:00',
-            status: 'PENDING',
-        }
+            status: 'CONFIRMED',
+        },
     ]);
 
+    const getStatusStyle = (status) => {
+        switch (status) {
+            case 'PENDING':
+                return 'bg-yellow-500 text-white';
+            case 'CONFIRMED':
+                return 'bg-green-500 text-white';
+            case 'CANCELLED':
+                return 'bg-red-500 text-white';
+            default:
+                return 'bg-gray-300 text-black';
+        }
+    };
+
+    const getStatusLabel = (status) => {
+        switch (status) {
+            case 'PENDING':
+                return 'Chờ duyệt';
+            case 'CONFIRMED':
+                return 'Đã duyệt';
+            case 'CANCELLED':
+                return 'Đã huỷ';
+            default:
+                return 'Không xác định';
+        }
+    };
+
     return (
-        <div className="flex">
-            <div className="flex-1 pt-[65px] ml-64 min-h-screen bg-main">
-                {/* Breadcrumb */}
-                <div className='items-center p-2 border-b space-x-2 font-bold'>
-                    <button onClick={() => navigate("/admin")}>Dashboard</button>
-                    <span>{'>'}</span>
-                    <button onClick={() => navigate("/appointment")}>Phê duyệt lịch hẹn</button>
+        <ClippedDrawer>
+            <div>
+                <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
+                    <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
+                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">
+                            Dashboard
+                        </button>
+                        <span>/</span>
+                        <span className="text-gray-700 font-medium">Lịch hẹn</span>
+                    </div>
+                    <h2 className="text-xl font-semibold p-4">Phê duyệt lịch hẹn</h2>
                 </div>
 
-                <h2 className="text-2xl p-2 font-semibold border-b">Phê duyệt lịch hẹn</h2>
+                <div className="p-6 max-w-7xl mx-auto space-y-6 bg-gray-50 min-h-[calc(100vh-80px)]">
 
-                <div className="p-6 space-y-4">
-                    {/* Tìm kiếm */}
-                    <div className='p-4 flex'>
-                        <input
-                            type="text"
-                            className="col-span-2 border px-3 py-2 rounded-tl-md rounded-bl-md outline-none"
-                            placeholder="Nhập tìm kiếm..."
-                        />
-                        <div className="flex">
-                            <button className="px-4 py-2 bg-blue-600 text-white">Tìm kiếm</button>
-                        </div>
-                    </div>
-
-                    {/* Bảng danh sách lịch hẹn */}
-                    <div className="p-4">
-                        <table className="w-full text-sm text-left border">
-                            <thead className="bg-gray-100">
+                    <div className="overflow-x-auto bg-white border rounded shadow-sm">
+                        <table className="w-full text-sm text-left">
+                            <thead className="bg-gray-100 text-gray-700">
                                 <tr>
-                                    <th className="p-2">Khách hàng</th>
-                                    <th className="p-2">Dịch vụ</th>
-                                    <th className="p-2">Bác sĩ</th>
-                                    <th className="p-2">Phòng khám</th>
-                                    <th className="p-2">Ngày</th>
-                                    <th className="p-2">Thời gian</th>
-                                    <th className="p-2">Trạng thái</th>
-                                    <th className="p-2 text-center">Hành động</th>
+                                    <th className="p-3">Khách hàng</th>
+                                    <th className="p-3">Dịch vụ</th>
+                                    <th className="p-3">Bác sĩ</th>
+                                    <th className="p-3">Phòng khám</th>
+                                    <th className="p-3">Ngày</th>
+                                    <th className="p-3">Thời gian</th>
+                                    <th className="p-3">Trạng thái</th>
+                                    <th className="p-3 w-20 text-center">Tác vụ</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {appointments.map((appt) => (
-                                    <tr key={appt.id} className="border-t hover:bg-gray-50">
-                                        <td className="p-2">{appt.customerName}</td>
-                                        <td className="p-2">{appt.serviceName}</td>
-                                        <td className="p-2">{appt.doctorName}</td>
-                                        <td className="p-2">{appt.clinicName}</td>
-                                        <td className="p-2">{appt.date}</td>
-                                        <td className="p-2">{appt.time}</td>
-                                        <td className="p-2">
-                                            <span className={`text-xs font-semibold px-2 py-1 rounded-full 
-                                                ${appt.status === 'PENDING' ? 'bg-yellow-500 text-white' :
-                                                    appt.status === 'CONFIRMED' ? 'bg-green-500 text-white' :
-                                                        'bg-red-500 text-white'}`}>
-                                                {appt.status === 'PENDING' ? 'Chờ duyệt' :
-                                                    appt.status === 'CONFIRMED' ? 'Đã duyệt' :
-                                                        'Đã huỷ'}
-                                            </span>
-                                        </td>
-                                        <td className="p-2 text-center">
-                                            <button
-                                                onClick={() => navigate(`/appointment/detail`)}
-                                                className="px-2 py-1 border rounded text-sm"
-                                            >
-                                                <Info className="w-4 h-4" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {appointments.length === 0 && (
+                                {appointments.length === 0 ? (
                                     <tr>
                                         <td colSpan="8" className="text-center py-4 text-gray-500">
                                             Không có lịch hẹn nào cần phê duyệt.
                                         </td>
                                     </tr>
+                                ) : (
+                                    appointments.map((appt) => (
+                                        <tr key={appt.id} className="border-t hover:bg-gray-50">
+                                            <td className="p-3">{appt.customerName}</td>
+                                            <td className="p-3">{appt.serviceName}</td>
+                                            <td className="p-3">{appt.doctorName}</td>
+                                            <td className="p-3">{appt.clinicName}</td>
+                                            <td className="p-3">{appt.date}</td>
+                                            <td className="p-3">{appt.time}</td>
+                                            <td className="p-3">
+                                                <span
+                                                    className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusStyle(
+                                                        appt.status
+                                                    )}`}
+                                                >
+                                                    {getStatusLabel(appt.status)}
+                                                </span>
+                                            </td>
+                                            <td className="p-3 text-center">
+                                                <button
+                                                    onClick={() => navigate(`/appointment/detail`)}
+                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                    title="Chi tiết"
+                                                >
+                                                    <Info className="w-4 h-4 text-gray-700" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
                                 )}
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-        </div >
+        </ClippedDrawer>
     );
 };
 

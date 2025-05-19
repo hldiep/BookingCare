@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 
 const ClinicDetail = () => {
     const navigate = useNavigate();
 
-    // Dữ liệu mẫu
-    const clinic = {
-        id: 1,
+    const [clinic] = useState({
         name: 'Phòng khám Nội tổng hợp',
         address: '123 Đường Nguyễn Văn Cừ, Quận 5, TP.HCM',
         phone: '02812345678',
@@ -18,7 +17,7 @@ const ClinicDetail = () => {
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnl06SsxvyKFuIJpfi_N9OdPVdDxp32wnd3w&s',
             'https://diadiemvietnam.vn/wp-content/uploads/2022/10/phong-khma-khoa-noi-tong-hop-taih-dong-thap-uy-tin-chat-luong.jpg',
         ],
-    };
+    });
 
     const getStatusLabel = (status) => {
         switch (status) {
@@ -30,74 +29,97 @@ const ClinicDetail = () => {
     };
 
     return (
-        <div className="flex">
-            <div className="flex-1 pt-[65px] ml-64 min-h-screen bg-main">
-                <div className='items-center p-2 border-b space-x-2 font-bold'>
-                    <button onClick={() => navigate("/admin")}>Dashboard</button>
-                    <span>{'>'}</span>
-                    <button onClick={() => navigate("/clinic")}>Phòng khám</button>
-                    <span>{'>'}</span>
-                    <button>Chi tiết</button>
+        <ClippedDrawer>
+            <div>
+                <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
+                    <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
+                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">
+                            Dashboard
+                        </button>
+                        <span>/</span>
+                        <button onClick={() => navigate('/clinic')} className="hover:underline text-blue-600">
+                            Phòng khám
+                        </button>
+                        <span>/</span>
+                        <span className="text-gray-700 font-medium">Thông tin</span>
+                    </div>
+                    <h2 className="text-xl font-semibold p-4">Thông tin phòng khám</h2>
                 </div>
 
-                <h2 className="text-2xl p-2 font-semibold border-b">Chi tiết phòng khám</h2>
+                <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
 
-                <div className="p-6 flex space-x-6 justify-around">
-                    <div className="w-1/4 space-y-4">
+                    <div className="w-full  bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <p className="text-sm text-gray-500">Tên phòng khám</p>
-                            <p className="font-semibold">{clinic.name}</p>
+                            <label className="block text-sm font-medium text-gray-700">Tên phòng khám</label>
+                            <input
+                                type="text"
+                                value={clinic.name}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm bg-gray-100"
+                            />
                         </div>
-
                         <div>
-                            <p className="text-sm text-gray-500">Địa chỉ</p>
-                            <p>{clinic.address}</p>
+                            <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
+                            <input
+                                type="text"
+                                value={getStatusLabel(clinic.status)}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm bg-gray-100"
+                            />
                         </div>
-
                         <div>
-                            <p className="text-sm text-gray-500">Số điện thoại</p>
-                            <p>{clinic.phone}</p>
+                            <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
+                            <input
+                                type="text"
+                                value={clinic.phone}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm bg-gray-100"
+                            />
                         </div>
-
                         <div>
-                            <p className="text-sm text-gray-500">Email</p>
-                            <p>{clinic.email}</p>
+                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <input
+                                type="email"
+                                value={clinic.email}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm bg-gray-100"
+                            />
                         </div>
-
-                        <div>
-                            <p className="text-sm text-gray-500">Trạng thái</p>
-                            <p className="text-green-600 font-medium">{getStatusLabel(clinic.status)}</p>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
+                            <input
+                                type="text"
+                                value={clinic.address}
+                                readOnly
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm bg-gray-100"
+                            />
                         </div>
-
-                        <div>
-                            <p className="text-sm text-gray-500">Mô tả</p>
-                            <p>{clinic.description}</p>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Mô tả</label>
+                            <textarea
+                                value={clinic.description}
+                                readOnly
+                                rows={4}
+                                className="mt-1 block w-full rounded border-gray-300 shadow-sm bg-gray-100 resize-none"
+                            />
                         </div>
-
-                        <button
-                            onClick={() => navigate(`/clinic/edit`)}
-                            className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded"
-                        >
-                            Chỉnh sửa
-                        </button>
-                    </div>
-
-                    <div className="w-3/5">
-                        <p className="font-semibold text-lg mb-2">Hình ảnh phòng khám</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {clinic.images.map((img, index) => (
-                                <img
-                                    key={index}
-                                    src={img}
-                                    alt={`Phòng khám ${index + 1}`}
-                                    className="w-full h-40 object-cover rounded shadow"
-                                />
-                            ))}
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Hình ảnh khác</label>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                {clinic.images.map((img, index) => (
+                                    <img
+                                        key={index}
+                                        src={img}
+                                        alt={`Phòng khám ${index + 1}`}
+                                        className="w-full h-32 object-cover rounded shadow"
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </ClippedDrawer>
     );
 };
 

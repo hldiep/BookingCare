@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 
 const ServiceDetail = () => {
     const navigate = useNavigate();
@@ -17,49 +18,64 @@ const ServiceDetail = () => {
     };
 
     return (
-        <div className="flex">
-            <div className="flex-1 pt-[65px] ml-64 min-h-screen bg-main">
-                <div className='items-center p-2 border-b space-x-2 font-bold'>
-                    <button onClick={() => navigate("/admin")}>Dashboard</button>
-                    <span>{'>'}</span>
-                    <button onClick={() => navigate("/service")}>Dịch vụ</button>
-                    <span>{'>'}</span>
-                    <button>Chi tiết</button>
+        <ClippedDrawer>
+            <div>
+                <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
+                    <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
+                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">
+                            Dashboard
+                        </button>
+                        <span>/</span>
+                        <button onClick={() => navigate('/service')} className="hover:underline text-blue-600">
+                            Dịch vụ
+                        </button>
+                        <span>/</span>
+                        <span className="text-gray-700 font-medium">Chi tiết</span>
+                    </div>
+                    <h2 className="text-xl font-semibold p-4">Chi tiết dịch vụ</h2>
                 </div>
 
-                <h2 className="text-2xl p-2 font-semibold border-b">Chi tiết dịch vụ</h2>
+                <div className="p-6 max-w-7xl mx-auto space-y-6 bg-gray-50 min-h-[calc(100vh-80px)]">
+                    <div className="flex flex-col md:flex-row gap-6">
 
-                <div className='p-6 flex space-x-6 justify-around'>
-                    <div className="w-1/4">
-                        <div className="font-semibold text-xl">{service.name}</div>
-                        <div className="mt-4">
-                            <p><strong>Chuyên khoa:</strong> {service.specialty}</p>
-                            <p className="mt-2"><strong>Trạng thái:</strong>
-                                <span className={`ml-2 px-2 py-1 rounded text-white ${service.status === 'active' ? 'bg-green-600' : 'bg-red-600'}`}>
+                        <div className="md:w-1/3 space-y-4">
+                            <div>
+                                <p className="text-gray-500 text-sm">Tên dịch vụ</p>
+                                <h3 className="text-lg font-semibold">{service.name}</h3>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 text-sm">Chuyên khoa</p>
+                                <p className="font-medium">{service.specialty}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 text-sm">Trạng thái</p>
+                                <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full text-white ${service.status === 'active' ? 'bg-green-600' : 'bg-red-600'}`}>
                                     {service.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
                                 </span>
-                            </p>
-                            <p className="mt-4"><strong>Mô tả:</strong></p>
-                            <p className="mt-2 text-justify">{service.description}</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-500 text-sm">Mô tả</p>
+                                <p className="text-justify">{service.description}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="w-3/5">
-                        <p className="font-semibold text-lg mb-2">Hình ảnh</p>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {service.images.map((img, index) => (
-                                <img
-                                    key={index}
-                                    src={img}
-                                    alt={`Hình ${index + 1}`}
-                                    className="w-full h-40 object-cover rounded shadow"
-                                />
-                            ))}
+                        <div className="md:w-2/3">
+                            <p className="font-semibold text-lg mb-2">Hình ảnh</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {service.images.map((img, index) => (
+                                    <img
+                                        key={index}
+                                        src={img}
+                                        alt={`Hình ${index + 1}`}
+                                        className="w-full h-40 object-cover rounded shadow"
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </ClippedDrawer>
     );
 };
 

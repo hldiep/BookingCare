@@ -19,7 +19,6 @@ const HomePage = () => {
                     <SectionIntro />
                 </div>
 
-                {/* Đội ngũ bác sĩ */}
                 <SectionDoctor />
 
                 <div className="container mx-auto">
@@ -37,7 +36,7 @@ const HomePage = () => {
                         </div>
                         <div className="md:w-1/2">
                             <h2 className="text-3xl font-bold text-highlight mb-4">
-                                Giới thiệu Hệ thống Phòng khám Star
+                                Giới thiệu Hệ thống Phòng khám HealthCare
                             </h2>
                             <p className="text-gray-700 mb-4 text-justify">
                                 Star là Hệ thống Y tế tiêu chuẩn quốc tế. Hệ thống cung cấp dịch vụ chăm sóc sức khỏe toàn diện, chuyên sâu với chất lượng cao, cơ sở vật chất hiện đại, đội ngũ bác sĩ giàu kinh nghiệm và trang thiết bị nhập khẩu từ Nhật, Mỹ.

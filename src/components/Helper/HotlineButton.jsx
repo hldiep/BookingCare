@@ -3,12 +3,12 @@ import React from 'react';
 const HotlineButton = () => {
     return (
         <div>
-            {/* <div className="fixed bottom-28 left-6 z-50 flex items-center gap-2 text-white px-4 py-2 rounded-full cursor-pointer hover:scale-105 transition-all">
-                <button className="font-bold px-6 py-4 rounded-full bg-logo border border-transparent hover:border-logo hover:bg-transparent hover:text-logo transition-all duration-300">
+            <div className="fixed bottom-32 left-6 z-50 flex items-center gap-2 bg-highlight text-white rounded-full shadow-lg cursor-pointer hover:scale-105 transition-all">
+                <button className="font-bold px-6 py-4 rounded-full bg-highlight border border-transparent hover:bg-blue-800 hover:bg-transparent transition-all duration-300">
                     Đặt lịch khám ngay
                 </button>
-            </div> */}
-            <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-nav text-white px-4 py-2 rounded-full shadow-lg cursor-pointer hover:scale-105 transition-all">
+            </div>
+            <div className="fixed bottom-6 left-6 z-50 flex items-center gap-2 bg-logo text-white px-4 py-2 rounded-full shadow-lg cursor-pointer hover:scale-105 transition-all">
 
                 <div className="relative w-10 h-10 flex items-center justify-center">
                     <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-ping"></div>

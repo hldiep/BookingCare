@@ -8,7 +8,6 @@ import { Outlet } from "react-router-dom";
 const UserLayout = () => {
     return (
         <>
-            <ScrollToTop />
             <Header />
             <main>
                 <Outlet />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 
 const ClinicCreate = () => {
     const navigate = useNavigate();
@@ -46,73 +47,113 @@ const ClinicCreate = () => {
     };
 
     return (
-        <div className="flex">
-            <div className="flex-1 pt-[65px] ml-64 min-h-screen bg-main">
-                <div className='items-center p-2 border-b space-x-2 font-bold'>
-                    <button onClick={() => navigate("/admin")}>Dashboard</button>
-                    <span>{'>'}</span>
-                    <button onClick={() => navigate("/clinic")}>Phòng khám</button>
-                    <span>{'>'}</span>
-                    <button>Thêm mới</button>
+        <ClippedDrawer>
+            <div>
+                <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
+                    <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
+                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">
+                            Dashboard
+                        </button>
+                        <span>/</span>
+                        <button onClick={() => navigate('/clinic')} className="hover:underline text-blue-600">
+                            Phòng khám
+                        </button>
+                        <span>/</span>
+                        <span className="text-gray-700 font-medium">Thêm</span>
+                    </div>
+                    <h2 className="text-xl font-semibold p-4">Thêm phòng khám</h2>
                 </div>
 
-                <h2 className="text-2xl p-2 font-semibold border-b">Thêm mới phòng khám</h2>
+                <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
 
-                <form onSubmit={handleSubmit} className='p-6 flex space-x-6 justify-around'>
-                    <div className="w-1/4 space-y-4">
+                    {/* Hình ảnh preview */}
+                    <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
+                        <p className="font-semibold text-center text-lg">Ảnh phòng khám</p>
+                        {clinic.images.map((img, index) => (
+                            <div key={index} className="space-y-2">
+                                <input
+                                    type="text"
+                                    value={img}
+                                    onChange={(e) => handleImageChange(index, e.target.value)}
+                                    placeholder={`Link ảnh ${index + 1}`}
+                                    className="w-full border px-3 py-2 rounded outline-none"
+                                />
+                                {img && (
+                                    <img
+                                        src={img}
+                                        alt={`Ảnh ${index + 1}`}
+                                        className="w-full h-40 object-cover rounded border"
+                                    />
+                                )}
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={addImageField}
+                            className="mt-2 w-full px-4 py-2 rounded border text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                            + Thêm ảnh
+                        </button>
+                    </div>
+
+                    {/* Form nhập */}
+                    <form
+                        onSubmit={handleSubmit}
+                        className="w-full md:w-2/3 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
                         <div>
-                            <label className="font-semibold block mb-1">Tên phòng khám</label>
+                            <label className="block text-sm font-medium text-gray-700">Tên phòng khám</label>
                             <input
                                 type="text"
                                 name="name"
                                 value={clinic.name}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded outline-none"
                                 required
+                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
-                            <label className="font-semibold block mb-1">Địa chỉ</label>
+                            <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
                             <input
                                 type="text"
                                 name="address"
                                 value={clinic.address}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded outline-none"
                                 required
+                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
-                            <label className="font-semibold block mb-1">Số điện thoại</label>
+                            <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
                             <input
                                 type="text"
                                 name="phone"
                                 value={clinic.phone}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded outline-none"
+                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
-                            <label className="font-semibold block mb-1">Email</label>
+                            <label className="block text-sm font-medium text-gray-700">Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={clinic.email}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded outline-none"
+                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
-                            <label className="font-semibold block mb-1">Trạng thái</label>
+                            <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
                             <select
                                 name="status"
                                 value={clinic.status}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded outline-none"
+                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="active">Hoạt động</option>
                                 <option value="pause">Tạm ngừng</option>
@@ -120,54 +161,28 @@ const ClinicCreate = () => {
                             </select>
                         </div>
 
-                        <div>
-                            <label className="font-semibold block mb-1">Mô tả</label>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Mô tả</label>
                             <textarea
                                 name="description"
                                 value={clinic.description}
                                 onChange={handleChange}
-                                className="w-full border px-3 py-2 rounded h-32 outline-none"
+                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm h-32 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
-                        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-                            Tạo mới
-                        </button>
-                    </div>
-
-                    <div className="w-3/5">
-                        <p className="font-semibold text-lg mb-2">Hình ảnh phòng khám</p>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {clinic.images.map((img, index) => (
-                                <div key={index}>
-                                    <input
-                                        type="text"
-                                        value={img}
-                                        onChange={(e) => handleImageChange(index, e.target.value)}
-                                        className="w-full border px-3 py-2 rounded outline-none mb-2"
-                                        placeholder={`Link ảnh ${index + 1}`}
-                                    />
-                                    {img && (
-                                        <img
-                                            src={img}
-                                            alt={`Ảnh ${index + 1}`}
-                                            className="w-full h-40 object-cover rounded shadow"
-                                        />
-                                    )}
-                                </div>
-                            ))}
+                        <div className="md:col-span-2 flex justify-end">
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                            >
+                                Tạo mới
+                            </button>
                         </div>
-                        <button
-                            type="button"
-                            onClick={addImageField}
-                            className="mt-4 px-4 py-2 rounded border text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                            + Thêm ảnh
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
+        </ClippedDrawer>
     );
 };
 

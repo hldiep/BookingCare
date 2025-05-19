@@ -14,9 +14,7 @@ import NewPassword from "./components/Login/NewPassword";
 import DepartmentPage from "./components/Home/DepartmentPage";
 
 import Login from "./components/Login/Login";
-import AdminDashboard from "./components/ManagerDoctor/AdminDashboard";
 import UserLayout from "./components/Layout/UserLayout";
-import AdminLayout from "./components/Layout/AdminLayout";
 import DoctorManagement from "./components/ManagerDoctor/DoctorManagement";
 import DoctorDetailManager from "./components/ManagerDoctor/DoctorDetailManager";
 import DoctorEdit from "./components/ManagerDoctor/DoctorEdit";
@@ -37,35 +35,36 @@ import AppointmentDetail from "./components/ManagerApproval/AppointmentDetail";
 import Appointment from "./components/ManagerApproval/Appointment";
 import ScheduleManagement from "./components/ManagerSchedule/ScheduleManagement";
 import ScheduleDetail from "./components/ManagerSchedule/ScheduleDetail";
-import DoctorLayout from "./components/Layout/DoctorLayout";
-import Manager from "./components/Doctor/DoctorManager";
-import DoctorManager from "./components/Doctor/DoctorManager";
+import DoctorProfile from "./components/Doctor/DoctorProfile";
+import Security from "./components/Doctor/Security";
+import DoctorSchedule from "./components/Doctor/DoctorSchedule";
+import LichKham from "./components/Doctor/LichKham";
+import LichKhamChiTiet from "./components/Doctor/LichKhamChiTiet";
+import DashboardLayoutBasic from "./components/Dashboard/DashboardLayoutBasic";
+import ScrollToTop from "./ScrollToTop";
+import ProfileEdit from "./components/Doctor/ProfileEdit";
 function App() {
   return (
-    <Routes>
-      {/* Các trang không cần header/footer như login, forgot password */}
-      <Route path="dang-nhap" element={<Login />} />
-      <Route path="quen-mat-khau" element={<RecoveryPassword />} />
-      <Route path="ma-xac-minh" element={<VerifyCode />} />
-      <Route path="mat-khau-moi" element={<NewPassword />} />
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="dang-nhap" element={<Login />} />
+        <Route path="quen-mat-khau" element={<RecoveryPassword />} />
+        <Route path="ma-xac-minh" element={<VerifyCode />} />
+        <Route path="mat-khau-moi" element={<NewPassword />} />
 
-      {/* Các route dùng UserLayout (có header/footer) */}
-      <Route path="/" element={<UserLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="lien-he" element={<Contact />} />
-        <Route path="dich-vu" element={<ServiceAll />} />
-        <Route path="chuyen-khoa" element={<DepartmentPage />} />
-        <Route path="gioi-thieu" element={<Info />} />
-        <Route path="bac-si" element={<Doctors />} />
-        <Route path="bac-si/detail" element={<DoctorDetail />} />
-        <Route path="dat-lich" element={<AppointmentPage />} />
-      </Route>
+        <Route path="/" element={<UserLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="lien-he" element={<Contact />} />
+          <Route path="dich-vu" element={<ServiceAll />} />
+          <Route path="chuyen-khoa" element={<DepartmentPage />} />
+          <Route path="gioi-thieu" element={<Info />} />
+          <Route path="bac-si" element={<Doctors />} />
+          <Route path="bac-si/detail" element={<DoctorDetail />} />
+          <Route path="dat-lich" element={<AppointmentPage />} />
+        </Route>
 
-      {/* Các route dùng AdminLayout (dashboard admin) */}
-      <Route path="/" element={<AdminLayout />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="admin" element={<AdminDashboard />} />
-
+        <Route path="admin" element={<DashboardLayoutBasic />} />
         <Route path="doctor" element={<DoctorManagement />} />
         <Route path="doctor/detail-manage" element={<DoctorDetailManager />} />
         <Route path="doctor/edit" element={<DoctorEdit />} />
@@ -91,16 +90,17 @@ function App() {
 
         <Route path="schedule" element={<ScheduleManagement />} />
         <Route path="schedule/detail" element={<ScheduleDetail />} />
-      </Route>
 
-      <Route path="/" element={<DoctorLayout />}>
-        <Route index element={<Manager />} />
-        <Route path="doctor/home" element={<DoctorManager />} />
-        {/* <Route path="user" element={<Manager />} /> */}
-        {/* <Route path="doctor/schedule" element={<ServiceAll />} /> */}
+        <Route path="profile" element={<DoctorProfile />} />
+        <Route path="profile/edit" element={<ProfileEdit />} />
 
-      </Route>
-    </Routes>
+        <Route path="security" element={<Security />} />
+        <Route path="my-schedule" element={<LichKham />} />
+        <Route path="my-appointments" element={<DoctorSchedule />} />
+        <Route path="my-appointments/detail" element={<LichKhamChiTiet />} />
+      </Routes>
+    </>
+
   );
 }
 
