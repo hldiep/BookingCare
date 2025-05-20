@@ -43,6 +43,7 @@ import LichKhamChiTiet from "./components/Doctor/LichKhamChiTiet";
 import DashboardLayoutBasic from "./components/Dashboard/DashboardLayoutBasic";
 import ScrollToTop from "./ScrollToTop";
 import ProfileEdit from "./components/Doctor/ProfileEdit";
+import AppointmentSuccess from "./components/Form/AppointmentSuccess";
 function App() {
   return (
     <>
@@ -62,6 +63,7 @@ function App() {
           <Route path="bac-si" element={<Doctors />} />
           <Route path="bac-si/detail" element={<DoctorDetail />} />
           <Route path="dat-lich" element={<AppointmentPage />} />
+          <Route path="appointment-success" element={<AppointmentSuccess />} />
         </Route>
 
         <Route path="admin" element={<DashboardLayoutBasic />} />
@@ -97,7 +99,7 @@ function App() {
         <Route path="security" element={<Security />} />
         <Route path="my-schedule" element={<LichKham />} />
         <Route path="my-appointments" element={<DoctorSchedule />} />
-        <Route path="my-appointments/detail" element={<LichKhamChiTiet />} />
+        <Route path="my-schedule/detail" element={<LichKhamChiTiet />} />
       </Routes>
     </>
 

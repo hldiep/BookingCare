@@ -1,10 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const HotlineButton = () => {
+    const navigate = useNavigate();
     return (
         <div>
             <div className="fixed bottom-32 left-6 z-50 flex items-center gap-2 bg-highlight text-white rounded-full shadow-lg cursor-pointer hover:scale-105 transition-all">
-                <button className="font-bold px-6 py-4 rounded-full bg-highlight border border-transparent hover:bg-blue-800 hover:bg-transparent transition-all duration-300">
+                <button onClick={() => navigate('/dat-lich')}
+                    className="font-bold px-6 py-4 rounded-full bg-highlight border border-transparent hover:bg-blue-800 hover:bg-transparent transition-all duration-300">
                     Đặt lịch khám ngay
                 </button>
             </div>

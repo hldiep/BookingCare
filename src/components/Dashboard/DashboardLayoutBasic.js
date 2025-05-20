@@ -57,10 +57,7 @@ export default function ClippedDrawer({ children }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleAccountClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-  const handleProfile = () => {
-    console.log('Đi tới trang cá nhân');
-    handleClose();
-  };
+
   const handleLogout = () => {
     console.log('Đăng xuất');
     handleClose();
@@ -104,7 +101,7 @@ export default function ClippedDrawer({ children }) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
-            <MenuItem onClick={handleProfile}>Trang cá nhân</MenuItem>
+            <MenuItem onClick={() => navigate('/profile')}>Trang cá nhân</MenuItem>
             <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
           </Menu>
         </Toolbar>

@@ -1,62 +1,57 @@
 import { useNavigate } from "react-router-dom";
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 const RecoveryPassword = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (email.trim() === "") {
             alert("Vui lòng nhập email.");
             return;
         }
-
         navigate("/ma-xac-minh");
     };
+
     return (
-        <div
-            className="min-h-screen bg-cover flex bg-center justify-center items-center relative"
-            style={{
-                backgroundImage:
-                    "url('https://images.unsplash.com/photo-1508615039623-a25605d2b022?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-            }}
-        >
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] via-[#ffffff] to-[#e0f7fa] relative px-4">
             <button
                 onClick={() => navigate("/dang-nhap")}
-                className="absolute top-4 left-4 italic font-bold text-highlight underline hover:text-blue-900 hover:scale-105 transition-all duration-300"
+                className="absolute top-6 left-6 italic text-blue-700 underline hover:text-blue-900 hover:scale-105 transition-all duration-300"
             >
                 Quay lại
             </button>
-            <div className="container">
 
-                <div className='container max-w-xl w-full justify-center items-center text-center'>
-                    <h2 className="text-2xl font-bold mb-4 font-georgia text-center text-highlight">QUÊN MẬT KHẨU</h2>
+            <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl px-10 py-12 w-full max-w-md">
+                <h2 className="text-2xl font-bold text-center mb-4 text-logo font-serif">QUÊN MẬT KHẨU</h2>
+                <p className="text-center text-gray-600 text-sm mb-6">
+                    Nhập địa chỉ email của bạn để nhận mã xác minh và tạo lại mật khẩu.
+                </p>
 
-                    <form onSubmit={handleSubmit} className='border border-[#f9f0eb] mt-8 p-6 rounded-lg shadow-lg'>
-                        <label className="block text-sm text-left mb-3">
-                            <p className='flex items-center justify-center mb-2'>
-                                <span>Nhập email để tạo mật khẩu mới</span>
-                            </p>
-                            <input
-                                type="email"
-                                name="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 w-full p-2 border rounded-md text-gray-900 outline-none"
-                                required
-                            />
-                        </label>
-                        <button
-                            type="submit"
-                            className="text-white text-center mt-4 px-3 py-2 rounded-full bg-logo border border-transparent hover:bg-yellow-600 hover:bg-transparent transition-all duration-300"
-                        >
-                            GỬI MÃ XÁC MINH
-                        </button>
-                    </form>
-                </div>
+                <form onSubmit={handleSubmit}>
+                    <label className="block text-sm text-gray-700 font-medium mb-2">
+                        Email
+                        <input
+                            type="email"
+                            name="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg outline-none"
+                            required
+                        />
+                    </label>
+
+                    <button
+                        type="submit"
+                        className="w-full text-white font-semibold py-2 mt-4 bg-logo rounded-full hover:bg-yellow-600 transition-all duration-300"
+                    >
+                        GỬI MÃ XÁC MINH
+                    </button>
+                </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default RecoveryPassword;

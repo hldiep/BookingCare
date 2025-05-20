@@ -1,12 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AppointmentPage() {
+    const navigate = useNavigate();
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        navigate('/appointment-success');
+    };
     return (
         <div className="min-h-screen pt-28 bg-main flex justify-center">
             <div className='container flex justify-center pt-20 p-5'>
                 <div className='w-full max-w-5xl px-4'>
                     <h2 className="text-2xl font-bold mb-6 text-center font-georgia text-highlight">ĐẶT LỊCH KHÁM BỆNH TRONG NGÀY</h2>
-                    <form >
+                    <form onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <p className='mb-2'>Họ và tên</p>
@@ -39,13 +47,15 @@ function AppointmentPage() {
                             <div>
                                 <p className='mb-2'>Dịch vụ</p>
                                 <select className="w-full border p-2 rounded outline-none">
-                                    <option>Hồ Chí Minh</option>
+                                    <option>Khám tổng quát</option>
+                                    <option>Siêu âm</option>
                                 </select>
                             </div>
                             <div>
-                                <p className='mb-2'>Dịch vụ</p>
+                                <p className='mb-2'>Bác sĩ điều trị</p>
                                 <select className="w-full border p-2 rounded outline-none">
-                                    <option>Hồ Chí Minh</option>
+                                    <option>Nguyễn Văn A</option>
+                                    <option>Trần Văn B</option>
                                 </select>
                             </div>
 
