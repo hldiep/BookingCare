@@ -24,7 +24,7 @@ const NewPassword = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] via-[#ffffff] to-[#e0f7fa] relative px-4">
             <button
                 onClick={() => navigate("/ma-xac-minh")}
-                className="absolute top-4 left-4 italic text-highlight underline hover:text-blue-900 hover:scale-105 transition-all duration-300"
+                className="absolute top-6 left-6 italic text-blue-700 underline hover:text-blue-900 hover:scale-105 transition-all duration-300"
             >
                 Quay lại
             </button>

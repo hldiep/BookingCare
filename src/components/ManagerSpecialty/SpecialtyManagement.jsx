@@ -1,34 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pencil, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const SpecialtyManagement = () => {
     const navigate = useNavigate();
-    const [specialties, setSpecialties] = useState([
-        {
-            id: 'MS01',
-            name: 'Tim mạch',
-            description: 'Khám và điều trị các bệnh lý liên quan đến tim (Cardiology - Heart-related diseases)',
-            status: 'ACTIVE',
-            doctors: ['Dr. Nguyễn Văn A', 'Dr. Trần Thị B'],
-        },
-        {
-            id: 'MS02',
-            name: 'Da liễu',
-            description: 'Chẩn đoán và điều trị các bệnh về da, tóc và móng (Dermatology - Skin, hair, and nail diseases)',
-            status: 'ACTIVE',
-            doctors: ['Dr. Lê Văn C'],
-        },
-        {
-            id: 'MS03',
-            name: 'Nhi khoa',
-            description: 'Chăm sóc sức khỏe cho trẻ sơ sinh và trẻ nhỏ (Pediatrics - Healthcare for children)',
-            status: 'DELETING',
-            doctors: [],
-        },
-    ]);
+    // const [specialties, setSpecialties] = useState([
+    //     {
+    //         id: 'MS01',
+    //         name: 'Tim mạch',
+    //         description: 'Khám và điều trị các bệnh lý liên quan đến tim (Cardiology - Heart-related diseases)',
+    //         status: 'ACTIVE',
+    //         doctors: ['Dr. Nguyễn Văn A', 'Dr. Trần Thị B'],
+    //     },
+    //     {
+    //         id: 'MS02',
+    //         name: 'Da liễu',
+    //         description: 'Chẩn đoán và điều trị các bệnh về da, tóc và móng (Dermatology - Skin, hair, and nail diseases)',
+    //         status: 'ACTIVE',
+    //         doctors: ['Dr. Lê Văn C'],
+    //     },
+    //     {
+    //         id: 'MS03',
+    //         name: 'Nhi khoa',
+    //         description: 'Chăm sóc sức khỏe cho trẻ sơ sinh và trẻ nhỏ (Pediatrics - Healthcare for children)',
+    //         status: 'DELETING',
+    //         doctors: [],
+    //     },
+    // ]);
+    const [specialties, setSpecialties] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const loadSpecialty = async () => {
+            try {
+                const data = await fetchAllSpecialty();
+                setSpecialties(data);
+            } catch (error) {
+                console.error("Lỗi tải danh sách chuyên khoa:", error);
+            };
+            loadSpecialty();
+        }
+    }, []);
     return (
         <ClippedDrawer>
             <div>
@@ -62,57 +76,61 @@ const SpecialtyManagement = () => {
                     </div>
 
                     <div className="overflow-x-auto bg-white border rounded shadow-sm">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-100 text-gray-700">
-                                <tr>
-                                    <th className="p-3 border-r w-20">Mã</th>
-                                    <th className="p-3 border-r">Tên chuyên khoa</th>
-                                    <th className="p-3 border-r">Mô tả</th>
-                                    <th className="p-3 border-r">Bác sĩ</th>
-                                    <th className="p-3 border-r w-28">Trạng thái</th>
-                                    <th className="p-3 w-32 text-center">Tác vụ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {specialties.map((item) => (
-                                    <tr key={item.id} className="border-t hover:bg-gray-50">
-                                        <td className="p-3 border-r font-medium">{item.id}</td>
-                                        <td className="p-3 border-r">{item.name}</td>
-                                        <td className="p-3 border-r">{item.description}</td>
-                                        <td className="p-3 border-r">
-                                            {item.doctors.length > 0 ? (
-                                                <ul className="list-disc list-inside space-y-1">
-                                                    {item.doctors.map((doc, idx) => (
-                                                        <li key={idx}>{doc}</li>
-                                                    ))}
-                                                </ul>
-                                            ) : (
-                                                <span className="text-gray-500 italic">Chưa có</span>
-                                            )}
-                                        </td>
-                                        <td className={`p-3 border-r font-medium ${item.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
-                                            {item.status === 'ACTIVE' ? 'Hoạt động' : 'Tạm dừng'}
-                                        </td>
-                                        <td className="p-3 text-center space-x-2">
-                                            <button
-                                                onClick={() => navigate(`/specialty/edit`)}
-                                                className="p-1 border rounded hover:bg-gray-100"
-                                                title="Chỉnh sửa"
-                                            >
-                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                            </button>
-                                            <button
-                                                onClick={() => navigate(`/specialty/detail`)}
-                                                className="p-1 border rounded hover:bg-gray-100"
-                                                title="Chi tiết"
-                                            >
-                                                <Info className="w-4 h-4 text-gray-700" />
-                                            </button>
-                                        </td>
+                        {specialties.length === 0 ? (
+                            <div className="text-center text-gray-500 py-8">Không có chuyên khoa nào.</div>
+                        ) : (
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-100 text-gray-700">
+                                    <tr>
+                                        <th className="p-3 border-r w-20">Mã</th>
+                                        <th className="p-3 border-r">Tên chuyên khoa</th>
+                                        <th className="p-3 border-r">Mô tả</th>
+                                        <th className="p-3 border-r">Bác sĩ</th>
+                                        <th className="p-3 border-r w-28">Trạng thái</th>
+                                        <th className="p-3 w-32 text-center">Tác vụ</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {specialties.map((item) => (
+                                        <tr key={item.id} className="border-t hover:bg-gray-50">
+                                            <td className="p-3 border-r font-medium">{item.id}</td>
+                                            <td className="p-3 border-r">{item.name}</td>
+                                            <td className="p-3 border-r">{item.description}</td>
+                                            <td className="p-3 border-r">
+                                                {item.doctors.length > 0 ? (
+                                                    <ul className="list-disc list-inside space-y-1">
+                                                        {item.doctors.map((doc, idx) => (
+                                                            <li key={idx}>{doc}</li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <span className="text-gray-500 italic">Chưa có</span>
+                                                )}
+                                            </td>
+                                            <td className={`p-3 border-r font-medium ${item.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
+                                                {item.status === 'ACTIVE' ? 'Hoạt động' : 'Tạm dừng'}
+                                            </td>
+                                            <td className="p-3 text-center space-x-2">
+                                                <button
+                                                    onClick={() => navigate(`/specialty/edit`)}
+                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                    title="Chỉnh sửa"
+                                                >
+                                                    <Pencil className="w-4 h-4 text-gray-700" />
+                                                </button>
+                                                <button
+                                                    onClick={() => navigate(`/specialty/detail`)}
+                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                    title="Chi tiết"
+                                                >
+                                                    <Info className="w-4 h-4 text-gray-700" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </div>
             </div>

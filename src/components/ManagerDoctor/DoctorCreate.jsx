@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { addDoctor } from '../util/doctorApi';
 
 const DoctorCreate = () => {
     const navigate = useNavigate();
     const [doctor, setDoctor] = useState({
+        accountId: '',
+        medicalSpecialtyId: '',
         name: '',
-        gender: 'male',
+        gender: 'true',
         birthday: '',
-        specialty: '',
         phone: '',
         email: '',
         address: '',
+        status: 'active',
         image: '',
     });
 
@@ -20,11 +23,20 @@ const DoctorCreate = () => {
         setDoctor({ ...doctor, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Thêm bác sĩ:", doctor);
-        alert("Đã thêm bác sĩ thành công!");
-        navigate("/doctor");
+        const payload = {
+            ...doctor,
+            gender: doctor.gender === 'true',
+        };
+        try {
+            await addDoctor(doctor);
+            alert("Đã thêm bác sĩ thành công!");
+            navigate("/doctor");
+        } catch (error) {
+            console.error("Lỗi thêm bác sĩ:", error);
+            alert("Đã xảy ra lỗi: " + error.message);
+        }
     };
 
     return (
@@ -63,6 +75,17 @@ const DoctorCreate = () => {
                         className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
                     >
                         <div>
+                            <label className="block text-sm font-medium text-gray-700">Mã tài khoản</label>
+                            <input
+                                type="text"
+                                name="accountId"
+                                value={doctor.accountId}
+                                onChange={handleChange}
+                                required
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div>
                             <label className="block text-sm font-medium text-gray-700">Họ tên</label>
                             <input
                                 type="text"
@@ -70,18 +93,18 @@ const DoctorCreate = () => {
                                 value={doctor.name}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Chuyên khoa</label>
                             <input
                                 type="text"
-                                name="specialty"
-                                value={doctor.specialty}
+                                name="medicalSpecialtyId"
+                                value={doctor.medicalSpecialtyId}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div>
@@ -91,10 +114,10 @@ const DoctorCreate = () => {
                                 value={doctor.gender}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             >
-                                <option value="male">Nam</option>
-                                <option value="female">Nữ</option>
+                                <option className='text-sm' value="true">Nam</option>
+                                <option className='text-sm' value="false">Nữ</option>
                             </select>
                         </div>
                         <div>
@@ -105,8 +128,21 @@ const DoctorCreate = () => {
                                 value={doctor.birthday}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 text-sm outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
+                            <select
+                                name="status"
+                                value={doctor.status}
+                                onChange={handleChange}
+                                required
+                                className="p-1 text-sm outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option className='text-sm' value="active">Đang hoạt động</option>
+                                <option className='text-sm' value="inactive">Ngưng hoạt động</option>
+                            </select>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
@@ -116,7 +152,7 @@ const DoctorCreate = () => {
                                 value={doctor.phone}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div>
@@ -127,7 +163,7 @@ const DoctorCreate = () => {
                                 value={doctor.email}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div className="md:col-span-2">
@@ -138,7 +174,7 @@ const DoctorCreate = () => {
                                 value={doctor.address}
                                 onChange={handleChange}
                                 required
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div className="md:col-span-2">
@@ -148,7 +184,7 @@ const DoctorCreate = () => {
                                 name="image"
                                 value={doctor.image}
                                 onChange={handleChange}
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
                         <div className="md:col-span-2 flex justify-end">

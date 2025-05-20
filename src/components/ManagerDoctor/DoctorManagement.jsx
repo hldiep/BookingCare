@@ -1,40 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Pencil, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { fetchAllDoctors } from '../util/doctorApi';
 
 const DoctorManagement = () => {
     const navigate = useNavigate();
-    const [doctors] = useState([
-        {
-            id: 1,
-            avatar: 'https://anhcute.net/wp-content/uploads/2024/10/Hinh-chibi-bac-si-nhan-vat-hoat-hinh-cute.jpg',
-            department: 'Nội tổng hợp',
-            name: 'Nguyễn Văn A',
-            phone: '0123456789',
-            role: 'Bác sĩ',
-            status: true,
-        },
-        {
-            id: 2,
-            avatar: 'https://i.pinimg.com/originals/24/bd/d9/24bdd9ec59a9f8966722063fe7791183.jpg',
-            department: 'Ngoại khoa',
-            name: 'Trần Thị B',
-            phone: '0978246246',
-            role: 'Bác sĩ',
-            status: true,
-        },
-        {
-            id: 3,
-            avatar: 'https://i.pinimg.com/736x/d1/c3/b3/d1c3b347f875398728a1734d4a1b1708.jpg',
-            department: 'Nội tổng hợp',
-            name: 'Phạm Văn C',
-            phone: '0766335563',
-            role: 'Bác sĩ',
-            status: true,
-        },
-    ]);
+    // const [doctors] = useState([
+    //     {
+    //         id: 1,
+    //         avatar: 'https://anhcute.net/wp-content/uploads/2024/10/Hinh-chibi-bac-si-nhan-vat-hoat-hinh-cute.jpg',
+    //         department: 'Nội tổng hợp',
+    //         name: 'Nguyễn Văn A',
+    //         phone: '0123456789',
+    //         role: 'Bác sĩ',
+    //         status: true,
+    //     },
+    //     {
+    //         id: 2,
+    //         avatar: 'https://i.pinimg.com/originals/24/bd/d9/24bdd9ec59a9f8966722063fe7791183.jpg',
+    //         department: 'Ngoại khoa',
+    //         name: 'Trần Thị B',
+    //         phone: '0978246246',
+    //         role: 'Bác sĩ',
+    //         status: true,
+    //     },
+    //     {
+    //         id: 3,
+    //         avatar: 'https://i.pinimg.com/736x/d1/c3/b3/d1c3b347f875398728a1734d4a1b1708.jpg',
+    //         department: 'Nội tổng hợp',
+    //         name: 'Phạm Văn C',
+    //         phone: '0766335563',
+    //         role: 'Bác sĩ',
+    //         status: true,
+    //     },
+    // ]);
 
+    const [doctors, setDoctors] = useState([]);
+
+    useEffect(() => {
+        const loadDoctors = async () => {
+            try {
+                const data = await fetchAllDoctors();
+                setDoctors(data);
+            } catch (error) {
+                console.error('Lỗi tải danh sách bác sĩ:', error);
+            }
+        };
+        loadDoctors();
+    }, []);
     return (
         <ClippedDrawer>
             <div>
@@ -68,52 +82,58 @@ const DoctorManagement = () => {
                         </div>
                     </div>
                     <div className="overflow-x-auto bg-white border rounded shadow-sm">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-100 text-gray-700">
-                                <tr>
-                                    <th className="p-3 w-14">Ảnh</th>
-                                    <th className="p-3">Chuyên khoa</th>
-                                    <th className="p-3">Họ tên</th>
-                                    <th className="p-3">Số điện thoại</th>
-                                    <th className="p-3">Vai trò</th>
-                                    <th className="p-3">Trạng thái</th>
-                                    <th className="p-3 w-32 text-center">Tác vụ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {doctors.map((doc) => (
-                                    <tr key={doc.id} className="border-t hover:bg-gray-50">
-                                        <td className="p-3">
-                                            <img src={doc.avatar} alt="avatar" className="w-9 h-9 rounded-full object-cover" />
-                                        </td>
-                                        <td className="p-3">{doc.department}</td>
-                                        <td className="p-3">{doc.name}</td>
-                                        <td className="p-3">{doc.phone}</td>
-                                        <td className="p-3">{doc.role}</td>
-                                        <td className="p-3 text-green-600 font-medium">
-                                            <BadgeCheck className="inline-block w-4 h-4 mr-1" />
-                                            Hoạt động
-                                        </td>
-                                        <td className="p-3 space-x-2 text-center">
-                                            <button
-                                                onClick={() => navigate('/doctor/edit')}
-                                                className="p-1 border rounded hover:bg-gray-100"
-                                                title="Chỉnh sửa"
-                                            >
-                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                            </button>
-                                            <button
-                                                onClick={() => navigate('/doctor/detail-manage')}
-                                                className="p-1 border rounded hover:bg-gray-100"
-                                                title="Chi tiết"
-                                            >
-                                                <Info className="w-4 h-4 text-gray-700" />
-                                            </button>
-                                        </td>
+                        {doctors.length === 0 ? (
+                            <div className="text-center text-gray-500 py-8">Không có bác sĩ nào.</div>
+                        ) : (
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-100 text-gray-700">
+                                    <tr>
+                                        <th className="p-3 w-14">Ảnh</th>
+                                        <th className="p-3">Chuyên khoa</th>
+                                        <th className="p-3">Họ tên</th>
+                                        <th className="p-3">Số điện thoại</th>
+                                        <th className="p-3">Email</th>
+                                        <th className="p-3">Trạng thái</th>
+                                        <th className="p-3 w-32 text-center">Tác vụ</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {doctors.map((doc) => (
+                                        <tr key={doc.id} className="border-t hover:bg-gray-50">
+                                            <td className="p-3">
+                                                <img src={doc.account?.avatar || 'https://via.placeholder.com/40'}
+                                                    alt="avatar"
+                                                    className="w-9 h-9 rounded-full object-cover" />
+                                            </td>
+                                            <td className="p-3">{doc.medicalSpecialty?.name}</td>
+                                            <td className="p-3">{doc.name}</td>
+                                            <td className="p-3">{doc.phone}</td>
+                                            <td className="p-3">{doc.email}</td>
+                                            <td className={`p-3 font-medium ${doc.status ? 'text-green-600' : 'text-red-500'}`}>
+                                                <BadgeCheck className="inline-block w-4 h-4 mr-1" />
+                                                {doc.status ? 'Hoạt động' : 'Ngừng hoạt động'}
+                                            </td>
+                                            <td className="p-3 space-x-2 text-center">
+                                                <button
+                                                    onClick={() => navigate(`/doctor/edit/${doc.id}`)}
+                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                    title="Chỉnh sửa"
+                                                >
+                                                    <Pencil className="w-4 h-4 text-gray-700" />
+                                                </button>
+                                                <button
+                                                    onClick={() => navigate(`/doctor/detail-manage/${doc.id}`)}
+                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                    title="Chi tiết"
+                                                >
+                                                    <Info className="w-4 h-4 text-gray-700" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </div>
             </div>
