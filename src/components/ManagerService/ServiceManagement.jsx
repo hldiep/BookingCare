@@ -1,33 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pencil, Info, Ban, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { fetchAllServices } from '../util/serviceApi';
 
 const ServiceManagement = () => {
     const navigate = useNavigate();
-    const [services] = useState([
-        {
-            id: 'SV001',
-            name: 'Khám tim mạch',
-            description: 'Đánh giá và điều trị các bệnh lý tim mạch',
-            department: 'Tim mạch',
-            status: 'ACTIVE',
-        },
-        {
-            id: 'SV002',
-            name: 'Điều trị Da liễu',
-            description: 'Khám và điều trị các bệnh về da như mụn, eczema',
-            department: 'Da liễu',
-            status: 'ACTIVE',
-        },
-        {
-            id: 'SV003',
-            name: 'Chăm sóc Nhi khoa',
-            description: 'Khám và chăm sóc sức khỏe cho trẻ em',
-            department: 'Nhi khoa',
-            status: 'DELETING',
-        },
-    ]);
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const loadService = async () => {
+            try {
+                const data = await fetchAllServices();
+                setServices(data);
+            } catch (error) {
+                console.log("Lỗi tải danh sách dịch vụ:", error);
+            }
+            finally {
+                setLoading(false);
+            }
+        }
+        loadService();
+    }, []);
+    // const [services] = useState([
+    //     {
+    //         id: 'SV001',
+    //         name: 'Khám tim mạch',
+    //         description: 'Đánh giá và điều trị các bệnh lý tim mạch',
+    //         department: 'Tim mạch',
+    //         status: 'ACTIVE',
+    //     },
+    //     {
+    //         id: 'SV002',
+    //         name: 'Điều trị Da liễu',
+    //         description: 'Khám và điều trị các bệnh về da như mụn, eczema',
+    //         department: 'Da liễu',
+    //         status: 'ACTIVE',
+    //     },
+    //     {
+    //         id: 'SV003',
+    //         name: 'Chăm sóc Nhi khoa',
+    //         description: 'Khám và chăm sóc sức khỏe cho trẻ em',
+    //         department: 'Nhi khoa',
+    //         status: 'DELETING',
+    //     },
+    // ]);
 
     return (
         <ClippedDrawer>
@@ -60,58 +78,64 @@ const ServiceManagement = () => {
                             </button>
                         </div>
                     </div>
+                    {loading ? (
+                        <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                    ) : (
+                        <div className="overflow-x-auto bg-white border rounded shadow-sm">
+                            {services.length === 0 ? (
+                                <div className="text-center text-gray-500 py-8">Không có dịch vụ nào.</div>
+                            ) : (
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-100 text-gray-700">
+                                        <tr>
+                                            <th className="p-3">Mã</th>
+                                            <th className="p-3">Tên dịch vụ</th>
+                                            <th className="p-3">Mô tả</th>
+                                            <th className="p-3">Trạng thái</th>
+                                            <th className="p-3 text-center">Tác vụ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {services.map((sv) => (
+                                            <tr key={sv.id} className="border-t hover:bg-gray-50">
+                                                <td className="p-3">{sv.id}</td>
+                                                <td className="p-3">{sv.name}</td>
+                                                <td className="p-3">{sv.description}</td>
+                                                <td className="p-3 font-medium">
+                                                    {sv.status === 'ACTIVE' ? (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-red-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="p-3 space-x-2 text-center">
+                                                    <button
+                                                        onClick={() => navigate('/service/edit')}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chỉnh sửa"
+                                                    >
+                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => navigate('/service/detail')}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chi tiết"
+                                                    >
+                                                        <Info className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    )}
 
-                    <div className="overflow-x-auto bg-white border rounded shadow-sm">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-gray-100 text-gray-700">
-                                <tr>
-                                    <th className="p-3">Mã</th>
-                                    <th className="p-3">Tên dịch vụ</th>
-                                    <th className="p-3">Mô tả</th>
-                                    <th className="p-3">Chuyên khoa</th>
-                                    <th className="p-3">Trạng thái</th>
-                                    <th className="p-3 text-center">Tác vụ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {services.map((sv) => (
-                                    <tr key={sv.id} className="border-t hover:bg-gray-50">
-                                        <td className="p-3">{sv.id}</td>
-                                        <td className="p-3">{sv.name}</td>
-                                        <td className="p-3">{sv.description}</td>
-                                        <td className="p-3">{sv.department}</td>
-                                        <td className="p-3 font-medium">
-                                            {sv.status === 'ACTIVE' ? (
-                                                <span className="text-green-600 flex items-center">
-                                                    <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
-                                                </span>
-                                            ) : (
-                                                <span className="text-red-500 flex items-center">
-                                                    <Ban className="w-4 h-4 mr-1" /> Tạm dừng
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className="p-3 space-x-2 text-center">
-                                            <button
-                                                onClick={() => navigate('/service/edit')}
-                                                className="p-1 border rounded hover:bg-gray-100"
-                                                title="Chỉnh sửa"
-                                            >
-                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                            </button>
-                                            <button
-                                                onClick={() => navigate('/service/detail')}
-                                                className="p-1 border rounded hover:bg-gray-100"
-                                                title="Chi tiết"
-                                            >
-                                                <Info className="w-4 h-4 text-gray-700" />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
         </ClippedDrawer>

@@ -39,9 +39,12 @@ const SpecialtyManagement = () => {
                 setSpecialties(data);
             } catch (error) {
                 console.error("Lỗi tải danh sách chuyên khoa:", error);
-            };
-            loadSpecialty();
+            }
+            finally {
+                setLoading(false);
+            }
         }
+        loadSpecialty();
     }, []);
     return (
         <ClippedDrawer>
@@ -74,64 +77,67 @@ const SpecialtyManagement = () => {
                             </button>
                         </div>
                     </div>
-
-                    <div className="overflow-x-auto bg-white border rounded shadow-sm">
-                        {specialties.length === 0 ? (
-                            <div className="text-center text-gray-500 py-8">Không có chuyên khoa nào.</div>
-                        ) : (
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-100 text-gray-700">
-                                    <tr>
-                                        <th className="p-3 border-r w-20">Mã</th>
-                                        <th className="p-3 border-r">Tên chuyên khoa</th>
-                                        <th className="p-3 border-r">Mô tả</th>
-                                        <th className="p-3 border-r">Bác sĩ</th>
-                                        <th className="p-3 border-r w-28">Trạng thái</th>
-                                        <th className="p-3 w-32 text-center">Tác vụ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {specialties.map((item) => (
-                                        <tr key={item.id} className="border-t hover:bg-gray-50">
-                                            <td className="p-3 border-r font-medium">{item.id}</td>
-                                            <td className="p-3 border-r">{item.name}</td>
-                                            <td className="p-3 border-r">{item.description}</td>
-                                            <td className="p-3 border-r">
-                                                {item.doctors.length > 0 ? (
-                                                    <ul className="list-disc list-inside space-y-1">
-                                                        {item.doctors.map((doc, idx) => (
-                                                            <li key={idx}>{doc}</li>
-                                                        ))}
-                                                    </ul>
-                                                ) : (
-                                                    <span className="text-gray-500 italic">Chưa có</span>
-                                                )}
-                                            </td>
-                                            <td className={`p-3 border-r font-medium ${item.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
-                                                {item.status === 'ACTIVE' ? 'Hoạt động' : 'Tạm dừng'}
-                                            </td>
-                                            <td className="p-3 text-center space-x-2">
-                                                <button
-                                                    onClick={() => navigate(`/specialty/edit`)}
-                                                    className="p-1 border rounded hover:bg-gray-100"
-                                                    title="Chỉnh sửa"
-                                                >
-                                                    <Pencil className="w-4 h-4 text-gray-700" />
-                                                </button>
-                                                <button
-                                                    onClick={() => navigate(`/specialty/detail`)}
-                                                    className="p-1 border rounded hover:bg-gray-100"
-                                                    title="Chi tiết"
-                                                >
-                                                    <Info className="w-4 h-4 text-gray-700" />
-                                                </button>
-                                            </td>
+                    {loading ? (
+                        <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                    ) : (
+                        <div className="overflow-x-auto bg-white border rounded shadow-sm">
+                            {specialties.length === 0 ? (
+                                <div className="text-center text-gray-500 py-8">Không có chuyên khoa nào.</div>
+                            ) : (
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-100 text-gray-700">
+                                        <tr>
+                                            <th className="p-3 border-r w-20">Mã</th>
+                                            <th className="p-3 border-r">Tên chuyên khoa</th>
+                                            <th className="p-3 border-r">Mô tả</th>
+                                            <th className="p-3 border-r">Bác sĩ</th>
+                                            <th className="p-3 border-r w-28">Trạng thái</th>
+                                            <th className="p-3 w-32 text-center">Tác vụ</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
+                                    </thead>
+                                    <tbody>
+                                        {specialties.map((item) => (
+                                            <tr key={item.id} className="border-t hover:bg-gray-50">
+                                                <td className="p-3 border-r font-medium">{item.id}</td>
+                                                <td className="p-3 border-r">{item.name}</td>
+                                                <td className="p-3 border-r">{item.description}</td>
+                                                <td className="p-3 border-r">
+                                                    {item.doctors.length > 0 ? (
+                                                        <ul className="list-disc list-inside space-y-1">
+                                                            {item.doctors.map((doc, idx) => (
+                                                                <li key={idx}>{doc}</li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        <span className="text-gray-500 italic">Chưa có</span>
+                                                    )}
+                                                </td>
+                                                <td className={`p-3 border-r font-medium ${item.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {item.status === 'ACTIVE' ? 'Hoạt động' : 'Tạm dừng'}
+                                                </td>
+                                                <td className="p-3 text-center space-x-2">
+                                                    <button
+                                                        onClick={() => navigate(`/specialty/edit`)}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chỉnh sửa"
+                                                    >
+                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => navigate(`/specialty/detail`)}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chi tiết"
+                                                    >
+                                                        <Info className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </ClippedDrawer>

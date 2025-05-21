@@ -37,7 +37,7 @@ const DoctorManagement = () => {
     // ]);
 
     const [doctors, setDoctors] = useState([]);
-
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const loadDoctors = async () => {
             try {
@@ -45,6 +45,9 @@ const DoctorManagement = () => {
                 setDoctors(data);
             } catch (error) {
                 console.error('Lỗi tải danh sách bác sĩ:', error);
+            }
+            finally {
+                setLoading(false);
             }
         };
         loadDoctors();
@@ -81,60 +84,65 @@ const DoctorManagement = () => {
                             </button>
                         </div>
                     </div>
-                    <div className="overflow-x-auto bg-white border rounded shadow-sm">
-                        {doctors.length === 0 ? (
-                            <div className="text-center text-gray-500 py-8">Không có bác sĩ nào.</div>
-                        ) : (
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-100 text-gray-700">
-                                    <tr>
-                                        <th className="p-3 w-14">Ảnh</th>
-                                        <th className="p-3">Chuyên khoa</th>
-                                        <th className="p-3">Họ tên</th>
-                                        <th className="p-3">Số điện thoại</th>
-                                        <th className="p-3">Email</th>
-                                        <th className="p-3">Trạng thái</th>
-                                        <th className="p-3 w-32 text-center">Tác vụ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {doctors.map((doc) => (
-                                        <tr key={doc.id} className="border-t hover:bg-gray-50">
-                                            <td className="p-3">
-                                                <img src={doc.account?.avatar || 'https://via.placeholder.com/40'}
-                                                    alt="avatar"
-                                                    className="w-9 h-9 rounded-full object-cover" />
-                                            </td>
-                                            <td className="p-3">{doc.medicalSpecialty?.name}</td>
-                                            <td className="p-3">{doc.name}</td>
-                                            <td className="p-3">{doc.phone}</td>
-                                            <td className="p-3">{doc.email}</td>
-                                            <td className={`p-3 font-medium ${doc.status ? 'text-green-600' : 'text-red-500'}`}>
-                                                <BadgeCheck className="inline-block w-4 h-4 mr-1" />
-                                                {doc.status ? 'Hoạt động' : 'Ngừng hoạt động'}
-                                            </td>
-                                            <td className="p-3 space-x-2 text-center">
-                                                <button
-                                                    onClick={() => navigate(`/doctor/edit/${doc.id}`)}
-                                                    className="p-1 border rounded hover:bg-gray-100"
-                                                    title="Chỉnh sửa"
-                                                >
-                                                    <Pencil className="w-4 h-4 text-gray-700" />
-                                                </button>
-                                                <button
-                                                    onClick={() => navigate(`/doctor/detail-manage/${doc.id}`)}
-                                                    className="p-1 border rounded hover:bg-gray-100"
-                                                    title="Chi tiết"
-                                                >
-                                                    <Info className="w-4 h-4 text-gray-700" />
-                                                </button>
-                                            </td>
+                    {loading ? (
+                        <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                    ) : (
+                        <div className="overflow-x-auto bg-white border rounded shadow-sm">
+                            {doctors.length === 0 ? (
+                                <div className="text-center text-gray-500 py-8">Không có bác sĩ nào.</div>
+                            ) : (
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-gray-100 text-gray-700">
+                                        <tr>
+                                            <th className="p-3 w-14">Ảnh</th>
+                                            <th className="p-3">Chuyên khoa</th>
+                                            <th className="p-3">Họ tên</th>
+                                            <th className="p-3">Số điện thoại</th>
+                                            <th className="p-3">Email</th>
+                                            <th className="p-3">Trạng thái</th>
+                                            <th className="p-3 w-32 text-center">Tác vụ</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
-                    </div>
+                                    </thead>
+                                    <tbody>
+                                        {doctors.map((doc) => (
+                                            <tr key={doc.id} className="border-t hover:bg-gray-50">
+                                                <td className="p-3">
+                                                    <img src={doc.account?.avatar || 'https://via.placeholder.com/40'}
+                                                        alt="avatar"
+                                                        className="w-9 h-9 rounded-full object-cover" />
+                                                </td>
+                                                <td className="p-3">{doc.medicalSpecialty?.name}</td>
+                                                <td className="p-3">{doc.name}</td>
+                                                <td className="p-3">{doc.phone}</td>
+                                                <td className="p-3">{doc.email}</td>
+                                                <td className={`p-3 font-medium ${doc.status ? 'text-green-600' : 'text-red-500'}`}>
+                                                    <BadgeCheck className="inline-block w-4 h-4 mr-1" />
+                                                    {doc.status ? 'Hoạt động' : 'Ngừng hoạt động'}
+                                                </td>
+                                                <td className="p-3 space-x-2 text-center">
+                                                    <button
+                                                        onClick={() => navigate(`/doctor/edit/${doc.id}`)}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chỉnh sửa"
+                                                    >
+                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => navigate(`/doctor/detail-manage/${doc.id}`)}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chi tiết"
+                                                    >
+                                                        <Info className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+                    )}
+
                 </div>
             </div>
         </ClippedDrawer>

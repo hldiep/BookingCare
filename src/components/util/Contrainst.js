@@ -1,5 +1,5 @@
 export const env = {
     url: {
-        API_BASE_URL: 'http://localhost',
+        API_BASE_URL: 'http://localhost:8080',
     }
 }

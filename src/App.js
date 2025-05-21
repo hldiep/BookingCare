@@ -68,8 +68,8 @@ function App() {
 
         <Route path="admin" element={<DashboardLayoutBasic />} />
         <Route path="doctor" element={<DoctorManagement />} />
-        <Route path="doctor/detail-manage" element={<DoctorDetailManager />} />
-        <Route path="doctor/edit" element={<DoctorEdit />} />
+        <Route path="doctor/detail-manage/:id" element={<DoctorDetailManager />} />
+        <Route path="doctor/edit/:id" element={<DoctorEdit />} />
         <Route path="doctor/create" element={<DoctorCreate />} />
 
         <Route path="service" element={<ServiceManagement />} />
