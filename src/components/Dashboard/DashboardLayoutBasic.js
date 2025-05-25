@@ -18,16 +18,18 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../Helper/AuthContext';
 
 const drawerWidth = 240;
 const collapsedWidth = 60;
 
 export default function ClippedDrawer({ children }) {
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const mainItems = [
-    { text: 'Tổng quan', icon: <DashboardIcon />, path: '/tong-quan' },
+    { text: 'Tổng quan', icon: <DashboardIcon />, path: '/admin' },
     { text: 'Bác sĩ', icon: <PeopleIcon />, path: '/doctor' },
     { text: 'Lịch khám', icon: <CalendarMonthIcon />, path: '/schedule' },
     { text: 'Phòng khám', icon: <LocalHospitalIcon />, path: '/clinic' },
@@ -58,9 +60,22 @@ export default function ClippedDrawer({ children }) {
   const handleAccountClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  const handleLogout = () => {
-    console.log('Đăng xuất');
-    handleClose();
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:8089/api/v1/p/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      logout();
+      navigate('/');
+      console.log('Logout thành công');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      handleClose();
+    }
   };
 
   return (

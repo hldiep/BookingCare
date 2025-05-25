@@ -17,6 +17,7 @@ const SectionDoctor = () => {
         }
         fetDoctor();
     }, []);
+
     return (
         <div><section className="py-10 px-4">
             <div className="container mx-auto max-w-6xl">

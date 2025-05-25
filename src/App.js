@@ -40,10 +40,11 @@ import Security from "./components/Doctor/Security";
 import DoctorSchedule from "./components/Doctor/DoctorSchedule";
 import LichKham from "./components/Doctor/LichKham";
 import LichKhamChiTiet from "./components/Doctor/LichKhamChiTiet";
-import DashboardLayoutBasic from "./components/Dashboard/DashboardLayoutBasic";
 import ScrollToTop from "./ScrollToTop";
 import ProfileEdit from "./components/Doctor/ProfileEdit";
 import AppointmentSuccess from "./components/Form/AppointmentSuccess";
+import Tongquan from "./components/Dashboard/Tongquan";
+import ProtectedRoute from "./components/Helper/ProtectedRoute";
 function App() {
   return (
     <>
@@ -66,7 +67,14 @@ function App() {
           <Route path="appointment-success" element={<AppointmentSuccess />} />
         </Route>
 
-        <Route path="admin" element={<DashboardLayoutBasic />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['manage', 'doctor']}>
+              <Tongquan />
+            </ProtectedRoute>
+          }
+        />
         <Route path="doctor" element={<DoctorManagement />} />
         <Route path="doctor/detail-manage/:id" element={<DoctorDetailManager />} />
         <Route path="doctor/edit/:id" element={<DoctorEdit />} />

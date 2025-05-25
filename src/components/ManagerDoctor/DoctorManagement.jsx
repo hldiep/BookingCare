@@ -6,47 +6,20 @@ import { fetchAllDoctors } from '../util/doctorApi';
 
 const DoctorManagement = () => {
     const navigate = useNavigate();
-    // const [doctors] = useState([
-    //     {
-    //         id: 1,
-    //         avatar: 'https://anhcute.net/wp-content/uploads/2024/10/Hinh-chibi-bac-si-nhan-vat-hoat-hinh-cute.jpg',
-    //         department: 'Nội tổng hợp',
-    //         name: 'Nguyễn Văn A',
-    //         phone: '0123456789',
-    //         role: 'Bác sĩ',
-    //         status: true,
-    //     },
-    //     {
-    //         id: 2,
-    //         avatar: 'https://i.pinimg.com/originals/24/bd/d9/24bdd9ec59a9f8966722063fe7791183.jpg',
-    //         department: 'Ngoại khoa',
-    //         name: 'Trần Thị B',
-    //         phone: '0978246246',
-    //         role: 'Bác sĩ',
-    //         status: true,
-    //     },
-    //     {
-    //         id: 3,
-    //         avatar: 'https://i.pinimg.com/736x/d1/c3/b3/d1c3b347f875398728a1734d4a1b1708.jpg',
-    //         department: 'Nội tổng hợp',
-    //         name: 'Phạm Văn C',
-    //         phone: '0766335563',
-    //         role: 'Bác sĩ',
-    //         status: true,
-    //     },
-    // ]);
 
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         const loadDoctors = async () => {
             try {
                 const data = await fetchAllDoctors();
                 setDoctors(data);
-            } catch (error) {
-                console.error('Lỗi tải danh sách bác sĩ:', error);
-            }
-            finally {
+            } catch (err) {
+                console.error('Lỗi tải danh sách bác sĩ:', err);
+                setError('Không thể tải danh sách bác sĩ. Vui lòng thử lại.');
+            } finally {
                 setLoading(false);
             }
         };
@@ -84,6 +57,7 @@ const DoctorManagement = () => {
                             </button>
                         </div>
                     </div>
+                    {error && <div className="text-red-500 text-sm">{error}</div>}
                     {loading ? (
                         <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
                     ) : (
