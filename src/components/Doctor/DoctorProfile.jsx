@@ -1,32 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { useNavigate, Link } from 'react-router-dom';
+import { fetchAllDoctors, fetchDoctorById } from '../util/doctorApi';
 
 const DoctorProfile = () => {
     const navigate = useNavigate();
-    const doctor = {
-        id: 1,
-        name: "Nguyễn Văn A",
-        avatarUrl: "https://bvbinhdan.com.vn/vnt_upload/treatment/thumbs/(270x320)__OQ6UTW0.jpg",
-        email: 'example@gmail.com',
-        phone: '0366253623',
-        specialty: 'Ngoại khoa',
-        room: 'Khu D, tầng 3, phòng 303',
-        status: 'Đang hoạt động',
-        role: 'Bác sĩ',
-        createdAt: '2022-11-02 21:12:20',
-        updatedAt: '2022-12-14 09:10:32',
-        education: [
-            'Tốt nghiệp Bác sĩ Đa khoa, Trường Đại học Y dược thành phố Hồ Chí Minh',
-            'Học chuyên khoa cấp II chuyên ngành Tâm thần, Đại học Y khoa Huế',
-            'Tốt nghiệp Tâm lý trị liệu, trường Tâm lý thực Hành Paris (Psychology practique de Paris)',
-        ],
-        experience: [
-            'Nguyên Trưởng phòng Kế hoạch Nghiệp vụ, Trưởng phòng khám Tâm thần Quận 3, thành phố Hồ Chí Minh',
-            'Nguyên Trưởng khoa lâm sàng Bệnh tâm thần thành phố Hồ Chí Minh',
-            'Giám định viên tư pháp chuyên ngành Tâm thần giám định các trường hợp trọng án, các trường hợp có liên quan pháp lý do cảnh sát điều tra, tòa án các cấp trưng cầu.',
-        ],
-    };
+    const [doctor, setDoctor] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const loadDoctor = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Chưa đăng nhập.');
+                    setLoading(false);
+                    return;
+                }
+
+                // Decode JWT
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const user = JSON.parse(atob(base64));
+
+                const roles = (user?.role || []).map(r =>
+                    typeof r === 'object' && r.authority
+                        ? r.authority.replace('ROLE_', '')
+                        : ''
+                );
+
+                if (!roles.includes('DOCTOR')) {
+                    setError('Tài khoản không phải là bác sĩ.');
+                    setLoading(false);
+                    return;
+                }
+
+                // 👇 Lấy tất cả bác sĩ rồi tìm theo user.id
+                const allDoctors = await fetchAllDoctors();
+                const currentDoctor = allDoctors.find(d => d.id === user.id);
+
+                if (!currentDoctor) {
+                    setError('Không tìm thấy thông tin bác sĩ.');
+                } else {
+                    setDoctor(currentDoctor);
+                }
+            } catch (err) {
+                console.error('Lỗi khi lấy danh sách bác sĩ:', err);
+                setError('Không thể tải thông tin bác sĩ.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadDoctor();
+    }, []);
+
+    if (loading) {
+        return (
+            <ClippedDrawer>
+                <div className="p-6 text-center text-gray-600">Đang tải thông tin...</div>
+            </ClippedDrawer>
+        );
+    }
+
+    if (error) {
+        return (
+            <ClippedDrawer>
+                <div className="p-6 text-center text-red-600">{error}</div>
+            </ClippedDrawer>
+        );
+    }
 
     return (
         <ClippedDrawer>
@@ -38,12 +82,10 @@ const DoctorProfile = () => {
                         <span>/</span>
                         <span className="text-gray-700 font-medium">Thông tin cá nhân</span>
                     </div>
-
-                    {/* Header */}
                     <h2 className="text-xl font-semibold p-4">Thông tin cá nhân</h2>
                 </div>
 
-                {/* Content */}
+                {/* Doctor Info */}
                 <div className="min-h-screen bg-main p-6">
                     <div className="mt-4 flex flex-col md:flex-row gap-6">
                         <div className="flex justify-center md:block">
@@ -67,7 +109,7 @@ const DoctorProfile = () => {
                     <div className="mt-6">
                         <h3 className="font-semibold text-gray-800 mb-2">Mô tả</h3>
                         <ul className="list-disc list-inside text-gray-700 space-y-1">
-                            {doctor.education.map((item, index) => (
+                            {doctor.education?.map((item, index) => (
                                 <li key={index}>{item}</li>
                             ))}
                         </ul>
@@ -76,7 +118,7 @@ const DoctorProfile = () => {
                     <div className="mt-6">
                         <h3 className="font-semibold text-gray-800 mb-2">Quá trình công tác</h3>
                         <ul className="list-disc list-inside text-gray-700 space-y-1">
-                            {doctor.experience.map((item, index) => (
+                            {doctor.experience?.map((item, index) => (
                                 <li key={index}>{item}</li>
                             ))}
                         </ul>

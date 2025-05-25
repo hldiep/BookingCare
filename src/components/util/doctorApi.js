@@ -1,21 +1,33 @@
 import axios from 'axios';
-import { env } from "./Contrainst";
-const API_URL = `${env.url.API_BASE_URL}/api/v1/m/doctors`;
+const API_URL = '/api/v1/m/doctors';
 
 export const fetchAllDoctors = async () => {
     try {
-        const token = localStorage.getItem('token')
-            || 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjpbeyJhdXRob3JpdHkiOiJST0xFX01BTkFHRVIifV0sInN1YiI6Im1hbmFnZXIxIiwiaWF0IjoxNzQ4MDk5NjM5LCJleHAiOjE3NDgxMDY4Mzl9.6lCoJ223yW4-CE7R10FUJAb0wnHrqPzinHQdaB8LQ_Y';
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('Token không tồn tại. Vui lòng đăng nhập lại.');
+        }
         const response = await axios.get(`${API_URL}/all`, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         });
         return response.data.data;
     } catch (error) {
-        console.error('Error fetching doctors:', error);
-        return [];
+        if (error.response) {
+            const status = error.response.status;
+            const message = error.response.data?.message || 'Lỗi không xác định từ server';
+
+            console.error(`Lỗi từ server [${status}]:`, message);
+            throw new Error(`Lỗi server [${status}]: ${message}`);
+        } else if (error.request) {
+            console.error('Không nhận được phản hồi từ server:', error.request);
+            throw new Error('Không kết nối được đến server.');
+        } else {
+            console.error('Lỗi khác:', error.message);
+            throw new Error(`Lỗi không xác định: ${error.message}`);
+        }
     }
 };
 export const updateDoctor = async (doctorId, doctorData) => {
@@ -32,32 +44,67 @@ export const updateDoctor = async (doctorId, doctorData) => {
     }
 };
 
-export const fetchDoctorById = async (doctorId) => {
+export const fetchDoctorById = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/${doctorId}`);
-        return response.data.data;
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || 'Không tìm thấy bác sĩ');
+        }
+        const json = await response.json();
+        return json.data;
     } catch (error) {
-        console.error('Lỗi khi tải chi tiết bác sĩ:', error);
-        throw error;
+        console.error('Lỗi khi gọi API fetchDoctorById:', error);
+        throw new Error(error.message || 'Đã xảy ra lỗi khi lấy thông tin bác sĩ');
     }
 };
 
 export const addDoctor = async (doctorData) => {
-    const response = await axios.get(`${API_URL}/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(doctorData),
-    });
-    if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Lỗi khi thêm bác sĩ');
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: token ? `Bearer ${token}` : '',
+            },
+            body: JSON.stringify(doctorData),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Lỗi khi thêm bác sĩ');
+        }
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('addDoctor error:', error);
+        throw error;
     }
+};
 
-    return response.json();
+export const deleteDoctor = async (id) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/delete/${id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            console.log('Xóa thành công');
+        } else {
+            console.error('Xóa thất bại');
+        }
+    } catch (error) {
+        console.error('Lỗi khi gọi API:', error);
+    }
 }
-
 export const fetchDoctorCount = async () => {
     try {
         const response = await axios.get(`${API_URL}/count`);

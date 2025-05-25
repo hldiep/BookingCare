@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Info, Pencil } from 'lucide-react';
+import { BadgeCheck, Ban, CheckCircle, Delete, Info, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { fetchAllClinics } from '../util/clinicApi';
@@ -22,38 +22,6 @@ const ClinicManagement = () => {
         };
         loadClinics();
     }, []);
-    // const [clinics] = useState([
-    //     {
-    //         id: 'CL01',
-    //         name: 'Phòng khám Tim mạch',
-    //         address: '101 Main St.',
-    //         description:
-    //             'Khám và điều trị các bệnh lý liên quan đến tim (Cardiology - Heart-related diseases)',
-    //         phone: '02812345678',
-    //         email: 'info@downtownclinic.com',
-    //         status: 'ACTIVE',
-    //     },
-    //     {
-    //         id: 'CL02',
-    //         name: 'Phòng khám Da liễu',
-    //         address: '101 Main St.',
-    //         description:
-    //             'Chẩn đoán và điều trị các bệnh về da, tóc và móng (Dermatology - Skin, hair, and nail diseases)',
-    //         phone: '02898765432',
-    //         email: 'contact@cityhealthcenter.com',
-    //         status: 'ACTIVE',
-    //     },
-    //     {
-    //         id: 'CL03',
-    //         name: 'Phòng khám Nhi khoa',
-    //         address: '101 Main St.',
-    //         description:
-    //             'Chăm sóc sức khỏe cho trẻ sơ sinh và trẻ nhỏ (Pediatrics - Healthcare for children)',
-    //         phone: '02811223344',
-    //         email: 'support@healthplusclinic.com',
-    //         status: 'DELETING',
-    //     },
-    // ]);
 
     return (
         <ClippedDrawer>
@@ -102,28 +70,38 @@ const ClinicManagement = () => {
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-gray-100 text-gray-700">
                                         <tr>
-                                            <th className="p-3 w-24">Mã phòng</th>
+                                            <th className="p-3 w-24">STT</th>
                                             <th className="p-3">Tên phòng khám</th>
                                             <th className="p-3">Địa chỉ</th>
                                             <th className="p-3">Mô tả</th>
                                             <th className="p-3">SĐT</th>
                                             <th className="p-3">Email</th>
                                             <th className="p-3 w-28">Trạng thái</th>
+                                            <th className="p-3 w-28">Ngày tạo</th>
                                             <th className="p-3 w-32 text-center">Tác vụ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {clinicList.map((clinic) => (
+                                        {clinicList.map((clinic, index) => (
                                             <tr key={clinic.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3">{clinic.id}</td>
+                                                <td className="p-3">{index + 1}</td>
                                                 <td className="p-3">{clinic.name}</td>
                                                 <td className="p-3">{clinic.address}</td>
                                                 <td className="p-3">{clinic.description}</td>
                                                 <td className="p-3">{clinic.phone}</td>
                                                 <td className="p-3">{clinic.email}</td>
-                                                <td className={`p-3 font-medium ${clinic.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {clinic.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                                                <td className="p-3 font-medium">
+                                                    {clinic.status === 'ACTIVE' ? (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-red-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                        </span>
+                                                    )}
                                                 </td>
+                                                <td className="p-3">{clinic.createdAt}</td>
                                                 <td className="p-3 space-x-2 text-center">
                                                     <button
                                                         onClick={() => navigate('/clinic/edit')}
@@ -132,12 +110,18 @@ const ClinicManagement = () => {
                                                     >
                                                         <Pencil className="w-4 h-4 text-gray-700" />
                                                     </button>
-                                                    <button
+                                                    {/* <button
                                                         onClick={() => navigate('/clinic/detail')}
                                                         className="p-1 border rounded hover:bg-gray-100"
                                                         title="Details"
                                                     >
                                                         <Info className="w-4 h-4 text-gray-700" />
+                                                    </button> */}
+                                                    <button
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Delete"
+                                                    >
+                                                        <Delete className="w-4 h-4 text-gray-700" />
                                                     </button>
                                                 </td>
                                             </tr>

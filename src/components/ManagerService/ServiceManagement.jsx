@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil, Info, Ban, CheckCircle } from 'lucide-react';
+import { Pencil, Info, Ban, CheckCircle, Delete } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { fetchAllServices } from '../util/serviceApi';
@@ -88,17 +88,18 @@ const ServiceManagement = () => {
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-gray-100 text-gray-700">
                                         <tr>
-                                            <th className="p-3">Mã</th>
+                                            <th className="p-3">STT</th>
                                             <th className="p-3">Tên dịch vụ</th>
                                             <th className="p-3">Mô tả</th>
                                             <th className="p-3">Trạng thái</th>
+                                            <th className="p-3">Ngày tạo</th>
                                             <th className="p-3 text-center">Tác vụ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {services.map((sv) => (
+                                        {services.map((sv, index) => (
                                             <tr key={sv.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3">{sv.id}</td>
+                                                <td className="p-3">{index + 1}</td>
                                                 <td className="p-3">{sv.name}</td>
                                                 <td className="p-3">{sv.description}</td>
                                                 <td className="p-3 font-medium">
@@ -112,7 +113,8 @@ const ServiceManagement = () => {
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="p-3 space-x-2 text-center">
+                                                <td className="p-3">{sv.createdAt}</td>
+                                                <td className="p-3 space-x-2 text-center flex">
                                                     <button
                                                         onClick={() => navigate('/service/edit')}
                                                         className="p-1 border rounded hover:bg-gray-100"
@@ -120,12 +122,18 @@ const ServiceManagement = () => {
                                                     >
                                                         <Pencil className="w-4 h-4 text-gray-700" />
                                                     </button>
-                                                    <button
+                                                    {/* <button
                                                         onClick={() => navigate('/service/detail')}
                                                         className="p-1 border rounded hover:bg-gray-100"
                                                         title="Chi tiết"
                                                     >
                                                         <Info className="w-4 h-4 text-gray-700" />
+                                                    </button> */}
+                                                    <button
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Xóa"
+                                                    >
+                                                        <Delete className="w-4 h-4 text-gray-700" />
                                                     </button>
                                                 </td>
                                             </tr>

@@ -1,43 +1,91 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { addDoctor } from '../util/doctorApi';
+import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorCreate = () => {
     const navigate = useNavigate();
-    const [doctor, setDoctor] = useState({
-        accountId: '',
+    const [specialties, setSpecialties] = useState([]);
+    useEffect(() => {
+        const fetchSpecialties = async () => {
+            try {
+                const data = await fetchAllSpecialty();
+                setSpecialties(data);
+            } catch (err) {
+                console.error("Lỗi khi lấy danh sách chuyên khoa:", error);
+            }
+        };
+        fetchSpecialties();
+    }, []);
+    const [formData, setFormData] = useState({
+        id: '',
+        account: {
+            username: '',
+            password: '',
+            roleId: 3,
+            status: 'ACTIVE',
+        },
         medicalSpecialtyId: '',
         name: '',
-        gender: 'true',
-        birthday: '',
         phone: '',
         email: '',
         address: '',
-        status: 'active',
-        image: '',
+        gender: true,
+        status: 'ACTIVE',
+        imageFile: '',
+        birthday: '',
+        description: '',
+        qualification: '',
     });
-
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setDoctor({ ...doctor, [name]: value });
-    };
+        const { name, value, type } = e.target;
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const payload = {
-            ...doctor,
-            gender: doctor.gender === 'true',
-        };
-        try {
-            await addDoctor(doctor);
-            alert("Đã thêm bác sĩ thành công!");
-            navigate("/doctor");
-        } catch (error) {
-            console.error("Lỗi thêm bác sĩ:", error);
-            alert("Đã xảy ra lỗi: " + error.message);
+        let newValue = value;
+        if (type === 'radio' && name === 'gender') {
+            newValue = value === 'true'; // ép chuỗi thành boolean
+        }
+
+        if (name.startsWith('account.')) {
+            const key = name.split('.')[1];
+            setFormData((prev) => ({
+                ...prev,
+                account: {
+                    ...prev.account,
+                    [key]: newValue,
+                },
+            }));
+        } else {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: newValue,
+            }));
         }
     };
+
+
+    const handleSubmit = async () => {
+        const doctorData = {
+            ...formData,
+            createdAt: new Date().toISOString(),
+            birthday: new Date(formData.birthday).toISOString(),
+        };
+
+        if (!formData.imageFile) {
+            delete doctorData.imageFile;
+        }
+
+        try {
+            const response = await addDoctor(doctorData);
+            console.log("Add success:", response);
+        } catch (error) {
+            console.error("Add failed:", error);
+        }
+    };
+
 
     return (
         <ClippedDrawer>
@@ -61,140 +109,205 @@ const DoctorCreate = () => {
 
                     <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
                         <img
-                            src={doctor.image || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
+                            src={formData.imageFile || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
                             alt="Avatar bác sĩ"
                             className="w-32 h-32 object-cover rounded-full border"
                         />
                         <div className="mt-4 font-semibold text-lg">
-                            {doctor.name ? `BS. ${doctor.name}` : 'Ảnh đại diện'}
+                            {formData.name ? `BS. ${formData.name}` : 'Ảnh đại diện'}
                         </div>
                     </div>
 
                     <form
                         onSubmit={handleSubmit}
-                        className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+                        className=" md:w-4/5 bg-white rounded shadow text-sm"
                     >
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Mã tài khoản</label>
-                            <input
-                                type="text"
-                                name="accountId"
-                                value={doctor.accountId}
-                                onChange={handleChange}
-                                required
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
+                        <div className="w-full p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block mb-1 font-medium">Tên đăng nhập *</label>
+                                <input
+                                    type="text"
+                                    name="account.username"
+                                    value={formData.account.username}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block mb-1 font-medium">Mật khẩu *</label>
+                                <input
+                                    type="password"
+                                    name="account.password"
+                                    value={formData.account.password}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block mb-1 font-medium">Họ tên *</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block mb-1 font-medium">Chuyên khoa *</label>
+                                <select
+                                    name="medicalSpecialtyId"
+                                    value={formData.medicalSpecialtyId}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                >
+                                    <option value="">Chọn chuyên khoa</option>
+                                    {specialties.map((s) => (
+                                        <option key={s.id} value={s.id}>{s.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block mb-1 font-medium">Số điện thoại *</label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block mb-1 font-medium">Email *</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block mb-1 font-medium">Giới tính *</label>
+                                <div className="flex gap-6">
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="gender"
+                                            value="true"
+                                            checked={formData.gender === true}
+                                            onChange={handleChange}
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2">Nam</span>
+                                    </label>
+                                    <label className="inline-flex items-center">
+                                        <input
+                                            type="radio"
+                                            name="gender"
+                                            value="false"
+                                            checked={formData.gender === false}
+                                            onChange={handleChange}
+                                            className="form-radio"
+                                        />
+                                        <span className="ml-2">Nữ</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block mb-1 font-medium">Trạng thái *</label>
+                                <select
+                                    name="status"
+                                    value={formData.status}
+                                    onChange={handleChange}
+                                    required
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                >
+                                    <option value="ACTIVE">Hoạt động</option>
+                                    <option value="INACTIVE">Ngừng hoạt động</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block mb-1 font-medium">Ngày sinh</label>
+                                <input
+                                    type="date"
+                                    name="birthday"
+                                    value={formData.birthday}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block mb-1 font-medium">Ảnh đại diện (URL)</label>
+                                <input
+                                    type="text"
+                                    name="imageFile"
+                                    value={formData.imageFile}
+                                    onChange={handleChange}
+                                    placeholder="URL hình ảnh"
+                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Họ tên</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={doctor.name}
-                                onChange={handleChange}
-                                required
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Chuyên khoa</label>
-                            <input
-                                type="text"
-                                name="medicalSpecialtyId"
-                                value={doctor.medicalSpecialtyId}
-                                onChange={handleChange}
-                                required
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Giới tính</label>
-                            <select
-                                name="gender"
-                                value={doctor.gender}
-                                onChange={handleChange}
-                                required
-                                className="p-1 outline-none text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option className='text-sm' value="true">Nam</option>
-                                <option className='text-sm' value="false">Nữ</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Ngày sinh</label>
-                            <input
-                                type="date"
-                                name="birthday"
-                                value={doctor.birthday}
-                                onChange={handleChange}
-                                required
-                                className="p-1 text-sm outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
-                            <select
-                                name="status"
-                                value={doctor.status}
-                                onChange={handleChange}
-                                required
-                                className="p-1 text-sm outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option className='text-sm' value="active">Đang hoạt động</option>
-                                <option className='text-sm' value="inactive">Ngưng hoạt động</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
-                            <input
-                                type="number"
-                                name="phone"
-                                value={doctor.phone}
-                                onChange={handleChange}
-                                required
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Email</label>
-                            <input
-                                type="email"
-                                name="email"
-                                value={doctor.email}
-                                onChange={handleChange}
-                                required
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            />
-                        </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
+                        <div className='px-6 py-3'>
+                            <label className="block mb-1 font-medium">Địa chỉ</label>
                             <input
                                 type="text"
                                 name="address"
-                                value={doctor.address}
+                                value={formData.address}
                                 onChange={handleChange}
-                                required
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                className="mt-1 block w-full rounded border p-2 text-sm outline-none"
                             />
                         </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Link ảnh đại diện</label>
+                        <div className='px-6 py-3'>
+                            <label className="block mb-1 font-medium">Mô tả</label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows={4}
+                                className="resize-none mt-1 block w-full rounded border p-2 text-sm outline-none"
+                            />
+                        </div>
+
+                        <div className='px-6 py-3'>
+                            <label className="block mb-1 font-medium">Trình độ</label>
                             <input
                                 type="text"
-                                name="image"
-                                value={doctor.image}
+                                name="qualification"
+                                value={formData.qualification}
                                 onChange={handleChange}
-                                className="p-1 outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Ví dụ: Bác sĩ chuyên khoa I"
+                                className="mt-1 block w-full rounded border p-2 text-sm outline-none"
                             />
                         </div>
-                        <div className="md:col-span-2 flex justify-end">
+
+                        <div className='px-6 py-3'>
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                                disabled={loading}
+                                className="px-3 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors disabled:bg-blue-300"
                             >
-                                Tạo mới
+                                {loading ? 'Đang lưu...' : 'Thêm bác sĩ'}
                             </button>
                         </div>
+
+                        {error && (
+                            <div className="text-red-600 font-semibold text-center">{error}</div>
+                        )}
+                        {successMsg && (
+                            <div className="text-green-600 font-semibold text-center">{successMsg}</div>
+                        )}
                     </form>
                 </div>
             </div>

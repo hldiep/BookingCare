@@ -1,14 +1,18 @@
 import axios from "axios";
-import { env } from "./Contrainst";
 
-const API_URL = `${env.url.API_BASE_URL}/api/medical-specialty`;
+const API_URL = `/api/v1/m/medical-specialties`;
 export const fetchAllSpecialty = async () => {
     try {
-        const response = await axios.get(`${API_URL}/add`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/all`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data.data;
     } catch (error) {
-        console.error('Error fetching specialty:', error);
-        return [];
+        console.error('Lỗi khi lấy danh sách chuyên khoa:', error);
+        throw error;
     }
 };
 export const updateSpecialty = async (specialtyId, specialtyData) => {
@@ -25,15 +29,27 @@ export const updateSpecialty = async (specialtyId, specialtyData) => {
     }
 };
 
-export const fetchSpecialtyById = async (specialtyId) => {
-    try {
-        const response = await axios.get(`${API_URL}/${specialtyId}`);
-        return response.data.data;
-    } catch (error) {
-        console.error('Lỗi khi tải chi tiết chuyên khoa:', error);
-        throw error;
-    }
-};
+// export const fetchSpecialtyById = async (id) => {
+//     try {
+//         const token = localStorage.getItem('token');
+//         const response = await fetch(`${API_URL}/${id}`, {
+//             headers: {
+//                 'Authorization': `Bearer ${token}`,
+//                 'Content-Type': 'application/json',
+//             },
+//         });
+
+//         if (!response.ok) {
+//             const errorText = await response.text();
+//             throw new Error(errorText || 'Không tìm thấy chuyên khoa');
+//         }
+//         const json = await response.json();
+//         return json.data;
+//     } catch (error) {
+//         console.error('Lỗi khi gọi API fetchSpecialtyById:', error);
+//         throw new Error(error.message || 'Đã xảy ra lỗi khi lấy thông tin chuyên khoa');
+//     }
+// };
 
 export const addSpecialty = async (specialtyData) => {
     const response = await axios.get(`${API_URL}/add`, {

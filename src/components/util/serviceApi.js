@@ -1,14 +1,18 @@
 import axios from "axios";
-import { env } from "./Contrainst";
 
-const API_URL = `${env.url.API_BASE_URL}/api/service`;
+const API_URL = `/api/v1/m/services`;
 export const fetchAllServices = async () => {
     try {
-        const response = await axios.get(`${API_URL}/all`);
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/all`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
         return response.data.data;
     } catch (error) {
-        console.error('Error fetching services:', error);
-        return [];
+        console.error('Lỗi khi lấy danh sách dịch vụ:', error);
+        throw error;
     }
 }
 

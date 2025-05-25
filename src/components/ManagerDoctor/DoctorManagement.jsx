@@ -1,30 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { BadgeCheck, Pencil, Info } from 'lucide-react';
+import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllDoctors } from '../util/doctorApi';
+import { deleteDoctor, fetchAllDoctors } from '../util/doctorApi';
+import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorManagement = () => {
     const navigate = useNavigate();
 
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
+    const [error, setError] = useState('');
+    const [specialty, setSpecialty] = useState([]);
     useEffect(() => {
-        const loadDoctors = async () => {
+        const loadData = async () => {
+            // try {
+            //     const data = await fetchAllDoctors();
+            //     setDoctors(data);
+            // } catch (err) {
+            //     console.error('Lỗi tải danh sách bác sĩ:', err);
+            //     setError('Không thể tải danh sách bác sĩ. Vui lòng đăng nhập hoặc thử lại.');
+            // } finally {
+            //     setLoading(false);
+            // }
             try {
-                const data = await fetchAllDoctors();
-                setDoctors(data);
+                const [doctorList, specialtyList] = await Promise.all([
+                    fetchAllDoctors(),
+                    fetchAllSpecialty()
+                ]);
+
+                const specialtyMap = {};
+                specialtyList.forEach(s => {
+                    specialtyMap[s.id] = s.name;
+                });
+                setSpecialty(specialtyMap);
+                setDoctors(doctorList);
             } catch (err) {
-                console.error('Lỗi tải danh sách bác sĩ:', err);
-                setError('Không thể tải danh sách bác sĩ. Vui lòng thử lại.');
+                console.error('Lỗi khi tải dữ liệu:', err);
             } finally {
                 setLoading(false);
             }
         };
-        loadDoctors();
+        loadData();
     }, []);
+    const handleDeleteDoctor = async (id) => {
+        const confirm = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
+        if (!confirm) return;
+
+        try {
+            await deleteDoctor(id);
+            setDoctors(prev => prev.filter(doc => doc.id !== id)); // Cập nhật UI
+        } catch (err) {
+            console.error('Lỗi khi xóa bác sĩ:', err);
+            alert('Xóa bác sĩ thất bại. Vui lòng thử lại.');
+        }
+    };
     return (
         <ClippedDrawer>
             <div>
@@ -69,8 +99,8 @@ const DoctorManagement = () => {
                                     <thead className="bg-gray-100 text-gray-700">
                                         <tr>
                                             <th className="p-3 w-14">Ảnh</th>
-                                            <th className="p-3">Chuyên khoa</th>
                                             <th className="p-3">Họ tên</th>
+                                            <th className="p-3">Chuyên khoa</th>
                                             <th className="p-3">Số điện thoại</th>
                                             <th className="p-3">Email</th>
                                             <th className="p-3">Trạng thái</th>
@@ -81,17 +111,26 @@ const DoctorManagement = () => {
                                         {doctors.map((doc) => (
                                             <tr key={doc.id} className="border-t hover:bg-gray-50">
                                                 <td className="p-3">
-                                                    <img src={doc.account?.avatar || 'https://via.placeholder.com/40'}
+                                                    <img
+                                                        src={doc.account?.avatar && doc.account.avatar.trim() !== "" ? doc.account.avatar : 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png'}
                                                         alt="avatar"
-                                                        className="w-9 h-9 rounded-full object-cover" />
+                                                        className="w-9 h-9 rounded-full object-cover"
+                                                    />
                                                 </td>
-                                                <td className="p-3">{doc.medicalSpecialty?.name}</td>
                                                 <td className="p-3">{doc.name}</td>
+                                                <td>{specialty[doc.medicalSpecialtyId] || 'Không xác định'}</td>
                                                 <td className="p-3">{doc.phone}</td>
                                                 <td className="p-3">{doc.email}</td>
-                                                <td className={`p-3 font-medium ${doc.status ? 'text-green-600' : 'text-red-500'}`}>
-                                                    <BadgeCheck className="inline-block w-4 h-4 mr-1" />
-                                                    {doc.status ? 'Hoạt động' : 'Ngừng hoạt động'}
+                                                <td className="p-3 font-medium">
+                                                    {doc.status === 'ACTIVE' ? (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-red-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Ngừng hoạt động
+                                                        </span>
+                                                    )}
                                                 </td>
                                                 <td className="p-3 space-x-2 text-center">
                                                     <button
@@ -107,6 +146,13 @@ const DoctorManagement = () => {
                                                         title="Chi tiết"
                                                     >
                                                         <Info className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteDoctor(doc.id)}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Xóa"
+                                                    >
+                                                        <Delete className="w-4 h-4 text-gray-700" />
                                                     </button>
                                                 </td>
                                             </tr>

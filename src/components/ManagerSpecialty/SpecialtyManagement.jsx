@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil, Info } from 'lucide-react';
+import { Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { fetchAllSpecialty } from '../util/specialtyApi';
+import { fetchAllDoctors } from '../util/doctorApi';
 
 const SpecialtyManagement = () => {
     const navigate = useNavigate();
@@ -32,19 +33,47 @@ const SpecialtyManagement = () => {
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // useEffect(() => {
+    //     const loadData = async () => {
+    //         try {
+    //             const data = await fetchAllSpecialty();
+    //             setSpecialties(data);
+    //         } catch (error) {
+    //             console.error("Lỗi tải danh sách chuyên khoa:", error);
+    //         }
+    //         finally {
+    //             setLoading(false);
+    //         }
+    //     }
+    //     loadData();
+    // }, []);
+
     useEffect(() => {
-        const loadSpecialty = async () => {
+        const loadData = async () => {
             try {
-                const data = await fetchAllSpecialty();
-                setSpecialties(data);
+                const [specialtyData, doctorData] = await Promise.all([
+                    fetchAllSpecialty(),
+                    fetchAllDoctors()
+                ]);
+                const specialtiesWithDoctors = specialtyData.map(specialty => {
+                    const relatedDoctors = doctorData.filter(
+                        doctor => doctor.medicalSpecialtyId === specialty.id
+                    );
+                    return {
+                        ...specialty,
+                        doctors: relatedDoctors,
+                    };
+                });
+
+                setSpecialties(specialtiesWithDoctors);
             } catch (error) {
-                console.error("Lỗi tải danh sách chuyên khoa:", error);
+                console.error("Lỗi tải dữ liệu:", error);
             }
             finally {
                 setLoading(false);
             }
         }
-        loadSpecialty();
+        loadData();
     }, []);
     return (
         <ClippedDrawer>
@@ -87,7 +116,7 @@ const SpecialtyManagement = () => {
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-gray-100 text-gray-700">
                                         <tr>
-                                            <th className="p-3 border-r w-20">Mã</th>
+                                            <th className="p-3 border-r w-20">STT</th>
                                             <th className="p-3 border-r">Tên chuyên khoa</th>
                                             <th className="p-3 border-r">Mô tả</th>
                                             <th className="p-3 border-r">Bác sĩ</th>
@@ -96,39 +125,53 @@ const SpecialtyManagement = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {specialties.map((item) => (
+                                        {specialties.map((item, index) => (
                                             <tr key={item.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3 border-r font-medium">{item.id}</td>
+                                                <td className="p-3 border-r font-medium">{index + 1}</td>
                                                 <td className="p-3 border-r">{item.name}</td>
                                                 <td className="p-3 border-r">{item.description}</td>
                                                 <td className="p-3 border-r">
-                                                    {item.doctors.length > 0 ? (
+                                                    {Array.isArray(item.doctors) && item.doctors.length > 0 ? (
                                                         <ul className="list-disc list-inside space-y-1">
                                                             {item.doctors.map((doc, idx) => (
-                                                                <li key={idx}>{doc}</li>
+                                                                <li key={idx}>{doc.name}</li>
                                                             ))}
                                                         </ul>
                                                     ) : (
                                                         <span className="text-gray-500 italic">Chưa có</span>
                                                     )}
                                                 </td>
-                                                <td className={`p-3 border-r font-medium ${item.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {item.status === 'ACTIVE' ? 'Hoạt động' : 'Tạm dừng'}
+                                                <td className="p-3 font-medium">
+                                                    {item.status === 'ACTIVE' ? (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-red-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                        </span>
+                                                    )}
                                                 </td>
                                                 <td className="p-3 text-center space-x-2">
                                                     <button
-                                                        onClick={() => navigate(`/specialty/edit`)}
+                                                        onClick={() => navigate(`/specialty/edit/${item.id}`)}
                                                         className="p-1 border rounded hover:bg-gray-100"
                                                         title="Chỉnh sửa"
                                                     >
                                                         <Pencil className="w-4 h-4 text-gray-700" />
                                                     </button>
-                                                    <button
-                                                        onClick={() => navigate(`/specialty/detail`)}
+                                                    {/* <button
+                                                        onClick={() => navigate(`/specialty/detail/${item.id}`)}
                                                         className="p-1 border rounded hover:bg-gray-100"
                                                         title="Chi tiết"
                                                     >
                                                         <Info className="w-4 h-4 text-gray-700" />
+                                                    </button> */}
+                                                    <button
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Xóa"
+                                                    >
+                                                        <Delete className="w-4 h-4 text-gray-700" />
                                                     </button>
                                                 </td>
                                             </tr>
