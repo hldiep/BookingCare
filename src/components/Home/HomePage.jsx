@@ -61,7 +61,7 @@ const HomePage = () => {
                         <div className="flex items-start gap-4 hover:scale-105 transition-all duration-300">
                             <Mail size={32} className="text-logo mt-1" />
                             <div>
-                                <h3 className="text-lg font-bold">khambenhhealthcare@gmail.com</h3>
+                                <h3 className="text-lg font-bold">hlthcare@gmail.com</h3>
                                 <p>Email liên hệ</p>
                             </div>
                         </div>

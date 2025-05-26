@@ -60,7 +60,7 @@ const Service = () => {
                         <div className="text-center text-gray-500 py-8">Không có dịch vụ nào.</div>
                     ) : (
                         <div className=" max-w-6xl mx-auto space-y-16">
-                            {services.map((service, index) => (
+                            {services.slice(0, 5).map((service, index) => (
                                 <div
                                     key={index}
                                     className={`flex rounded-xl shadow-lg bg-gray-100 flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""

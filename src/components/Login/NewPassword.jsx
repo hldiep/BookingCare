@@ -1,5 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react'
 import React, { useState } from 'react'
+import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const NewPassword = () => {
@@ -23,9 +24,10 @@ const NewPassword = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] via-[#ffffff] to-[#e0f7fa] relative px-4">
             <button
-                onClick={() => navigate("/ma-xac-minh")}
-                className="absolute top-6 left-6 italic text-blue-700 underline hover:text-blue-900 hover:scale-105 transition-all duration-300"
+                onClick={() => navigate('/ma-xac-minh')}
+                className="absolute top-6 left-6 flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 px-4 py-2 transition-all duration-300"
             >
+                <FaArrowLeft className="text-sm" />
                 Quay lại
             </button>
 

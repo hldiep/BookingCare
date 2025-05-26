@@ -2,18 +2,44 @@ import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Ban, CheckCircle, Delete, Info, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllClinics } from '../util/clinicApi';
+import { fetchAllClinics, fetchAllClinicsManager } from '../util/clinicApi';
 
 const ClinicManagement = () => {
     const navigate = useNavigate();
     const [clinicList, setClinicList] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [error, setError] = useState('');
+    const [roles, setRoles] = useState([]);
     useEffect(() => {
         const loadClinics = async () => {
             try {
-                const data = await fetchAllClinics();
-                setClinicList(data);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Không tìm thấy token.');
+                    setLoading(false);
+                    return;
+                }
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const user = JSON.parse(atob(base64));
+
+                const extractedRoles = (user?.role || []).map(r =>
+                    typeof r === 'object' && r.authority
+                        ? r.authority.replace('ROLE_', '')
+                        : ''
+                );
+                setRoles(extractedRoles);
+                let clinicList = [];
+                if (extractedRoles.includes('MANAGER')) {
+                    clinicList = await fetchAllClinicsManager();
+                } else if (extractedRoles.includes('DOCTOR')) {
+                    clinicList = await fetchAllClinics();
+                } else {
+                    setError('Tài khoản không hợp lệ.');
+                    setLoading(false);
+                    return;
+                }
+                setClinicList(clinicList);
             } catch (error) {
                 console.log("Lỗi tải danh sách phòng khám:", error);
             } finally {
@@ -22,7 +48,11 @@ const ClinicManagement = () => {
         };
         loadClinics();
     }, []);
-
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleString('vi-VN');
+    };
     return (
         <ClippedDrawer>
             <div>
@@ -60,6 +90,7 @@ const ClinicManagement = () => {
                             </button>
                         </div>
                     </div>
+                    {error && <div className="text-red-500 text-sm">{error}</div>}
                     {loading ? (
                         <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
                     ) : (
@@ -101,28 +132,25 @@ const ClinicManagement = () => {
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="p-3">{clinic.createdAt}</td>
+                                                <td className="p-3">{formatDate(clinic.createdAt)}</td>
                                                 <td className="p-3 space-x-2 text-center">
-                                                    <button
-                                                        onClick={() => navigate('/clinic/edit')}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Edit"
-                                                    >
-                                                        <Pencil className="w-4 h-4 text-gray-700" />
-                                                    </button>
-                                                    {/* <button
-                                                        onClick={() => navigate('/clinic/detail')}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Details"
-                                                    >
-                                                        <Info className="w-4 h-4 text-gray-700" />
-                                                    </button> */}
-                                                    <button
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Delete"
-                                                    >
-                                                        <Delete className="w-4 h-4 text-gray-700" />
-                                                    </button>
+                                                    {!(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => navigate(`/clinic/edit/${clinic.id}`)}
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Chỉnh sửa"
+                                                            >
+                                                                <Pencil className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                            <button
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Xóa"
+                                                            >
+                                                                <Delete className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

@@ -2,37 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllSpecialty } from '../util/specialtyApi';
+import { fetchAllSpecialty, fetchAllSpecialtyManager } from '../util/specialtyApi';
 import { fetchAllDoctors } from '../util/doctorApi';
 
 const SpecialtyManagement = () => {
     const navigate = useNavigate();
-    // const [specialties, setSpecialties] = useState([
-    //     {
-    //         id: 'MS01',
-    //         name: 'Tim mạch',
-    //         description: 'Khám và điều trị các bệnh lý liên quan đến tim (Cardiology - Heart-related diseases)',
-    //         status: 'ACTIVE',
-    //         doctors: ['Dr. Nguyễn Văn A', 'Dr. Trần Thị B'],
-    //     },
-    //     {
-    //         id: 'MS02',
-    //         name: 'Da liễu',
-    //         description: 'Chẩn đoán và điều trị các bệnh về da, tóc và móng (Dermatology - Skin, hair, and nail diseases)',
-    //         status: 'ACTIVE',
-    //         doctors: ['Dr. Lê Văn C'],
-    //     },
-    //     {
-    //         id: 'MS03',
-    //         name: 'Nhi khoa',
-    //         description: 'Chăm sóc sức khỏe cho trẻ sơ sinh và trẻ nhỏ (Pediatrics - Healthcare for children)',
-    //         status: 'DELETING',
-    //         doctors: [],
-    //     },
-    // ]);
+
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [error, setError] = useState('');
+    const [roles, setRoles] = useState([]);
     // useEffect(() => {
     //     const loadData = async () => {
     //         try {
@@ -51,10 +30,35 @@ const SpecialtyManagement = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [specialtyData, doctorData] = await Promise.all([
-                    fetchAllSpecialty(),
-                    fetchAllDoctors()
-                ]);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Không tìm thấy token.');
+                    setLoading(false);
+                    return;
+                }
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const user = JSON.parse(atob(base64));
+
+                const extractedRoles = (user?.role || []).map(r =>
+                    typeof r === 'object' && r.authority
+                        ? r.authority.replace('ROLE_', '')
+                        : ''
+                );
+                setRoles(extractedRoles);
+
+                let specialtyData = [];
+
+                if (extractedRoles.includes('MANAGER')) {
+                    specialtyData = await fetchAllSpecialtyManager();
+                } else if (extractedRoles.includes('DOCTOR')) {
+                    specialtyData = await fetchAllSpecialty();
+                } else {
+                    setError('Không có quyền truy cập chuyên khoa.');
+                    setLoading(false);
+                    return;
+                }
+                const doctorData = await fetchAllDoctors();
                 const specialtiesWithDoctors = specialtyData.map(specialty => {
                     const relatedDoctors = doctorData.filter(
                         doctor => doctor.medicalSpecialtyId === specialty.id
@@ -106,6 +110,7 @@ const SpecialtyManagement = () => {
                             </button>
                         </div>
                     </div>
+                    {error && <div className="text-red-500 text-sm">{error}</div>}
                     {loading ? (
                         <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
                     ) : (
@@ -127,10 +132,10 @@ const SpecialtyManagement = () => {
                                     <tbody>
                                         {specialties.map((item, index) => (
                                             <tr key={item.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3 border-r font-medium">{index + 1}</td>
-                                                <td className="p-3 border-r">{item.name}</td>
-                                                <td className="p-3 border-r">{item.description}</td>
-                                                <td className="p-3 border-r">
+                                                <td className="p-3 font-medium">{index + 1}</td>
+                                                <td className="p-3 ">{item.name}</td>
+                                                <td className="p-3 ">{item.description}</td>
+                                                <td className="p-3 ">
                                                     {Array.isArray(item.doctors) && item.doctors.length > 0 ? (
                                                         <ul className="list-disc list-inside space-y-1">
                                                             {item.doctors.map((doc, idx) => (
@@ -142,37 +147,39 @@ const SpecialtyManagement = () => {
                                                     )}
                                                 </td>
                                                 <td className="p-3 font-medium">
-                                                    {item.status === 'ACTIVE' ? (
-                                                        <span className="text-green-600 flex items-center">
-                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-red-500 flex items-center">
-                                                            <Ban className="w-4 h-4 mr-1" /> Tạm dừng
-                                                        </span>
+                                                    {!(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            {item.status === 'ACTIVE' ? (
+                                                                <span className="text-green-600 flex items-center">
+                                                                    <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-red-500 flex items-center">
+                                                                    <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                                </span>
+                                                            )}
+                                                        </>
                                                     )}
+
                                                 </td>
                                                 <td className="p-3 text-center space-x-2">
-                                                    <button
-                                                        onClick={() => navigate(`/specialty/edit/${item.id}`)}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Chỉnh sửa"
-                                                    >
-                                                        <Pencil className="w-4 h-4 text-gray-700" />
-                                                    </button>
-                                                    {/* <button
-                                                        onClick={() => navigate(`/specialty/detail/${item.id}`)}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Chi tiết"
-                                                    >
-                                                        <Info className="w-4 h-4 text-gray-700" />
-                                                    </button> */}
-                                                    <button
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Xóa"
-                                                    >
-                                                        <Delete className="w-4 h-4 text-gray-700" />
-                                                    </button>
+                                                    {!(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => navigate(`/specialty/edit/${item.id}`)}
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Chỉnh sửa"
+                                                            >
+                                                                <Pencil className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                            <button
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Xóa"
+                                                            >
+                                                                <Delete className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

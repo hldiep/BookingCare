@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchDoctorById } from '../util/doctorApi';
+import { fetchDoctorById, fetchDoctorByIdManager } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorDetail = () => {
@@ -15,7 +15,7 @@ const DoctorDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const doctorData = await fetchDoctorById(id);
+                const doctorData = await fetchDoctorByIdManager(id);
                 setDoctor(doctorData);
 
                 const specialties = await fetchAllSpecialty();
@@ -108,7 +108,6 @@ const DoctorDetail = () => {
                         <InfoItem label="Họ tên" value={doctor.name} />
                         <InfoItem label="Chuyên khoa" value={doctor.medicalSpecialty?.name || specialtyName} />
                         <InfoItem label="Giới tính" value={doctor.gender ? 'Nam' : 'Nữ'} />
-                        <InfoItem label="Ngày sinh" value={doctor.birthday} type="date" />
                         <InfoItem label="Số điện thoại" value={doctor.phone} />
                         <InfoItem label="Email" value={doctor.email} />
                         <InfoItem label="Địa chỉ" value={doctor.address} full />

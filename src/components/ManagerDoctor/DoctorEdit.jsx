@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchDoctorById, updateDoctor } from '../util/doctorApi';
+import { fetchDoctorById, fetchDoctorByIdManager, updateDoctor } from '../util/doctorApi';
 
 const DoctorEdit = () => {
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ const DoctorEdit = () => {
         const loadDoctor = async () => {
             try {
                 setLoading(true);
-                const data = await fetchDoctorById(doctorId);
+                const data = await fetchDoctorByIdManager(doctorId);
                 setDoctor(data);
             } catch (error) {
                 console.error("Không thể tải thông tin bác sĩ:", error);

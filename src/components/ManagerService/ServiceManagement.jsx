@@ -2,18 +2,44 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Info, Ban, CheckCircle, Delete } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllServices } from '../util/serviceApi';
+import { fetchAllServices, fetchAllServicesManager } from '../util/serviceApi';
 
 const ServiceManagement = () => {
     const navigate = useNavigate();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [error, setError] = useState('');
+    const [roles, setRoles] = useState([]);
     useEffect(() => {
         const loadService = async () => {
             try {
-                const data = await fetchAllServices();
-                setServices(data);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Không tìm thấy token.');
+                    setLoading(false);
+                    return;
+                }
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const user = JSON.parse(atob(base64));
+
+                const extractedRoles = (user?.role || []).map(r =>
+                    typeof r === 'object' && r.authority
+                        ? r.authority.replace('ROLE_', '')
+                        : ''
+                );
+                setRoles(extractedRoles);
+                let serviceList = [];
+                if (extractedRoles.includes('MANAGER')) {
+                    serviceList = await fetchAllServicesManager();
+                } else if (extractedRoles.includes('DOCTOR')) {
+                    serviceList = await fetchAllServices();
+                } else {
+                    setError('Tài khoản không hợp lệ.');
+                    setLoading(false);
+                    return;
+                }
+                setServices(serviceList);
             } catch (error) {
                 console.log("Lỗi tải danh sách dịch vụ:", error);
             }
@@ -23,30 +49,11 @@ const ServiceManagement = () => {
         }
         loadService();
     }, []);
-    // const [services] = useState([
-    //     {
-    //         id: 'SV001',
-    //         name: 'Khám tim mạch',
-    //         description: 'Đánh giá và điều trị các bệnh lý tim mạch',
-    //         department: 'Tim mạch',
-    //         status: 'ACTIVE',
-    //     },
-    //     {
-    //         id: 'SV002',
-    //         name: 'Điều trị Da liễu',
-    //         description: 'Khám và điều trị các bệnh về da như mụn, eczema',
-    //         department: 'Da liễu',
-    //         status: 'ACTIVE',
-    //     },
-    //     {
-    //         id: 'SV003',
-    //         name: 'Chăm sóc Nhi khoa',
-    //         description: 'Khám và chăm sóc sức khỏe cho trẻ em',
-    //         department: 'Nhi khoa',
-    //         status: 'DELETING',
-    //     },
-    // ]);
-
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleString('vi-VN');
+    };
     return (
         <ClippedDrawer>
             <div>
@@ -78,6 +85,7 @@ const ServiceManagement = () => {
                             </button>
                         </div>
                     </div>
+                    {error && <div className="text-red-500 text-sm">{error}</div>}
                     {loading ? (
                         <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
                     ) : (
@@ -113,28 +121,25 @@ const ServiceManagement = () => {
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="p-3">{sv.createdAt}</td>
+                                                <td className="p-3">{formatDate(sv.createdAt)}</td>
                                                 <td className="p-3 space-x-2 text-center flex">
-                                                    <button
-                                                        onClick={() => navigate('/service/edit')}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Chỉnh sửa"
-                                                    >
-                                                        <Pencil className="w-4 h-4 text-gray-700" />
-                                                    </button>
-                                                    {/* <button
-                                                        onClick={() => navigate('/service/detail')}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Chi tiết"
-                                                    >
-                                                        <Info className="w-4 h-4 text-gray-700" />
-                                                    </button> */}
-                                                    <button
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Xóa"
-                                                    >
-                                                        <Delete className="w-4 h-4 text-gray-700" />
-                                                    </button>
+                                                    {!(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => navigate(`/service/edit/${sv.id}`)}
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Chỉnh sửa"
+                                                            >
+                                                                <Pencil className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                            <button
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Xóa"
+                                                            >
+                                                                <Delete className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

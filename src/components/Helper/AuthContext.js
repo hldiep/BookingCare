@@ -32,11 +32,18 @@ export const AuthProvider = ({ children }) => {
 
     if (!res.ok) throw new Error('Login failed');
     const data = await res.json();
+
     const newToken = data.data.token;
-    if (!newToken) throw new Error('Token not found in response');
+    const user = data.data.user;
+
+    if (!newToken || !user) throw new Error('Token hoặc thông tin người dùng không hợp lệ');
+
     localStorage.setItem('token', newToken);
+    localStorage.setItem('user', JSON.stringify(user));
+
     setToken(newToken);
   };
+
 
   const logout = () => {
     localStorage.removeItem('token');

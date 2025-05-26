@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteDoctor, fetchAllDoctors } from '../util/doctorApi';
+import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorManagement = () => {
@@ -12,37 +12,57 @@ const DoctorManagement = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [specialty, setSpecialty] = useState([]);
+    const [roles, setRoles] = useState([]);
     useEffect(() => {
         const loadData = async () => {
-            // try {
-            //     const data = await fetchAllDoctors();
-            //     setDoctors(data);
-            // } catch (err) {
-            //     console.error('Lỗi tải danh sách bác sĩ:', err);
-            //     setError('Không thể tải danh sách bác sĩ. Vui lòng đăng nhập hoặc thử lại.');
-            // } finally {
-            //     setLoading(false);
-            // }
             try {
-                const [doctorList, specialtyList] = await Promise.all([
-                    fetchAllDoctors(),
-                    fetchAllSpecialty()
-                ]);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Không tìm thấy token.');
+                    setLoading(false);
+                    return;
+                }
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const user = JSON.parse(atob(base64));
 
+                const extractedRoles = (user?.role || []).map(r =>
+                    typeof r === 'object' && r.authority
+                        ? r.authority.replace('ROLE_', '')
+                        : ''
+                );
+                setRoles(extractedRoles);
+
+                let doctorList = [];
+                if (extractedRoles.includes('MANAGER')) {
+                    doctorList = await fetchAllDoctorsManager();
+                } else if (extractedRoles.includes('DOCTOR')) {
+                    doctorList = await fetchAllDoctors();
+                } else {
+                    setError('Tài khoản không hợp lệ.');
+                    setLoading(false);
+                    return;
+                }
+
+                const specialtyList = await fetchAllSpecialty();
                 const specialtyMap = {};
                 specialtyList.forEach(s => {
                     specialtyMap[s.id] = s.name;
                 });
-                setSpecialty(specialtyMap);
+
                 setDoctors(doctorList);
+                setSpecialty(specialtyMap);
             } catch (err) {
                 console.error('Lỗi khi tải dữ liệu:', err);
+                setError('Không thể tải dữ liệu.');
             } finally {
                 setLoading(false);
             }
         };
+
         loadData();
     }, []);
+
     const handleDeleteDoctor = async (id) => {
         const confirm = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
         if (!confirm) return;
@@ -133,13 +153,25 @@ const DoctorManagement = () => {
                                                     )}
                                                 </td>
                                                 <td className="p-3 space-x-2 text-center">
-                                                    <button
-                                                        onClick={() => navigate(`/doctor/edit/${doc.id}`)}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Chỉnh sửa"
-                                                    >
-                                                        <Pencil className="w-4 h-4 text-gray-700" />
-                                                    </button>
+                                                    {!(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            <button
+                                                                onClick={() => navigate(`/doctor/edit/${doc.id}`)}
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Chỉnh sửa"
+                                                            >
+                                                                <Pencil className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteDoctor(doc.id)}
+                                                                className="p-1 border rounded hover:bg-gray-100"
+                                                                title="Xóa"
+                                                            >
+                                                                <Delete className="w-4 h-4 text-gray-700" />
+                                                            </button>
+                                                        </>
+                                                    )}
+
                                                     <button
                                                         onClick={() => navigate(`/doctor/detail-manage/${doc.id}`)}
                                                         className="p-1 border rounded hover:bg-gray-100"
@@ -147,14 +179,8 @@ const DoctorManagement = () => {
                                                     >
                                                         <Info className="w-4 h-4 text-gray-700" />
                                                     </button>
-                                                    <button
-                                                        onClick={() => handleDeleteDoctor(doc.id)}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Xóa"
-                                                    >
-                                                        <Delete className="w-4 h-4 text-gray-700" />
-                                                    </button>
                                                 </td>
+
                                             </tr>
                                         ))}
                                     </tbody>

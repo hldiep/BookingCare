@@ -1,12 +1,26 @@
 import axios from "axios";
 
 const API_URL = `/api/v1/m/clinics`;
-export const fetchAllClinics = async () => {
+export const fetchAllClinicsManager = async () => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${API_URL}/all`, {
             headers: {
                 Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách phòng khám:', error);
+        throw error;
+    }
+};
+export const fetchAllClinics = async () => {
+    try {
+        // const token = localStorage.getItem('token');
+        const response = await axios.get('/api/v1/p/clinics/active', {
+            headers: {
+                // Authorization: `Bearer ${token}`,
             },
         });
         return response.data.data;

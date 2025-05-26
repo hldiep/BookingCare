@@ -1,21 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import { fetchAllDoctors } from '../util/doctorApi';
+import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const SectionDoctor = () => {
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [specialty, setSpecialty] = useState([]);
     useEffect(() => {
-        const fetDoctor = async () => {
+        const loadData = async () => {
             try {
-                const data = await fetchAllDoctors();
-                setDoctors(data.slice(0, 3));
+                const [doctorList, specialtyList] = await Promise.all([
+                    fetchAllDoctors(),
+                    fetchAllSpecialty()
+                ]);
+
+                const specialtyMap = {};
+                specialtyList.forEach(s => {
+                    specialtyMap[s.id] = s.name;
+                });
+                setSpecialty(specialtyMap);
+                setDoctors(doctorList);
             } catch (err) {
-                console.log("Lỗi tải bác sĩ", err);
+                console.error('Lỗi khi tải dữ liệu:', err);
             } finally {
                 setLoading(false);
             }
-        }
-        fetDoctor();
+        };
+        loadData();
     }, []);
 
     return (
@@ -30,18 +41,18 @@ const SectionDoctor = () => {
                             <div className="text-center text-gray-500 py-8">Hiện chưa có bác sĩ nào.</div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {doctors.map((doctor, index) => (
+                                {doctors.slice(0, 3).map((doctor, index) => (
                                     <div
                                         key={index}
                                         className="bg-white rounded-lg shadow-md p-4 text-center hover:scale-105 transition-all duration-300"
                                     >
                                         <img
-                                            src={doctor.image || 'https://via.placeholder.com/150'}
-                                            alt={doctor.fullName}
+                                            src={doctor.image}
+                                            alt={doctor.name}
                                             className="mx-auto h-40 w-40 object-cover rounded-full mb-4"
                                         />
-                                        <h3 className="text-xl font-semibold">{doctor.fullName}</h3>
-                                        <p className="text-sm text-gray-500">Chuyên khoa: {doctor.specialty}</p>
+                                        <h3 className="text-xl font-semibold">{doctor.name}</h3>
+                                        <p className="text-sm text-gray-500">Chuyên khoa: {specialty[doctor.medicalSpecialtyId] || 'Không xác định'}</p>
                                     </div>
                                 ))}
                             </div>

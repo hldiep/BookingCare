@@ -2,6 +2,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../Helper/AuthContext';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -46,11 +47,11 @@ const Login = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] via-[#ffffff] to-[#e0f7fa] relative px-4">
             <button
                 onClick={() => navigate('/')}
-                className="absolute top-6 left-6 italic text-blue-700 underline hover:text-blue-900 hover:scale-105 transition-all duration-300"
+                className="absolute top-6 left-6 flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 px-4 py-2 transition-all duration-300"
             >
+                <FaArrowLeft className="text-sm" />
                 Quay lại
             </button>
-
             <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl px-10 py-12 w-full max-w-md">
                 <h2 className="text-3xl font-bold text-center mb-2 text-logo font-serif">
                     ĐĂNG NHẬP

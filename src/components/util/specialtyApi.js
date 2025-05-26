@@ -1,12 +1,25 @@
 import axios from "axios";
 
 const API_URL = `/api/v1/m/medical-specialties`;
-export const fetchAllSpecialty = async () => {
+export const fetchAllSpecialtyManager = async () => {
     try {
         const token = localStorage.getItem('token');
         const response = await axios.get(`${API_URL}/all`, {
             headers: {
                 Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách chuyên khoa:', error);
+        throw error;
+    }
+};
+export const fetchAllSpecialty = async () => {
+    try {
+        const response = await axios.get('/api/v1/p/medical-specialties/all/active', {
+            headers: {
+                // Authorization: `Bearer ${token}`,
             },
         });
         return response.data.data;
