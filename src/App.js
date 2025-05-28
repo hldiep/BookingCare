@@ -82,17 +82,17 @@ function App() {
 
         <Route path="service" element={<ServiceManagement />} />
         <Route path="service/detail" element={<ServiceDetail />} />
-        <Route path="service/edit" element={<ServiceEdit />} />
+        <Route path="service/edit/:id" element={<ServiceEdit />} />
         <Route path="service/create" element={<ServiceCreate />} />
 
         <Route path="clinic" element={<ClinicManagement />} />
-        <Route path="clinic/edit" element={<ClinicEdit />} />
+        <Route path="clinic/edit/:id" element={<ClinicEdit />} />
         <Route path="clinic/detail" element={<ClinicDetail />} />
         <Route path="clinic/create" element={<ClinicCreate />} />
 
         <Route path="specialty" element={<SpecialtyManagement />} />
         <Route path="specialty/detail" element={<SpecialtyDetail />} />
-        <Route path="specialty/edit" element={<SpecialtyEdit />} />
+        <Route path="specialty/edit/:id" element={<SpecialtyEdit />} />
         <Route path="specialty/create" element={<SpecialtyCreate />} />
 
         <Route path="appointment" element={<Appointment />} />

@@ -46,7 +46,7 @@ const DoctorCreate = () => {
 
         let newValue = value;
         if (type === 'radio' && name === 'gender') {
-            newValue = value === 'true'; // ép chuỗi thành boolean
+            newValue = value === 'true';
         }
 
         if (name.startsWith('account.')) {

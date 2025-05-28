@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Info, Ban, CheckCircle, Delete } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllServices, fetchAllServicesManager } from '../util/serviceApi';
+import { deleteService, fetchAllServices, fetchAllServicesManager } from '../util/serviceApi';
 
 const ServiceManagement = () => {
     const navigate = useNavigate();
@@ -10,43 +10,51 @@ const ServiceManagement = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [roles, setRoles] = useState([]);
-    useEffect(() => {
-        const loadService = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('Không tìm thấy token.');
-                    setLoading(false);
-                    return;
-                }
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const user = JSON.parse(atob(base64));
 
-                const extractedRoles = (user?.role || []).map(r =>
-                    typeof r === 'object' && r.authority
-                        ? r.authority.replace('ROLE_', '')
-                        : ''
-                );
-                setRoles(extractedRoles);
-                let serviceList = [];
-                if (extractedRoles.includes('MANAGER')) {
-                    serviceList = await fetchAllServicesManager();
-                } else if (extractedRoles.includes('DOCTOR')) {
-                    serviceList = await fetchAllServices();
-                } else {
-                    setError('Tài khoản không hợp lệ.');
-                    setLoading(false);
-                    return;
-                }
-                setServices(serviceList);
-            } catch (error) {
-                console.log("Lỗi tải danh sách dịch vụ:", error);
-            }
-            finally {
+    const [currentPage, setCurrentPage] = useState(1);
+    const servicePerPage = 10;
+    const indexOfLast = currentPage * servicePerPage;
+    const indexOfFirst = indexOfLast - servicePerPage;
+    const current = services.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(services.length / servicePerPage);
+
+    const loadService = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Không tìm thấy token.');
                 setLoading(false);
+                return;
             }
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const user = JSON.parse(atob(base64));
+
+            const extractedRoles = (user?.role || []).map(r =>
+                typeof r === 'object' && r.authority
+                    ? r.authority.replace('ROLE_', '')
+                    : ''
+            );
+            setRoles(extractedRoles);
+            let serviceList = [];
+            if (extractedRoles.includes('MANAGER')) {
+                serviceList = await fetchAllServicesManager();
+            } else if (extractedRoles.includes('DOCTOR')) {
+                serviceList = await fetchAllServices();
+            } else {
+                setError('Tài khoản không hợp lệ.');
+                setLoading(false);
+                return;
+            }
+            setServices(serviceList);
+        } catch (error) {
+            console.log("Lỗi tải danh sách dịch vụ:", error);
         }
+        finally {
+            setLoading(false);
+        }
+    }
+    useEffect(() => {
         loadService();
     }, []);
     const formatDate = (dateString) => {
@@ -54,6 +62,26 @@ const ServiceManagement = () => {
         const date = new Date(dateString);
         return date.toLocaleString('vi-VN');
     };
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
+    };
+
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm('Bạn có chắc muốn xóa dịch vụ này không?');
+        if (!confirmDelete) {
+            return;
+        }
+        try {
+            const response = await deleteService(id);
+            alert(response.data || 'Xóa thành công');
+            setLoading(true);
+            await loadService();
+        } catch (err) {
+            alert(err.message || 'Đã xảy ra lỗi khi xóa dịch vụ');
+        }
+    }
     return (
         <ClippedDrawer>
             <div>
@@ -77,17 +105,20 @@ const ServiceManagement = () => {
                         />
                         <div className="flex gap-2">
                             <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
-                            <button
+                            {!(roles.includes('DOCTOR')) && (<button
                                 onClick={() => navigate('/service/create')}
                                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                             >
                                 Tạo mới
-                            </button>
+                            </button>)}
                         </div>
                     </div>
                     {error && <div className="text-red-500 text-sm">{error}</div>}
                     {loading ? (
-                        <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                        <div className="flex justify-center items-center py-10">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
+                            <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
+                        </div>
                     ) : (
                         <div className="overflow-x-auto bg-white border rounded shadow-sm">
                             {services.length === 0 ? (
@@ -105,9 +136,9 @@ const ServiceManagement = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {services.map((sv, index) => (
+                                        {current.map((sv, index) => (
                                             <tr key={sv.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3">{index + 1}</td>
+                                                <td className="p-3">{indexOfFirst + index + 1}</td>
                                                 <td className="p-3">{sv.name}</td>
                                                 <td className="p-3">{sv.description}</td>
                                                 <td className="p-3 font-medium">
@@ -133,6 +164,7 @@ const ServiceManagement = () => {
                                                                 <Pencil className="w-4 h-4 text-gray-700" />
                                                             </button>
                                                             <button
+                                                                onClick={() => handleDelete(services.id)}
                                                                 className="p-1 border rounded hover:bg-gray-100"
                                                                 title="Xóa"
                                                             >
@@ -148,7 +180,22 @@ const ServiceManagement = () => {
                             )}
                         </div>
                     )}
-
+                    <div className="flex flex-col items-center gap-4 mt-10">
+                        <div className="flex gap-2 flex-wrap justify-center">
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handlePageClick(i + 1)}
+                                    className={`px-3 py-1 rounded border ${currentPage === i + 1
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </ClippedDrawer>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Ban, CheckCircle, Delete, Info, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllClinics, fetchAllClinicsManager } from '../util/clinicApi';
+import { deleteClinic, fetchAllClinics, fetchAllClinicsManager } from '../util/clinicApi';
 
 const ClinicManagement = () => {
     const navigate = useNavigate();
@@ -10,42 +10,51 @@ const ClinicManagement = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [roles, setRoles] = useState([]);
-    useEffect(() => {
-        const loadClinics = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('Không tìm thấy token.');
-                    setLoading(false);
-                    return;
-                }
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const user = JSON.parse(atob(base64));
 
-                const extractedRoles = (user?.role || []).map(r =>
-                    typeof r === 'object' && r.authority
-                        ? r.authority.replace('ROLE_', '')
-                        : ''
-                );
-                setRoles(extractedRoles);
-                let clinicList = [];
-                if (extractedRoles.includes('MANAGER')) {
-                    clinicList = await fetchAllClinicsManager();
-                } else if (extractedRoles.includes('DOCTOR')) {
-                    clinicList = await fetchAllClinics();
-                } else {
-                    setError('Tài khoản không hợp lệ.');
-                    setLoading(false);
-                    return;
-                }
-                setClinicList(clinicList);
-            } catch (error) {
-                console.log("Lỗi tải danh sách phòng khám:", error);
-            } finally {
+    const [currentPage, setCurrentPage] = useState(1);
+    const clinicPerPage = 10;
+    const indexOfLast = currentPage * clinicPerPage;
+    const indexOfFirst = indexOfLast - clinicPerPage;
+    const current = clinicList.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(clinicList.length / clinicPerPage);
+
+    const loadClinics = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Không tìm thấy token.');
                 setLoading(false);
+                return;
             }
-        };
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const user = JSON.parse(atob(base64));
+
+            const extractedRoles = (user?.role || []).map(r =>
+                typeof r === 'object' && r.authority
+                    ? r.authority.replace('ROLE_', '')
+                    : ''
+            );
+            setRoles(extractedRoles);
+            let clinicList = [];
+            if (extractedRoles.includes('MANAGER')) {
+                clinicList = await fetchAllClinicsManager();
+            } else if (extractedRoles.includes('DOCTOR')) {
+                clinicList = await fetchAllClinics();
+            } else {
+                setError('Tài khoản không hợp lệ.');
+                setLoading(false);
+                return;
+            }
+            setClinicList(clinicList);
+        } catch (error) {
+            console.log("Lỗi tải danh sách phòng khám:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         loadClinics();
     }, []);
     const formatDate = (dateString) => {
@@ -53,6 +62,27 @@ const ClinicManagement = () => {
         const date = new Date(dateString);
         return date.toLocaleString('vi-VN');
     };
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
+    };
+
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm('Bạn có chắc muốn xóa phòng khám này không?');
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const response = await deleteClinic(id);
+            alert(response.data || 'Xóa thành công');
+            setLoading(true);
+            await loadClinics();
+        } catch (err) {
+            alert(err.message || 'Đã xảy ra lỗi khi xóa phòng khám');
+        }
+    }
     return (
         <ClippedDrawer>
             <div>
@@ -82,17 +112,22 @@ const ClinicManagement = () => {
                             <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                                 Tìm kiếm
                             </button>
-                            <button
-                                onClick={() => navigate('/clinic/create')}
-                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                            >
-                                Tạo mới
-                            </button>
+                            {!(roles.includes('DOCTOR')) && (
+                                <button
+                                    onClick={() => navigate('/clinic/create')}
+                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                >
+                                    Tạo mới
+                                </button>
+                            )}
                         </div>
                     </div>
                     {error && <div className="text-red-500 text-sm">{error}</div>}
                     {loading ? (
-                        <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                        <div className="flex justify-center items-center py-10">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
+                            <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
+                        </div>
                     ) : (
                         <div className="overflow-x-auto bg-white border rounded shadow-sm">
                             {clinicList.length === 0 ? (
@@ -101,10 +136,10 @@ const ClinicManagement = () => {
                                 <table className="w-full text-sm text-left">
                                     <thead className="bg-gray-100 text-gray-700">
                                         <tr>
-                                            <th className="p-3 w-24">STT</th>
-                                            <th className="p-3">Tên phòng khám</th>
+                                            <th className="p-3">STT</th>
+                                            <th className="p-3 w-56">Tên phòng khám</th>
                                             <th className="p-3">Địa chỉ</th>
-                                            <th className="p-3">Mô tả</th>
+                                            <th className="p-3 w-60">Mô tả</th>
                                             <th className="p-3">SĐT</th>
                                             <th className="p-3">Email</th>
                                             <th className="p-3 w-28">Trạng thái</th>
@@ -113,22 +148,37 @@ const ClinicManagement = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {clinicList.map((clinic, index) => (
+                                        {current.map((clinic, index) => (
                                             <tr key={clinic.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3">{index + 1}</td>
+                                                <td className="p-3">{indexOfFirst + index + 1}</td>
                                                 <td className="p-3">{clinic.name}</td>
                                                 <td className="p-3">{clinic.address}</td>
                                                 <td className="p-3">{clinic.description}</td>
                                                 <td className="p-3">{clinic.phone}</td>
                                                 <td className="p-3">{clinic.email}</td>
                                                 <td className="p-3 font-medium">
-                                                    {clinic.status === 'ACTIVE' ? (
+                                                    {/* {clinic.status === 'active' ? (
                                                         <span className="text-green-600 flex items-center">
                                                             <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
                                                         </span>
                                                     ) : (
                                                         <span className="text-red-500 flex items-center">
                                                             <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                        </span>
+                                                    )} */}
+                                                    {clinic.status === 'active' && (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    )}
+                                                    {clinic.status === 'ACTIVE' && (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    )}
+                                                    {clinic.status === 'DELETED' && (
+                                                        <span className="text-red-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Đã xóa
                                                         </span>
                                                     )}
                                                 </td>
@@ -144,6 +194,7 @@ const ClinicManagement = () => {
                                                                 <Pencil className="w-4 h-4 text-gray-700" />
                                                             </button>
                                                             <button
+                                                                onClick={() => handleDelete(clinic.id)}
                                                                 className="p-1 border rounded hover:bg-gray-100"
                                                                 title="Xóa"
                                                             >
@@ -159,7 +210,22 @@ const ClinicManagement = () => {
                             )}
                         </div >
                     )}
-
+                    <div className="flex flex-col items-center gap-4 mt-10">
+                        <div className="flex gap-2 flex-wrap justify-center">
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handlePageClick(i + 1)}
+                                    className={`px-3 py-1 rounded border ${currentPage === i + 1
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div >
             </div >
         </ClippedDrawer >

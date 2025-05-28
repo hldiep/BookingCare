@@ -30,32 +30,56 @@ export const fetchAllClinics = async () => {
     }
 };
 
-export const updateCilinic = async (clinicId, clinicData) => {
+export const updateCilinic = async (clinicData) => {
     try {
-        const response = await axios.put(`${API_URL}/update/${clinicId}`, clinicData, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/update`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify(clinicData),
         });
-        return response.data;
+        return response.json();
     } catch (error) {
-        console.error("Lỗi khi cập nhật bác sĩ:", error);
+        console.error("Lỗi khi cập nhật phòng khám:", error);
         throw error.response?.data || { message: 'Lỗi không xác định' };
     }
 }
 
 export const addClinic = async (clinicData) => {
-    const response = await axios.get(`${API_URL}/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(clinicData),
-    });
-    if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Lỗi khi thêm phòng khám');
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(clinicData),
+        });
+        const data = await response.json();
+        if (!response.ok || data.statusCode !== 201) {
+            console.error('Lỗi thêm phòng khám:', data.message)
+        }
+        return data;
+    } catch (err) {
+        console.error('Lỗi kết nối đến máy chủ:', err);
     }
+}
 
-    return response.json();
+export const deleteClinic = async (id) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(`${API_URL}/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (err) {
+        console.error('Lỗi khi xóa phòng khám:', err);
+        throw err.response?.data || { message: 'Lỗi không xác định' };
+    }
 }

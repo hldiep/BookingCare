@@ -28,54 +28,55 @@ export const fetchAllSpecialty = async () => {
         throw error;
     }
 };
-export const updateSpecialty = async (specialtyId, specialtyData) => {
+export const updateSpecialty = async (specialtyData) => {
     try {
-        const response = await axios.put(`${API_URL}/update/${specialtyId}`, specialtyData, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/update`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify(specialtyData),
         });
-        return response.data;
+        return response.json();
     } catch (error) {
         console.error("Lỗi khi cập nhật chuyên khoa:", error);
         throw error.response?.data || { message: 'Lỗi không xác định' };
     }
 };
-
-// export const fetchSpecialtyById = async (id) => {
-//     try {
-//         const token = localStorage.getItem('token');
-//         const response = await fetch(`${API_URL}/${id}`, {
-//             headers: {
-//                 'Authorization': `Bearer ${token}`,
-//                 'Content-Type': 'application/json',
-//             },
-//         });
-
-//         if (!response.ok) {
-//             const errorText = await response.text();
-//             throw new Error(errorText || 'Không tìm thấy chuyên khoa');
-//         }
-//         const json = await response.json();
-//         return json.data;
-//     } catch (error) {
-//         console.error('Lỗi khi gọi API fetchSpecialtyById:', error);
-//         throw new Error(error.message || 'Đã xảy ra lỗi khi lấy thông tin chuyên khoa');
-//     }
-// };
-
 export const addSpecialty = async (specialtyData) => {
-    const response = await axios.get(`${API_URL}/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(specialtyData),
-    });
-    if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Lỗi khi thêm chuyên khoa');
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(specialtyData),
+        })
+        const data = await response.json();
+        if (!response.ok || data.statusCode !== 201) {
+            console.error('Lỗi thêm chuyên khoa:', data.message)
+        }
+        return data;
+    } catch (err) {
+        console.error('Lỗi kết nối đến máy chủ', err);
     }
+}
 
-    return response.json();
+export const deleteSpecialty = async (id) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(`${API_URL}/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (err) {
+        console.error('Lỗi khi xóa chuyên khoa:', err);
+        throw err.response?.data || { message: 'Lỗi không xác định' };
+    }
 }

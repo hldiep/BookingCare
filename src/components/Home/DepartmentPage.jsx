@@ -42,7 +42,10 @@ const DepartmentPage = () => {
                             Giới thiệu chuyên khoa
                         </h2>
                         {loading ? (
-                            <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                            <div className="flex justify-center items-center py-10">
+                                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
+                                <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
+                            </div>
                         ) : (
                             <div>
                                 {specialties.length === 0 ? (

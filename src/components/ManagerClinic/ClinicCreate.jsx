@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { addClinic } from '../util/clinicApi';
 
 const ClinicCreate = () => {
     const navigate = useNavigate();
@@ -11,7 +12,7 @@ const ClinicCreate = () => {
         phone: '',
         email: '',
         description: '',
-        status: 'active',
+        status: 'ACTIVE',
         images: [''],
     });
 
@@ -39,11 +40,20 @@ const ClinicCreate = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Phòng khám mới:', clinic);
-        alert('Đã tạo phòng khám mới!');
-        navigate('/clinic');
+
+        try {
+            const result = await addClinic({
+                ...clinic,
+                createdAt: new Date().toISOString(),
+            });
+
+            alert(result.message || 'Tạo phòng khám thành công!');
+            navigate('/clinic');
+        } catch (error) {
+            alert(`Lỗi: ${error.message}`);
+        }
     };
 
     return (
@@ -66,7 +76,6 @@ const ClinicCreate = () => {
 
                 <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
 
-                    {/* Hình ảnh preview */}
                     <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
                         <p className="font-semibold text-center text-lg">Ảnh phòng khám</p>
                         {clinic.images.map((img, index) => (
@@ -96,11 +105,21 @@ const ClinicCreate = () => {
                         </button>
                     </div>
 
-                    {/* Form nhập */}
                     <form
                         onSubmit={handleSubmit}
                         className="w-full md:w-2/3 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
                     >
+                        {/* <div>
+                            <label className="block text-sm font-medium text-gray-700">Mã phòng khám</label>
+                            <input
+                                type="text"
+                                name="id"
+                                value={clinic.id}
+                                readOnly
+                                className="bg-gray-100 cursor-not-allowed outline-none mt-1 block w-full rounded border-gray-300 shadow-sm"
+                            />
+                        </div> */}
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Tên phòng khám</label>
                             <input
@@ -147,19 +166,29 @@ const ClinicCreate = () => {
                             />
                         </div>
 
-                        <div>
+                        <div className='flex space-x-4 items-center text-center'>
                             <label className="block text-sm font-medium text-gray-700">Trạng thái</label>
                             <select
                                 name="status"
                                 value={clinic.status}
                                 onChange={handleChange}
-                                className="outline-none mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                disabled
+                                className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             >
-                                <option value="active">Hoạt động</option>
-                                <option value="pause">Tạm ngừng</option>
-                                <option value="inactive">Không hoạt động</option>
+                                <option value="ACTIVE">Hoạt động</option>
                             </select>
                         </div>
+
+                        {/* <div>
+                            <label className="block text-sm font-medium text-gray-700">Ngày tạo</label>
+                            <input
+                                type="text"
+                                name="createdAt"
+                                value={clinic.createdAt}
+                                readOnly
+                                className="bg-gray-100 cursor-not-allowed outline-none mt-1 block w-full rounded border-gray-300 shadow-sm"
+                            />
+                        </div> */}
 
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700">Mô tả</label>
@@ -180,6 +209,7 @@ const ClinicCreate = () => {
                             </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </ClippedDrawer>

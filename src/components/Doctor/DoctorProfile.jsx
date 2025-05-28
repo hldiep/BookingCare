@@ -24,13 +24,14 @@ const DoctorProfile = () => {
                 const user = JSON.parse(userJson);
 
                 const roleName = user?.account?.role?.name;
-                if (roleName !== 'DOCTOR') {
-                    setError('Tài khoản không phải là bác sĩ.');
+                if (roleName !== 'DOCTOR' && roleName !== 'MANAGER') {
+                    setError('Tài khoản không phải là bác sĩ hoặc quản lý');
                     setLoading(false);
                     return;
                 }
 
-                setDoctor(user); // Không cần gọi fetchDoctorById
+                setDoctor(user);
+
             } catch (err) {
                 console.error('Lỗi khi tải thông tin bác sĩ:', err);
                 setError('Không thể tải thông tin bác sĩ.');
@@ -46,14 +47,6 @@ const DoctorProfile = () => {
         const date = new Date(dateString);
         return date.toLocaleString('vi-VN');
     };
-
-    if (loading) {
-        return (
-            <ClippedDrawer>
-                <div className="p-6 text-center text-gray-600">Đang tải thông tin...</div>
-            </ClippedDrawer>
-        );
-    }
 
     if (error) {
         return (
@@ -74,61 +67,66 @@ const DoctorProfile = () => {
                     </div>
                     <h2 className="text-xl font-semibold p-4">Thông tin cá nhân</h2>
                 </div>
+                {loading ? (
+                    <div className="flex justify-center items-center py-10">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
+                        <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
+                    </div>
+                ) : (
+                    <div className="min-h-screen bg-main p-6">
+                        <div className="mt-4 flex flex-col md:flex-row gap-6">
+                            <div className="flex justify-center md:block">
+                                <img
+                                    src={doctor.avatarUrl}
+                                    alt="Doctor Avatar"
+                                    className="w-40 h-40 object-cover rounded-full border-4 border-blue-500 shadow-md"
+                                />
+                            </div>
 
-                <div className="min-h-screen bg-main p-6">
-                    <div className="mt-4 flex flex-col md:flex-row gap-6">
-                        <div className="flex justify-center md:block">
-                            <img
-                                src={doctor.avatarUrl}
-                                alt="Doctor Avatar"
-                                className="w-40 h-40 object-cover rounded-full border-4 border-blue-500 shadow-md"
-                            />
+                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                                <div><span className="font-semibold">Mã số bác sĩ:</span> {doctor.id}</div>
+                                <div><span className="font-semibold">Email:</span> <strong>{doctor.email}</strong></div>
+                                <div><span className="font-semibold">Tên:</span> <strong>{doctor.name}</strong></div>
+                                <div><span className="font-semibold">Chuyên khoa:</span> {doctor.medicalSpecialtyId}</div>
+                                <div><span className="font-semibold">Số điện thoại:</span> {doctor.phone}</div>
+                                <div><span className="font-semibold">Username:</span> <strong>{doctor?.account?.username}</strong></div>
+                            </div>
                         </div>
 
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                            <div><span className="font-semibold">Mã số bác sĩ:</span> {doctor.id}</div>
-                            <div><span className="font-semibold">Email:</span> <strong>{doctor.email}</strong></div>
-                            <div><span className="font-semibold">Tên:</span> <strong>{doctor.name}</strong></div>
-                            <div><span className="font-semibold">Chuyên khoa:</span> {doctor.medicalSpecialtyId}</div>
-                            <div><span className="font-semibold">Số điện thoại:</span> {doctor.phone}</div>
-                            <div><span className="font-semibold">Username:</span> <strong>{doctor?.account?.username}</strong></div>
+                        <div className="mt-6">
+                            <h3 className="font-semibold text-gray-800 mb-2">Mô tả</h3>
+                            <ul className="list-disc list-inside text-gray-700 space-y-1">
+                                {doctor.education?.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
                         </div>
-                    </div>
 
-                    <div className="mt-6">
-                        <h3 className="font-semibold text-gray-800 mb-2">Mô tả</h3>
-                        <ul className="list-disc list-inside text-gray-700 space-y-1">
-                            {doctor.education?.map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                        </ul>
-                    </div>
+                        <div className="mt-6">
+                            <h3 className="font-semibold text-gray-800 mb-2">Quá trình công tác</h3>
+                            <ul className="list-disc list-inside text-gray-700 space-y-1">
+                                {doctor.experience?.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
 
-                    <div className="mt-6">
-                        <h3 className="font-semibold text-gray-800 mb-2">Quá trình công tác</h3>
-                        <ul className="list-disc list-inside text-gray-700 space-y-1">
-                            {doctor.experience?.map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                        </ul>
-                    </div>
+                        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700">
+                            <div><span className="font-semibold">Trạng thái:</span> <span className="text-green-600">{doctor.status}</span></div>
+                            <div><span className="font-semibold">Vai trò:</span> {doctor?.account?.role?.name}</div>
+                            <div><span className="font-semibold">Khởi tạo:</span> {formatDate(doctor.createdAt)}</div>
+                            <div><span className="font-semibold">Cập nhật lần cuối:</span> {doctor.updatedAt}</div>
+                        </div>
 
-                    <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700">
-                        <div><span className="font-semibold">Trạng thái:</span> <span className="text-green-600">{doctor.status}</span></div>
-                        <div><span className="font-semibold">Vai trò:</span> {doctor?.account?.role?.name}</div>
-                        <div><span className="font-semibold">Khởi tạo:</span> {formatDate(doctor.createdAt)}</div>
-                        <div><span className="font-semibold">Cập nhật lần cuối:</span> {doctor.updatedAt}</div>
-                    </div>
-
-                    <div className="mt-6 text-right">
-                        <button
-                            onClick={() => navigate('/profile/edit')}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                        >
-                            Cập nhật thông tin
-                        </button>
-                    </div>
-                </div>
+                        <div className="mt-6 text-right">
+                            <button
+                                onClick={() => navigate('/profile/edit')}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                            >
+                                Cập nhật thông tin
+                            </button>
+                        </div>
+                    </div>)}
             </div>
         </ClippedDrawer>
     );

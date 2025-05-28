@@ -1,45 +1,43 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { fetchAllSpecialtyManager, updateSpecialty } from '../util/specialtyApi';
 
 const SpecialtyEdit = () => {
     const navigate = useNavigate();
-
+    const { id } = useParams();
     const [specialty, setSpecialty] = useState({
-        id: 'MS01',
-        name: 'Tim mạch',
-        description:
-            'Khám và điều trị các bệnh lý liên quan đến tim (Cardiology - Heart-related diseases)',
+        id: '',
+        name: '',
+        description: '',
         status: 'ACTIVE',
-        doctors: ['Dr. Nguyễn Văn A', 'Dr. Trần Thị B'],
     });
-
-    const allDoctors = [
-        'Dr. Nguyễn Văn A',
-        'Dr. Trần Thị B',
-        'Dr. Lê Văn C',
-        'Dr. Phạm Thị D',
-    ];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setSpecialty((prev) => ({ ...prev, [name]: value }));
     };
-
-    const handleDoctorToggle = (doctor) => {
-        setSpecialty((prev) => {
-            const exists = prev.doctors.includes(doctor);
-            const updatedDoctors = exists
-                ? prev.doctors.filter((d) => d !== doctor)
-                : [...prev.doctors, doctor];
-            return { ...prev, doctors: updatedDoctors };
-        });
-    };
-
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        const fetchSp = async () => {
+            try {
+                const sp = await fetchAllSpecialtyManager();
+                const target = sp.find(c => c.id === id);
+                if (target) setSpecialty(target);
+            } catch (error) {
+                console.log('Lỗi', error);
+            }
+        }
+        fetchSp();
+    }, [id]);
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Cập nhật chuyên khoa:', specialty);
-        navigate('/specialty');
+        try {
+            await updateSpecialty(specialty);
+            alert('Đã lưu thay đổi!');
+            navigate('/specialty');
+        } catch (error) {
+            alert("Cập nhật thất bại: " + error.message);
+        }
     };
 
     return (
@@ -76,7 +74,7 @@ const SpecialtyEdit = () => {
                         <div>
                             <label
                                 htmlFor="id"
-                                className="block text-sm font-medium text-gray-700 mb-1"
+                                className="block text-sm font-medium mb-1"
                             >
                                 Mã chuyên khoa:
                             </label>
@@ -86,14 +84,14 @@ const SpecialtyEdit = () => {
                                 name="id"
                                 value={specialty.id}
                                 readOnly
-                                className="outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
+                                className="text-sm outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
                             />
                         </div>
 
                         <div>
                             <label
                                 htmlFor="name"
-                                className="block text-sm font-medium text-gray-700 mb-1"
+                                className="block text-sm font-medium mb-1"
                             >
                                 Tên chuyên khoa:
                             </label>
@@ -103,14 +101,14 @@ const SpecialtyEdit = () => {
                                 name="name"
                                 value={specialty.name}
                                 onChange={handleChange}
-                                className="outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
+                                className="text-sm outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
                             />
                         </div>
 
                         <div className="md:col-span-2">
                             <label
                                 htmlFor="description"
-                                className="block text-sm font-medium text-gray-700 mb-1"
+                                className="block text-sm font-medium mb-1"
                             >
                                 Mô tả:
                             </label>
@@ -120,14 +118,14 @@ const SpecialtyEdit = () => {
                                 value={specialty.description}
                                 onChange={handleChange}
                                 rows={4}
-                                className="outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
+                                className="text-sm outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
                             />
                         </div>
 
-                        <div>
+                        <div className='flex space-x-4 items-center text-center'>
                             <label
                                 htmlFor="status"
-                                className="block text-sm font-medium text-gray-700 mb-1"
+                                className="block text-sm font-medium"
                             >
                                 Trạng thái:
                             </label>
@@ -136,33 +134,11 @@ const SpecialtyEdit = () => {
                                 name="status"
                                 value={specialty.status}
                                 onChange={handleChange}
-                                className="outline-none mt-1 block w-full rounded border border-gray-300 bg-gray-100 px-3 py-2 shadow-sm"
+                                className="text-sm outline-none block rounded border border-gray-300 bg-gray-100 p-2 shadow-sm"
                             >
                                 <option value="ACTIVE">Hoạt động</option>
                                 <option value="DELETING">Tạm dừng</option>
                             </select>
-                        </div>
-
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Bác sĩ thuộc chuyên khoa:
-                            </label>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                {allDoctors.map((doctor, idx) => (
-                                    <label
-                                        key={idx}
-                                        className="flex items-center space-x-2 cursor-pointer select-none"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={specialty.doctors.includes(doctor)}
-                                            onChange={() => handleDoctorToggle(doctor)}
-                                            className="cursor-pointer"
-                                        />
-                                        <span className="text-gray-900">{doctor}</span>
-                                    </label>
-                                ))}
-                            </div>
                         </div>
 
                         <div className="md:col-span-2 flex space-x-4 pt-4">

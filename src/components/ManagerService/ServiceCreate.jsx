@@ -1,46 +1,52 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
+import { addService } from '../util/serviceApi';
+import { fetchAllSpecialtyManager } from '../util/specialtyApi';
 
 const ServiceCreate = () => {
     const navigate = useNavigate();
-
+    const [specialties, setSpecialties] = useState([]);
     const [service, setService] = useState({
         name: '',
         description: '',
-        specialty: '',
-        status: 'active',
+        medicalSpecialtyId: '',
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString(),
         images: [''],
     });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setService(prev => ({ ...prev, [name]: value }));
+        setService(prev => ({
+            ...prev,
+            [name]: value,
+        }));
     };
-
-    const handleImageChange = (index, value) => {
-        const updatedImages = [...service.images];
-        updatedImages[index] = value;
-        setService(prev => ({ ...prev, images: updatedImages }));
-    };
-
-    const handleAddImage = () => {
-        setService(prev => ({ ...prev, images: [...prev.images, ''] }));
-    };
-
-    const handleRemoveImage = (index) => {
-        const updatedImages = [...service.images];
-        updatedImages.splice(index, 1);
-        setService(prev => ({ ...prev, images: updatedImages }));
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Dịch vụ mới:", service);
-        alert("Đã thêm dịch vụ thành công!");
-        navigate("/service");
+        try {
+            const result = await addService({
+                ...service,
+                createdAt: new Date().toISOString(),
+            });
+            alert(result.message || 'Tạo dịch vụ thành công!');
+            navigate('/service');
+        } catch (error) {
+            alert(`Lỗi: ${error.message}`);
+        }
     };
-
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await fetchAllSpecialtyManager();
+                setSpecialties(data);
+            } catch (error) {
+                console.error("Không thể tải chuyên khoa.");
+            }
+        };
+        fetchData();
+    }, []);
     return (
         <ClippedDrawer>
             <div>
@@ -54,104 +60,75 @@ const ServiceCreate = () => {
                     </div>
                     <h2 className="text-xl font-semibold p-4">Thêm dịch vụ</h2>
                 </div>
-
-                <form onSubmit={handleSubmit} className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
+                    <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
+                        <p className="font-semibold text-center">Ảnh dịch vụ</p>
+                    </div>
+                    <form onSubmit={handleSubmit} className="w-full md:w-2/3 bg-white rounded shadow p-6 gap-6">
+                        <p className="font-semibold text-center">Thông tin dịch vụ</p>
                         <div className="space-y-4 col-span-1">
-                            <div>
-                                <label className="block font-semibold mb-1">Tên dịch vụ</label>
+                            <div className='flex space-x-4  items-center text-center'>
+                                <label className="block text-sm font-medium">Tên dịch vụ</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={service.name}
                                     onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded outline-none"
-                                    required
+                                    className="outline-none mt-1 block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
 
-                            <div>
-                                <label className="block font-semibold mb-1">Chuyên khoa</label>
-                                <input
-                                    type="text"
-                                    name="specialty"
-                                    value={service.specialty}
+                            <div className='flex space-x-4 items-center text-center'>
+                                <label className="block text-sm font-medium">Chuyên khoa</label>
+                                <select
+                                    name="medicalSpecialtyId"
+                                    value={service.medicalSpecialtyId}
                                     onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded outline-none"
+                                    className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                     required
-                                />
+                                >
+                                    <option value="">Chọn chuyên khoa</option>
+                                    {specialties.map((spec) => (
+                                        <option key={spec.id} value={spec.id}>
+                                            {spec.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
-
-                            <div>
-                                <label className="block font-semibold mb-1">Trạng thái</label>
+                            <div className='flex space-x-4 items-center text-center'>
+                                <label className="block text-sm font-medium">Trạng thái</label>
                                 <select
                                     name="status"
                                     value={service.status}
                                     onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded outline-none"
+                                    disabled
+                                    className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 >
-                                    <option value="active">Hoạt động</option>
-                                    <option value="pause">Tạm ngừng</option>
-                                    <option value="inactive">Không hoạt động</option>
+                                    <option value="ACTIVE">Hoạt động</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label className="block font-semibold mb-1">Mô tả</label>
+                                <label className="block text-sm font-medium ">Mô tả</label>
                                 <textarea
                                     name="description"
                                     value={service.description}
                                     onChange={handleChange}
-                                    className="w-full border px-3 py-2 rounded h-32 outline-none"
+                                    className="text-sm outline-none mt-1 block w-full rounded border-gray-300 shadow-sm h-32 focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
-
-                            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                                Thêm dịch vụ
-                            </button>
-                        </div>
-
-                        <div className="col-span-2">
-                            <p className="font-semibold text-lg mb-2">Hình ảnh</p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {service.images.map((img, index) => (
-                                    <div key={index}>
-                                        {img && (
-                                            <img
-                                                src={img}
-                                                alt={`Hình ${index + 1}`}
-                                                className="w-full h-40 object-cover rounded shadow mb-2"
-                                            />
-                                        )}
-                                        <div className="flex space-x-2">
-                                            <input
-                                                type="text"
-                                                value={img}
-                                                onChange={(e) => handleImageChange(index, e.target.value)}
-                                                className="w-full border px-3 py-2 rounded outline-none"
-                                                placeholder="Dán link ảnh..."
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => handleRemoveImage(index)}
-                                                className="bg-red-500 text-white px-2 rounded hover:bg-red-600"
-                                            >
-                                                Xoá
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="md:col-span-2 flex justify-end">
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                                    Thêm dịch vụ
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={handleAddImage}
-                                className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            >
-                                + Thêm ảnh
-                            </button>
+
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+
             </div>
         </ClippedDrawer>
     );

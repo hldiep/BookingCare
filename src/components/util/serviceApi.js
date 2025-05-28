@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_URL = `/api/v1/p/services`;
+const API_URL = `/api/v1/m/services`;
 export const fetchAllServices = async () => {
     try {
-        const response = await axios.get(`${API_URL}/active`, {
+        const response = await axios.get('/api/v1/p/services/active', {
             headers: {
                 // Authorization: `Bearer ${token}`,
             },
@@ -17,7 +17,7 @@ export const fetchAllServices = async () => {
 export const fetchAllServicesManager = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/v1/m/services/all', {
+        const response = await axios.get(`${API_URL}/all`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -29,42 +29,57 @@ export const fetchAllServicesManager = async () => {
     }
 }
 
-export const updateService = async (serviceId, serviceData) => {
+export const updateService = async (serviceData) => {
     try {
-        const response = await axios.put(`${API_URL}/update/${serviceId}`, serviceData, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/update`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify(serviceData),
         });
-        return response.data;
+        return response.json();
     } catch (error) {
         console.error("Lỗi khi cập nhật dịch vụ:", error);
         throw error.response?.data || { message: 'Lỗi không xác định' };
     }
 };
 
-export const fetchServiceById = async (serviceId) => {
-    try {
-        const response = await axios.get(`${API_URL}/${serviceId}`);
-        return response.data.data;
-    } catch (error) {
-        console.error('Lỗi khi tải chi tiết dịch vụ:', error);
-        throw error;
-    }
-};
-
 export const addService = async (serviceData) => {
-    const response = await axios.get(`${API_URL}/add`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(serviceData),
-    });
-    if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || 'Lỗi khi thêm dịch vụ');
-    }
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(serviceData),
+        })
+        const data = await response.json();
+        if (!response.ok || data.statusCode !== 201) {
+            console.error('Lỗi thêm dịch vụ:', data.message)
+        }
 
-    return response.json();
+        return data;
+    } catch (err) {
+        console.error('Lỗi kết nối đến máy chủ', err);
+    }
+}
+
+export const deleteService = async (id) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(`${API_URL}/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (err) {
+        console.error('Lỗi khi xóa dịch vụ:', err);
+        throw err.response?.data || { message: 'Lỗi không xác định' };
+    }
 }
