@@ -5,6 +5,17 @@ const ServiceAll = () => {
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const spPerPage = 5;
+    const indexOfLast = currentPage * spPerPage;
+    const indexOfFirst = indexOfLast - spPerPage;
+    const current = services.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(services.length / spPerPage);
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
+    };
     useEffect(() => {
         const loadService = async () => {
             try {
@@ -25,6 +36,9 @@ const ServiceAll = () => {
                 <div className='w-full max-w-5xl px-4'>
                     <section className="px-4 bg-white mb-10">
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight text-center uppercase">Các dịch vụ khám tại trung tâm</h2>
+                        <p className="text-lg text-gray-700 text-justify mb-8 leading-relaxed">
+                            Trung tâm cung cấp đa dạng các dịch vụ khám chữa bệnh nhằm đáp ứng nhu cầu chăm sóc sức khỏe toàn diện cho mọi người dân. Từ khám tổng quát, chẩn đoán hình ảnh, đến các dịch vụ chuyên sâu, chúng tôi luôn đặt chất lượng và sự hài lòng của bệnh nhân lên hàng đầu.
+                        </p>
                         {loading ? (
                             <div className="flex justify-center items-center py-10">
                                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
@@ -36,16 +50,16 @@ const ServiceAll = () => {
                                     <div className="text-center text-gray-500 py-8">Không có dịch vụ nào.</div>
                                 ) : (
                                     <div className="max-w-6xl mx-auto space-y-16">
-                                        {services.map((service, index) => (
+                                        {current.map((service, index) => (
                                             <div
                                                 key={index}
                                                 className={`flex rounded-xl shadow-lg bg-gray-100 flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
-                                                    } items-stretch gap-6 h-[320px]`}
+                                                    } items-stretch gap-6 h-[280px]`}
                                             >
                                                 <div className="md:w-1/2 h-full">
                                                     <img
                                                         src={service.image}
-                                                        alt={service.title}
+                                                        alt={service.name}
                                                         className="h-full w-full object-cover rounded-xl shadow-lg"
                                                     />
                                                 </div>
@@ -59,6 +73,22 @@ const ServiceAll = () => {
                                         ))}
                                     </div>
                                 )}
+                                <div className="flex flex-col items-center gap-4 mt-10">
+                                    <div className="flex gap-2 flex-wrap justify-center">
+                                        {Array.from({ length: totalPages }, (_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => handlePageClick(i + 1)}
+                                                className={`px-3 py-1 rounded border ${currentPage === i + 1
+                                                    ? 'bg-blue-500 text-white'
+                                                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    }`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </section>

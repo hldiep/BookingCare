@@ -19,7 +19,7 @@ const Info = () => {
                                     chúng tôi cam kết mang đến dịch vụ y tế chất lượng cao,
                                     chẩn đoán chính xác và điều trị hiệu quả cho từng bệnh nhân.</span>
                             </div>
-                            <img src="https://tamanhhospital.vn/wp-content/uploads/2020/12/banner-chuyen-gia-bac-si-mb.jpg" alt="" className='w-[500px] h-[300px] hover:scale-105 transition-all duration-300' />
+                            <img src="https://tamanhhospital.vn/wp-content/uploads/2020/12/banner-chuyen-gia-bac-si-mb.jpg" alt="" className='w-[500px] h-[300px] hover:scale-[1.01] transition-all duration-300' />
                         </div>
                     </div>
                     <div className='p-10'>
@@ -34,12 +34,12 @@ const Info = () => {
                                     tuyệt đối cho người bệnh.</span>
                             </div>
                             <div >
-                                <img src="https://media.vietnamplus.vn/images/7255a701687d11cb8c6bbc58a6c807856d8ae68b6bdc79bb27649442b6477075fcf6a5944edcf4bea8896c3832fcb72e120d687809679afc54b8bc3cc131d938/1-7297.jpg.webp" alt="" className='w-[400px] h-[250px] hover:scale-105 transition-all duration-300' />
+                                <img src="https://media.vietnamplus.vn/images/7255a701687d11cb8c6bbc58a6c807856d8ae68b6bdc79bb27649442b6477075fcf6a5944edcf4bea8896c3832fcb72e120d687809679afc54b8bc3cc131d938/1-7297.jpg.webp" alt="" className='w-[400px] h-[250px] hover:scale-[1.01] transition-all duration-300' />
 
                             </div>
                             <div className='space-y-4'>
-                                <img src="https://image.tienphong.vn/600x315/Uploaded/2025/slkbvun/2025_03_31/bm2-8228-9588.jpg" alt="" className='w-[300px] h-[150px] hover:scale-105 transition-all duration-300' />
-                                <img src="https://image.baodauthau.vn/w750/Uploaded/2025/qjmfn/2024_04_16/01-1876.jpg" alt="" className='w-[300px] h-[150px] hover:scale-105 transition-all duration-300' />
+                                <img src="https://image.tienphong.vn/600x315/Uploaded/2025/slkbvun/2025_03_31/bm2-8228-9588.jpg" alt="" className='w-[300px] h-[150px] hover:scale-[1.01] transition-all duration-300' />
+                                <img src="https://image.baodauthau.vn/w750/Uploaded/2025/qjmfn/2024_04_16/01-1876.jpg" alt="" className='w-[300px] h-[150px] hover:scale-[1.01] transition-all duration-300' />
                             </div>
                         </div>
                     </div>
@@ -47,7 +47,7 @@ const Info = () => {
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight">Kinh nghiệm chuyên môn</h2>
                         <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-start'>
                             <div>
-                                <img src="https://cdn.thuvienphapluat.vn/uploads/laodongtienluong/20230301/LT/bs-1.jpg" alt="" className='w-[300px] h-[150px] hover:scale-105 transition-all duration-300' />
+                                <img src="https://cdn.thuvienphapluat.vn/uploads/laodongtienluong/20230301/LT/bs-1.jpg" alt="" className='w-[300px] h-[150px] hover:scale-[1.01] transition-all duration-300' />
                             </div>
                             <div className='md:w-1/2 text-justify'>
                                 <span>Đội ngũ bác sĩ tại Trung tâm Khám bệnh đều là những chuyên gia có trình độ chuyên môn cao,

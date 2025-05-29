@@ -62,7 +62,7 @@ function App() {
           <Route path="chuyen-khoa" element={<DepartmentPage />} />
           <Route path="gioi-thieu" element={<Info />} />
           <Route path="bac-si" element={<Doctors />} />
-          <Route path="bac-si/detail" element={<DoctorDetail />} />
+          <Route path="bac-si/detail/:id" element={<DoctorDetail />} />
           <Route path="dat-lich" element={<AppointmentPage />} />
           <Route path="appointment-success" element={<AppointmentSuccess />} />
         </Route>
@@ -99,7 +99,7 @@ function App() {
         <Route path="appointment/detail" element={<AppointmentDetail />} />
 
         <Route path="schedule" element={<ScheduleManagement />} />
-        <Route path="schedule/detail" element={<ScheduleDetail />} />
+        <Route path="schedule/detail/:id" element={<ScheduleDetail />} />
 
         <Route path="profile" element={<DoctorProfile />} />
         <Route path="profile/edit" element={<ProfileEdit />} />

@@ -1,55 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchDoctorById, fetchDoctorByIdManager, updateDoctor } from '../util/doctorApi';
+import { fetchDoctorByIdManager, updateDoctor } from '../util/doctorApi';
+import { fetchAllSpecialtyManager } from '../util/specialtyApi';
 
 const DoctorEdit = () => {
     const navigate = useNavigate();
-    const { doctorId } = useParams();
-    const [loading, setLoading] = useState(true);
-    const [updating, setUpdating] = useState(false);
+    const { id } = useParams();
+    const [specialties, setSpecialties] = useState([]);
     const [doctor, setDoctor] = useState({
         name: '',
-        gender: 'male',
+        gender: true,
         birthday: '',
-        specialty: '',
+        medicalSpecialtyId: '',
         phone: '',
         email: '',
         address: '',
+        status: '',
         image: '',
+        createdAt: new Date().toISOString(),
     });
 
     useEffect(() => {
         const loadDoctor = async () => {
             try {
-                setLoading(true);
-                const data = await fetchDoctorByIdManager(doctorId);
+                const data = await fetchDoctorByIdManager(id);
                 setDoctor(data);
             } catch (error) {
                 console.error("Không thể tải thông tin bác sĩ:", error);
-            } finally {
-                setLoading(false);
+            }
+        };
+
+        const loadSpecialties = async () => {
+            try {
+                const response = await fetchAllSpecialtyManager(); // Gọi API lấy danh sách chuyên khoa
+                setSpecialties(response);
+            } catch (error) {
+                console.error("Không thể tải danh sách chuyên khoa:", error);
             }
         };
         loadDoctor();
-    }, [doctorId]);
+        loadSpecialties();
+    }, [id]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setDoctor({ ...doctor, [name]: value });
+        let newValue = value;
+
+        if (name === 'gender') {
+            newValue = value === 'true';
+        }
+
+        setDoctor({ ...doctor, [name]: newValue });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setUpdating(true);
         try {
-            await updateDoctor(doctorId, doctor);
+            await updateDoctor(doctor);
             alert("Cập nhật bác sĩ thành công!");
             navigate("/doctor");
         } catch (error) {
-            alert("Lỗi khi cập nhật bác sĩ");
-            console.error(error);
-        } finally {
-            setUpdating(false);
+            alert("Lỗi khi cập nhật bác sĩ: " + error.message);
         }
     };
 
@@ -70,129 +82,135 @@ const DoctorEdit = () => {
                     </div>
                     <h2 className="text-xl font-semibold p-4">Chỉnh sửa bác sĩ</h2>
                 </div>
-                {loading ? (
-                    <div className="flex justify-center items-center h-screen">
-                        <div className="text-gray-600 text-lg">Đang tải thông tin bác sĩ...</div>
-                    </div>
-                ) : (
-                    <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
 
-                        <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
-                            <img
-                                src={doctor.image}
-                                alt="Avatar bác sĩ"
-                                className="w-32 h-32 object-cover rounded-full border"
+                <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
+                    <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
+                        <img
+                            src=''
+                            alt="Avatar bác sĩ"
+                            className="w-32 h-32 object-cover rounded-full border"
+                        />
+                        <div className="mt-4 font-semibold text-lg">BS. {doctor.name}</div>
+                    </div>
+
+                    <form
+                        onSubmit={handleSubmit}
+                        className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+                    >
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Họ tên</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={doctor.name}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
                             />
-                            <div className="mt-4 font-semibold text-lg">BS. {doctor.name}</div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Chuyên khoa</label>
+                            <select
+                                name="medicalSpecialtyId"
+                                value={doctor.medicalSpecialtyId}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            >
+                                <option value="">Chọn chuyên khoa</option>
+                                {specialties.map((specialty) => (
+                                    <option key={specialty.id} value={specialty.id}>
+                                        {specialty.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Giới tính</label>
+                            <select
+                                name="gender"
+                                value={doctor.gender}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            >
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        {/* <div>
+                            <label className="block text-sm font-medium text-gray-700">Ngày sinh</label>
+                            <input
+                                type="date"
+                                name="birthday"
+                                value={doctor.birthday}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
+                        </div> */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={doctor.phone}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={doctor.email}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
+                        </div>
+                        <div className='md:col-span-2 flex space-x-4 items-center text-center'>
+                            <label className="block font-medium text-sm">Trạng thái</label>
+                            <select
+                                name="status"
+                                value={doctor.status}
+                                onChange={handleChange}
+                                className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="ACTIVE">Hoạt động</option>
+                                <option value="DELETED">Tạm ngừng</option>
+                            </select>
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
+                            <input
+                                type="text"
+                                name="address"
+                                value={doctor.address}
+                                onChange={handleChange}
+                                required
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
+                        </div>
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700">Link ảnh đại diện</label>
+                            <input
+                                type="text"
+                                name="image"
+                                value={doctor.image}
+                                onChange={handleChange}
+                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                            />
                         </div>
 
-                        <form
-                            onSubmit={handleSubmit}
-                            className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
-                        >
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Họ tên</label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={doctor.name}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Chuyên khoa</label>
-                                <input
-                                    type="text"
-                                    name="specialty"
-                                    value={doctor.specialty}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Giới tính</label>
-                                <select
-                                    name="gender"
-                                    value={doctor.gender}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                >
-                                    <option value="male">Nam</option>
-                                    <option value="female">Nữ</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Ngày sinh</label>
-                                <input
-                                    type="date"
-                                    name="birthday"
-                                    value={doctor.birthday}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
-                                <input
-                                    type="text"
-                                    name="phone"
-                                    value={doctor.phone}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={doctor.email}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
-                                <input
-                                    type="text"
-                                    name="address"
-                                    value={doctor.address}
-                                    onChange={handleChange}
-                                    required
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700">Link ảnh đại diện</label>
-                                <input
-                                    type="text"
-                                    name="image"
-                                    value={doctor.image}
-                                    onChange={handleChange}
-                                    className="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                disabled={updating}
-                                className={`px-4 py-2 rounded transition ${updating ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                                    } text-white`}
-                            >
-                                {updating ? 'Đang lưu...' : 'Lưu thay đổi'}
-                            </button>
-                        </form>
-                    </div>
-                )}
-
+                        <div className="md:col-span-2 flex justify-end">
+                            <button type="submit" className=" py-2 bg-blue-600 text-white px-4 rounded">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </ClippedDrawer>
+        </ClippedDrawer >
     );
 };
 

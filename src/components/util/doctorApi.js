@@ -55,44 +55,61 @@ export const fetchAllDoctorsManager = async () => {
         }
     }
 };
-export const updateDoctor = async (doctorId, doctorData) => {
+export const updateDoctor = async (doctorData) => {
     try {
-        const response = await axios.put(`${API_URL}/update/${doctorId}`, doctorData, {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_URL}/update`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify(doctorData),
         });
-        return response.data;
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Lỗi khi cập nhật bác sĩ');
+        }
+
+        return await response.json();
     } catch (error) {
         console.error("Lỗi khi cập nhật bác sĩ:", error);
-        throw error.response?.data || { message: 'Lỗi không xác định' };
+        throw error;
     }
 };
 
 export const fetchDoctorByIdManager = async (id) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/${id}`, {
+        const url = `${API_URL}/${id}`;
+        console.log('Fetching doctor by ID:', url);
+
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
 
+        console.log('Status:', response.status);
+        const text = await response.text();
+        console.log('Response body:', text);
+
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(errorText || 'Không tìm thấy bác sĩ');
+            throw new Error(text || 'Không tìm thấy bác sĩ');
         }
-        const json = await response.json();
+
+        const json = JSON.parse(text);
         return json.data;
     } catch (error) {
-        console.error('Lỗi khi gọi API fetchDoctorById:', error);
+        console.error('Lỗi khi gọi API fetchDoctorByIdManager:', error);
         throw new Error(error.message || 'Đã xảy ra lỗi khi lấy thông tin bác sĩ');
     }
 };
+
 export const fetchDoctorById = async (id) => {
     try {
-
         const response = await fetch(`/api/v1/p/doctors/${id}`, {
             headers: {
                 //'Authorization': `Bearer ${token}`,
@@ -118,16 +135,16 @@ export const addDoctor = async (doctorData) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: token ? `Bearer ${token}` : '',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(doctorData),
         });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Lỗi khi thêm bác sĩ');
+        const data = await response.json();
+        if (!response.ok || data.statusCode !== 201) {
+            console.error('Lỗi thêm bác sĩ:', data.message)
         }
-        const result = await response.json();
-        return result;
+
+        return data;
     } catch (error) {
         console.error('addDoctor error:', error);
         throw error;
@@ -137,25 +154,27 @@ export const addDoctor = async (doctorData) => {
 export const deleteDoctor = async (id) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/delete/${id}`, {
-            method: 'DELETE',
+        const response = await axios.delete(`${API_URL}/delete/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
         });
-
         if (response.ok) {
             console.log('Xóa thành công');
         } else {
             console.error('Xóa thất bại');
         }
+        return response.data;
     } catch (error) {
         console.error('Lỗi khi gọi API:', error);
     }
 }
-export const fetchDoctorCount = async () => {
-    try {
-        const response = await axios.get(`${API_URL}/count`);
-        return response.data.data;
-    } catch (err) {
-        console.error("Lỗi lấy số lượng bác sĩ:", err);
-        return 0;
-    }
-}
+// export const fetchDoctorCount = async () => {
+//     try {
+//         const response = await axios.get(`${API_URL}/count`);
+//         return response.data.data;
+//     } catch (err) {
+//         console.error("Lỗi lấy số lượng bác sĩ:", err);
+//         return 0;
+//     }
+// }

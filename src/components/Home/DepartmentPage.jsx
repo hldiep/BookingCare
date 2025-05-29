@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 import { fetchAllDoctors } from '../util/doctorApi';
 
@@ -6,6 +6,17 @@ const DepartmentPage = () => {
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const specialtyPerPage = 5;
+    const indexOfLast = currentPage * specialtyPerPage;
+    const indexOfFirst = indexOfLast - specialtyPerPage;
+    const current = specialties.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(specialties.length / specialtyPerPage);
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
+    };
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -41,6 +52,9 @@ const DepartmentPage = () => {
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-center uppercase text-highlight">
                             Giới thiệu chuyên khoa
                         </h2>
+                        <p className="text-lg text-gray-700 text-justify mb-8 leading-relaxed">
+                            Chuyên khoa là các bộ phận chuyên sâu trong bệnh viện, tập trung vào các lĩnh vực y học cụ thể như nội khoa, ngoại khoa, tai mũi họng, da liễu và nhiều chuyên ngành khác. Mỗi chuyên khoa được đảm nhiệm bởi đội ngũ bác sĩ có chuyên môn và kinh nghiệm sâu rộng, nhằm đảm bảo việc chẩn đoán và điều trị hiệu quả cho bệnh nhân.
+                        </p>
                         {loading ? (
                             <div className="flex justify-center items-center py-10">
                                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
@@ -52,11 +66,11 @@ const DepartmentPage = () => {
                                     <div className="text-center text-gray-500 py-8">Không có chuyên khoa nào.</div>
                                 ) : (
                                     <div className="max-w-6xl mx-auto space-y-16">
-                                        {specialties.map((sp, index) => (
+                                        {current.map((sp, index) => (
                                             <div
                                                 key={index}
                                                 className={`flex rounded-xl shadow-lg bg-gray-100 flex-col md:flex-row ${index % 2 !== 0 ? "md:flex-row-reverse" : ""
-                                                    } items-stretch gap-6 h-[320px]`}
+                                                    } items-stretch gap-6 h-[280px]`}
                                             >
                                                 <div className="md:w-1/2">
                                                     <img
@@ -86,6 +100,22 @@ const DepartmentPage = () => {
                                     </div>
 
                                 )}
+                                <div className="flex flex-col items-center gap-4 mt-10">
+                                    <div className="flex gap-2 flex-wrap justify-center">
+                                        {Array.from({ length: totalPages }, (_, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => handlePageClick(i + 1)}
+                                                className={`px-3 py-1 rounded border ${currentPage === i + 1
+                                                    ? 'bg-blue-500 text-white'
+                                                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                                                    }`}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </section>

@@ -9,7 +9,7 @@ const Doctors = () => {
     const [specialty, setSpecialty] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const doctorsPerPage = 5;
+    const doctorsPerPage = 4;
     const sectionRef = useRef(null);
 
     // useEffect(() => {
@@ -66,6 +66,16 @@ const Doctors = () => {
         <div className="min-h-screen pt-28 bg-main flex justify-center">
             <div className='container flex justify-center pt-20 p-5'>
                 <div className='w-full max-w-5xl px-4'>
+                    <section className="bg-gradient-to-r from-blue-100 to-white px-4 py-10 rounded-lg shadow-md mb-10">
+                        <div className="text-center max-w-4xl mx-auto">
+                            <h1 className="text-4xl font-bold text-logo mb-4 font-georgia">Đội ngũ bác sĩ tận tâm và chuyên nghiệp</h1>
+                            <p className="text-lg text-gray-700 leading-relaxed">
+                                Chúng tôi tự hào mang đến cho bạn đội ngũ bác sĩ giỏi chuyên môn, giàu kinh nghiệm và luôn đặt sức khỏe của bạn lên hàng đầu.
+                                Tại đây, bạn có thể dễ dàng tìm kiếm thông tin và lựa chọn bác sĩ phù hợp với nhu cầu khám chữa bệnh của mình.
+                            </p>
+                        </div>
+                    </section>
+
                     <section ref={sectionRef} className="px-4 bg-white mb-10">
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-center uppercase text-highlight">
                             Danh sách bác sĩ
@@ -81,12 +91,12 @@ const Doctors = () => {
                                     <div className="text-center text-gray-500 py-8">Không có bác sĩ nào.</div>
                                 ) : (
                                     <>
-                                        <div className="max-w-6xl mx-auto space-y-16">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {currentDoctors.map((doc, index) => (
                                                 <div
                                                     key={index}
                                                     onClick={() => navigate(`/bac-si/detail/${doc.id}`)}
-                                                    className="flex rounded-xl shadow-lg bg-gray-100 flex-col md:flex-row items-stretch gap-0 h-[200px] overflow-hidden cursor-pointer"
+                                                    className="flex rounded-xl shadow-xl bg-gray-100 flex-col md:flex-row items-stretch gap-0 h-[200px] overflow-hidden cursor-pointer hover:shadow-lg transition duration-300"
                                                 >
                                                     <div className="md:w-1/4 w-full h-full">
                                                         <img
@@ -123,6 +133,20 @@ const Doctors = () => {
                                 )}
                             </div>
                         )}
+                    </section>
+                    <section className="bg-gradient-to-r from-blue-50 via-white to-blue-50 px-6 py-14 rounded-xl shadow-lg mb-12 border border-blue-100">
+                        <div className="max-w-5xl mx-auto text-center space-y-6">
+                            <h1 className="text-3xl font-bold text-logo ">Đội ngũ bác sĩ hàng đầu</h1>
+                            <p className=" text-gray-700 leading-relaxed">
+                                Với sứ mệnh chăm sóc sức khỏe toàn diện cho cộng đồng, chúng tôi quy tụ đội ngũ bác sĩ có trình độ chuyên môn cao,
+                                nhiều năm kinh nghiệm trong nghề, luôn tận tâm với từng bệnh nhân. Họ không chỉ là những chuyên gia y tế,
+                                mà còn là người bạn đồng hành trên hành trình phục hồi sức khỏe của bạn.
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                Mỗi bác sĩ trong danh sách dưới đây đều được chọn lọc kỹ lưỡng, có thông tin minh bạch về chuyên môn và kinh nghiệm.
+                                Bạn có thể dễ dàng tìm hiểu và đặt lịch hẹn khám bệnh một cách thuận tiện, nhanh chóng.
+                            </p>
+                        </div>
                     </section>
                 </div>
             </div>

@@ -1,13 +1,32 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ClippedDrawer from './DashboardLayoutBasic';
-import { fetchDoctorCount } from '../util/doctorApi';
+import { fetchAllDoctors, fetchDoctorCount } from '../util/doctorApi';
+import { fetchAllServices } from '../util/serviceApi';
 
 const Tongquan = () => {
     const navigate = useNavigate();
     const [doctorCount, setDoctorCount] = useState(0);
+    const [serviceCount, setServiceCount] = useState(0);
     useEffect(() => {
-        fetchDoctorCount().then(setDoctorCount);
+        const loadData = async () => {
+            try {
+                const data = await fetchAllDoctors();
+                setDoctorCount(data.length);
+            } catch (err) {
+                console.log('Lỗi tải danh sách bác sĩ', err);
+            }
+        }
+        const loadData2 = async () => {
+            try {
+                const data = await fetchAllServices();
+                setServiceCount(data.length);
+            } catch (err) {
+                console.log('Lỗi tải danh sách dịch vụ', err);
+            }
+        }
+        loadData();
+        loadData2();
     }, []);
     return (
         <ClippedDrawer>
@@ -29,8 +48,8 @@ const Tongquan = () => {
                             <p className="text-xl font-bold">{doctorCount}</p>
                         </div>
                         <div className="p-4 border-l-4 border-red-600 bg-white rounded-md shadow">
-                            <p className="text-sm">Số bệnh nhân hôm nay</p>
-                            <p className="text-xl font-bold">12</p>
+                            <p className="text-sm">Số lượng dịch vụ</p>
+                            <p className="text-xl font-bold">{serviceCount}</p>
                         </div>
                         <div className="p-4 border-l-4 border-green-600 bg-white rounded-md shadow">
                             <p className="text-sm">Tổng lịch hẹn hôm nay</p>

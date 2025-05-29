@@ -1,52 +1,69 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarDays, Eye } from 'lucide-react';
+import { Ban, CalendarDays, CheckCircle, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { fetchAllSchedule, fetchSchdulesByStatus, fetchSchedulesByDoctor } from '../util/scheduleApi';
+import { fetchAllSchedule, fetchSchedulesByDoctor, fetchSchedulesByStatus } from '../util/scheduleApi';
 
 const ScheduleManagement = () => {
     const navigate = useNavigate();
-    // const [schedules] = useState([
-    //     {
-    //         id: 'SCHED016',
-    //         doctorName: 'BS. Nguyễn Văn A',
-    //         clinicName: 'Phòng khám ABC',
-    //         date: '2025-06-04',
-    //         timeStart: '08:00',
-    //         timeEnd: '11:00',
-    //         maxBooking: 10,
-    //         status: 'ACTIVE',
-    //     },
-    //     {
-    //         id: 'SCHED017',
-    //         doctorName: 'BS. Trần Thị B',
-    //         clinicName: 'Phòng khám XYZ',
-    //         date: '2025-06-04',
-    //         timeStart: '09:00',
-    //         timeEnd: '12:00',
-    //         maxBooking: 12,
-    //         status: 'UPCOMING',
-    //     },
-    // ]);
-
     const [schedule, setSchedule] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('');
     const [doctorIdFilter, setDoctorIdFilter] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const schedulePerPage = 10;
+    const indexOfLast = currentPage * schedulePerPage;
+    const indexOfFirst = indexOfLast - schedulePerPage;
+    const current = schedule.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(schedule.length / schedulePerPage);
+
     useEffect(() => {
-        const loadSchedule = async () => {
-            try {
-                const data = await fetchAllSchedule();
-                setSchedule(data);
-            } catch (err) {
-                console.err("Lỗi tải danh sách lịch khám:", err);
+        handleFilter();
+    }, []);
+
+    const handleFilter = async () => {
+        try {
+            setLoading(true);
+            let data = [];
+
+            if (statusFilter) {
+                data = await fetchSchedulesByStatus(statusFilter);
+            } else if (doctorIdFilter) {
+                data = await fetchSchedulesByDoctor(doctorIdFilter);
+            } else {
+                data = await fetchAllSchedule();
             }
-            finally {
-                setLoading(false);
-            }
-        };
-        loadSchedule();
-    })
+
+            setSchedule(data);
+            setCurrentPage(1); // Reset trang khi lọc
+        } catch (err) {
+            console.error("Lỗi khi lọc:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleReset = async () => {
+        try {
+            setLoading(true);
+            const data = await fetchAllSchedule();
+            setSchedule(data);
+            setDoctorIdFilter('');
+            setStatusFilter('');
+            setCurrentPage(1);
+        } catch (e) {
+            console.error("Lỗi tải lại:", e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <ClippedDrawer>
             <div>
@@ -61,17 +78,6 @@ const ScheduleManagement = () => {
                     <h2 className="text-xl font-semibold p-4">Quản lý lịch khám</h2>
                 </div>
                 <div className="p-6 max-w-7xl mx-auto space-y-6 bg-gray-50 min-h-[calc(100vh-80px)]">
-                    {/* <div className="flex flex-col md:flex-row md:items-center gap-4">
-                        <input
-                            type="text"
-                            className="flex-1 border px-3 py-2 rounded-md outline-none"
-                            placeholder="Nhập tìm kiếm..."
-                        />
-                        <div className="flex gap-2">
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
-
-                        </div>
-                    </div> */}
                     <div className="flex flex-col md:flex-row gap-4 items-center">
                         <input
                             type="text"
@@ -85,92 +91,117 @@ const ScheduleManagement = () => {
                             onChange={(e) => setStatusFilter(e.target.value)}
                             className="border px-3 py-2 rounded-md outline-none"
                         >
-                            <option value="">-- Trạng thái --</option>
+                            <option value="">Trạng thái</option>
+                            <option value="PENDING">Pending</option>
                             <option value="ACTIVE">Active</option>
                             <option value="UPCOMING">Upcoming</option>
-                            <option value="CANCELLED">Cancelled</option>
+                            <option value="ONGOING">Ongoing</option>
+                            <option value="PAUSED">Paused</option>
+                            <option value="EXPIRED">Expired</option>
+                            <option value="CANCELED">Canceled</option>
+                            <option value="DELETED">Deleted</option>
                         </select>
                         <button
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                            onClick={async () => {
-                                try {
-                                    setLoading(true);
-                                    let filteredData = [];
-
-                                    if (statusFilter) {
-                                        filteredData = await fetchSchdulesByStatus(statusFilter);
-                                    } else if (doctorIdFilter) {
-                                        filteredData = await fetchSchedulesByDoctor(doctorIdFilter);
-                                    } else {
-                                        filteredData = await fetchAllSchedule();
-                                    }
-
-                                    setSchedule(filteredData);
-                                } catch (err) {
-                                    console.error("Lỗi khi lọc:", err);
-                                } finally {
-                                    setLoading(false);
-                                }
-                            }}
+                            onClick={handleFilter}
                         >
                             Lọc
                         </button>
                         <button
                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                            onClick={async () => {
-                                try {
-                                    setLoading(true);
-                                    const data = await fetchAllSchedule();
-                                    setSchedule(data);
-                                    setDoctorIdFilter('');
-                                    setStatusFilter('');
-                                } catch (e) {
-                                    console.error("Lỗi tải lại:", e);
-                                } finally {
-                                    setLoading(false);
-                                }
-                            }}
+                            onClick={handleReset}
                         >
                             Tải lại
                         </button>
                     </div>
+
+                    {/* Loading */}
                     {loading ? (
-                        <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
+                        <div className="flex justify-center items-center py-10">
+                            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
+                            <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
+                        </div>
                     ) : (
                         <div className="overflow-x-auto bg-white border rounded shadow-sm">
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-gray-100 text-gray-700">
                                     <tr>
-                                        <th className="p-3 border-r w-28">Mã lịch</th>
-                                        <th className="p-3 border-r">Bác sĩ</th>
-                                        <th className="p-3 border-r">Phòng khám</th>
-                                        <th className="p-3 border-r w-32">Ngày</th>
-                                        <th className="p-3 border-r w-20">Giờ bắt đầu</th>
-                                        <th className="p-3 border-r w-20">Giờ kết thúc</th>
-                                        <th className="p-3 border-r w-28">Số lượt tối đa</th>
+                                        <th className="p-3">STT</th>
+                                        <th className="p-3">Bác sĩ</th>
+                                        <th className="p-3">Phòng khám</th>
+                                        <th className="p-3 w-32">Ngày</th>
+                                        <th className="p-3 w-20">Giờ bắt đầu</th>
+                                        <th className="p-3 w-20">Giờ kết thúc</th>
+                                        <th className="p-3 w-28">Số lượt tối đa</th>
+                                        <th className="p-3 w-28">Trạng thái</th>
                                         <th className="p-3 w-32 text-center">Tác vụ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {schedule.length === 0 ? (
                                         <tr>
-                                            <td colSpan="7" className="p-4 text-center text-gray-500">Chưa có lịch trình nào</td>
+                                            <td colSpan="9" className="p-4 text-center text-gray-500">
+                                                Chưa có lịch trình nào
+                                            </td>
                                         </tr>
                                     ) : (
-                                        schedule.map((item) => (
+                                        current.map((item, index) => (
                                             <tr key={item.id} className="border-t hover:bg-gray-50">
-                                                <td className="p-3 border-r font-medium">{item.id}</td>
-                                                <td className="p-3 border-r">{item.doctorName}</td>
-                                                <td className="p-3 border-r">{item.clinicName}</td>
-                                                <td className="p-3 border-r flex items-center gap-1">
+                                                <td className="p-3">{indexOfFirst + index + 1}</td>
+                                                <td className="p-3">{item?.doctor?.name || "Không rõ bác sĩ"}</td>
+                                                <td className="p-3">{item?.clinic?.name || "Không rõ phòng khám"}</td>
+                                                <td className="p-3 flex items-center gap-1">
                                                     <CalendarDays className="w-4 h-4 text-gray-500" /> {item.date}
                                                 </td>
-                                                <td className="p-3 border-r">{item.timeStart}</td>
-                                                <td className="p-3 border-r">{item.timeEnd}</td>
-                                                <td className="p-3 border-r">{item.maxBooking}</td>
+                                                <td className="p-3">{item.timeStart}</td>
+                                                <td className="p-3">{item.timeEnd}</td>
+                                                <td className="p-3">{item.maxBooking}</td>
+                                                <td className="p-3 font-medium">
+                                                    {item.status === 'PENDING' && (
+                                                        <span className="text-yellow-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Chờ duyệt
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'ACTIVE' && (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'UPCOMING' && (
+                                                        <span className="text-cyan-600 flex items-center">
+                                                            <CalendarDays className="w-4 h-4 mr-1" /> Sắp diễn ra
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'ONGOING' && (
+                                                        <span className="text-blue-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Đang diễn ra
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'PAUSED' && (
+                                                        <span className="text-yellow-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'EXPIRED' && (
+                                                        <span className="text-gray-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Hết hạn
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'CANCELED' && (
+                                                        <span className="text-red-500 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Đã hủy
+                                                        </span>
+                                                    )}
+                                                    {item.status === 'DELETED' && (
+                                                        <span className="text-red-700 flex items-center">
+                                                            <Ban className="w-4 h-4 mr-1" /> Đã xóa
+                                                        </span>
+                                                    )}
+                                                </td>
+
                                                 <td className="p-3 text-center space-x-2">
                                                     <button
-                                                        onClick={() => navigate(`/schedule/detail`)}
+                                                        onClick={() => navigate(`/schedule/detail/${item.id}`)}
                                                         className="p-1 border rounded hover:bg-gray-100 inline-flex items-center gap-1 text-blue-600"
                                                         title="Xem chi tiết"
                                                     >
@@ -184,6 +215,24 @@ const ScheduleManagement = () => {
                             </table>
                         </div>
                     )}
+
+                    {/* Pagination */}
+                    <div className="flex flex-col items-center gap-4 mt-10">
+                        <div className="flex gap-2 flex-wrap justify-center">
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => handlePageClick(i + 1)}
+                                    className={`px-3 py-1 rounded border ${currentPage === i + 1
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </ClippedDrawer>

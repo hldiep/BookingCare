@@ -44,7 +44,7 @@ const SectionDoctor = () => {
                                 {doctors.slice(0, 3).map((doctor, index) => (
                                     <div
                                         key={index}
-                                        className="bg-white rounded-lg shadow-md p-4 text-center hover:scale-105 transition-all duration-300"
+                                        className="bg-white rounded-lg shadow-md p-4 text-center hover:scale-[1.02] transition-all duration-300"
                                     >
                                         <img
                                             src={doctor.image}

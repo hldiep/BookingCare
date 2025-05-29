@@ -20,67 +20,70 @@ const DoctorManagement = () => {
     const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
     const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
     const totalPages = Math.ceil(doctors.length / doctorsPerPage);
+    const loadData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setError('Không tìm thấy token.');
+                setLoading(false);
+                return;
+            }
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const user = JSON.parse(atob(base64));
+
+            const extractedRoles = (user?.role || []).map(r =>
+                typeof r === 'object' && r.authority
+                    ? r.authority.replace('ROLE_', '')
+                    : ''
+            );
+            setRoles(extractedRoles);
+
+            let doctorList = [];
+            if (extractedRoles.includes('MANAGER')) {
+                doctorList = await fetchAllDoctorsManager();
+            } else if (extractedRoles.includes('DOCTOR')) {
+                doctorList = await fetchAllDoctors();
+            } else {
+                setError('Tài khoản không hợp lệ.');
+                setLoading(false);
+                return;
+            }
+
+            const specialtyList = await fetchAllSpecialty();
+            const specialtyMap = {};
+            specialtyList.forEach(s => {
+                specialtyMap[s.id] = s.name;
+            });
+
+            setDoctors(doctorList);
+            setSpecialty(specialtyMap);
+        } catch (err) {
+            console.error('Lỗi khi tải dữ liệu:', err);
+            setError('Không thể tải dữ liệu.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadData = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    setError('Không tìm thấy token.');
-                    setLoading(false);
-                    return;
-                }
-                const base64Url = token.split('.')[1];
-                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                const user = JSON.parse(atob(base64));
-
-                const extractedRoles = (user?.role || []).map(r =>
-                    typeof r === 'object' && r.authority
-                        ? r.authority.replace('ROLE_', '')
-                        : ''
-                );
-                setRoles(extractedRoles);
-
-                let doctorList = [];
-                if (extractedRoles.includes('MANAGER')) {
-                    doctorList = await fetchAllDoctorsManager();
-                } else if (extractedRoles.includes('DOCTOR')) {
-                    doctorList = await fetchAllDoctors();
-                } else {
-                    setError('Tài khoản không hợp lệ.');
-                    setLoading(false);
-                    return;
-                }
-
-                const specialtyList = await fetchAllSpecialty();
-                const specialtyMap = {};
-                specialtyList.forEach(s => {
-                    specialtyMap[s.id] = s.name;
-                });
-
-                setDoctors(doctorList);
-                setSpecialty(specialtyMap);
-            } catch (err) {
-                console.error('Lỗi khi tải dữ liệu:', err);
-                setError('Không thể tải dữ liệu.');
-            } finally {
-                setLoading(false);
-            }
-        };
 
         loadData();
     }, []);
 
     const handleDeleteDoctor = async (id) => {
-        const confirm = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
-        if (!confirm) return;
+        const confirmDelete = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
+        if (!confirmDelete) {
+            return;
+        }
 
         try {
-            await deleteDoctor(id);
-            setDoctors(prev => prev.filter(doc => doc.id !== id)); // Cập nhật UI
+            const response = await deleteDoctor(id);
+            alert(response.data || 'Xóa thành công');
+            setLoading(true);
+            await loadData();
         } catch (err) {
-            console.error('Lỗi khi xóa bác sĩ:', err);
-            alert('Xóa bác sĩ thất bại. Vui lòng thử lại.');
+            alert(err.message || 'Đã xảy ra lỗi khi xóa bác sĩ');
         }
     };
 
