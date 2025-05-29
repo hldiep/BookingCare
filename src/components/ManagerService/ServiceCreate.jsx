@@ -12,8 +12,8 @@ const ServiceCreate = () => {
         description: '',
         medicalSpecialtyId: '',
         status: 'ACTIVE',
-        createdAt: new Date().toISOString(),
         images: [''],
+        creatorId: '',
     });
 
     const handleChange = (e) => {
@@ -26,17 +26,28 @@ const ServiceCreate = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            const { images, ...cleanService } = service;
             const result = await addService({
-                ...service,
+                ...cleanService,
                 createdAt: new Date().toISOString(),
             });
             alert(result.message || 'Tạo dịch vụ thành công!');
             navigate('/service');
         } catch (error) {
-            alert(`Lỗi: ${error.message}`);
+            alert(`Lỗi thêm dịch vụ: ${error.message}`);
         }
     };
     useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const user = JSON.parse(storedUser);
+            setService(prev => ({
+                ...prev,
+                creatorId: user.id,
+            }));
+            console.log(user.id);
+        }
+
         const fetchData = async () => {
             try {
                 const data = await fetchAllSpecialtyManager();
@@ -47,6 +58,7 @@ const ServiceCreate = () => {
         };
         fetchData();
     }, []);
+
     return (
         <ClippedDrawer>
             <div>
@@ -74,7 +86,7 @@ const ServiceCreate = () => {
                                     name="name"
                                     value={service.name}
                                     onChange={handleChange}
-                                    className="outline-none mt-1 block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    className="text-sm outline-none mt-1 block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
 
@@ -84,7 +96,7 @@ const ServiceCreate = () => {
                                     name="medicalSpecialtyId"
                                     value={service.medicalSpecialtyId}
                                     onChange={handleChange}
-                                    className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    className="text-sm p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                     required
                                 >
                                     <option value="">Chọn chuyên khoa</option>

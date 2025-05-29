@@ -34,22 +34,6 @@ const DoctorDetail = () => {
         fetchData();
     }, [id]);
 
-    if (loading) {
-        return (
-            <ClippedDrawer>
-                <div className="p-10 text-center text-gray-600">Đang tải thông tin bác sĩ...</div>
-            </ClippedDrawer>
-        );
-    }
-
-    if (!doctor) {
-        return (
-            <ClippedDrawer>
-                <div className="p-10 text-center text-red-600">Không tìm thấy bác sĩ!</div>
-            </ClippedDrawer>
-        );
-    }
-
     const InfoItem = ({ label, value, type = 'text', full = false }) => (
         <div className={full ? 'md:col-span-2' : ''}>
             <label className="block text-sm font-medium text-gray-700">{label}</label>
@@ -93,28 +77,33 @@ const DoctorDetail = () => {
                         </button>
                     </div>
                 </div>
-
-                <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
-                    <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-                            alt="Avatar bác sĩ"
-                            className="w-32 h-32 object-cover rounded-full border"
-                        />
-                        <div className="mt-4 font-semibold text-lg">BS. {doctor.name}</div>
+                {loading ? (
+                    <div className="flex justify-center items-center py-10">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
+                        <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
                     </div>
+                ) : (
+                    <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
+                        <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
+                            <img
+                                src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+                                alt="Avatar bác sĩ"
+                                className="w-32 h-32 object-cover rounded-full border"
+                            />
+                            <div className="mt-4 font-semibold text-lg">BS. {doctor.name}</div>
+                        </div>
 
-                    <form className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <InfoItem label="Họ tên" value={doctor.name} />
-                        <InfoItem label="Chuyên khoa" value={doctor.medicalSpecialty?.name || specialtyName} />
-                        <InfoItem label="Giới tính" value={doctor.gender ? 'Nam' : 'Nữ'} />
-                        <InfoItem label="Số điện thoại" value={doctor.phone} />
-                        <InfoItem label="Email" value={doctor.email} />
-                        <InfoItem label="Địa chỉ" value={doctor.address} full />
-                        <InfoItem label="Trạng thái" value={doctor.status === 'ACTIVE' ? 'Đang hoạt động' : 'Ngừng hoạt động'} />
-                        <InfoItem label="Ngày tạo" value={formatDate(doctor.createdAt)} />
-                    </form>
-                </div>
+                        <form className="w-full md:w-4/5 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InfoItem label="Họ tên" value={doctor.name} />
+                            <InfoItem label="Chuyên khoa" value={doctor.medicalSpecialty?.name || specialtyName} />
+                            <InfoItem label="Giới tính" value={doctor.gender ? 'Nam' : 'Nữ'} />
+                            <InfoItem label="Số điện thoại" value={doctor.phone} />
+                            <InfoItem label="Email" value={doctor.email} />
+                            <InfoItem label="Địa chỉ" value={doctor.address} full />
+                            <InfoItem label="Trạng thái" value={doctor.status === 'ACTIVE' ? 'Đang hoạt động' : 'Ngừng hoạt động'} />
+                            <InfoItem label="Ngày tạo" value={formatDate(doctor.createdAt)} />
+                        </form>
+                    </div>)}
             </div>
         </ClippedDrawer>
     );

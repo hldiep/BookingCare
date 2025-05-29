@@ -47,27 +47,24 @@ export const updateService = async (serviceData) => {
     }
 };
 
-export const addService = async (serviceData) => {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_URL}/add`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(serviceData),
-        })
-        const data = await response.json();
-        if (!response.ok || data.statusCode !== 201) {
-            console.error('Lỗi thêm dịch vụ:', data.message)
-        }
+export const addService = async (service) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/add`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(service),
+    });
 
-        return data;
-    } catch (err) {
-        console.error('Lỗi kết nối đến máy chủ', err);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Thêm dịch vụ thất bại');
     }
-}
+
+    return await response.json();
+};
 
 export const deleteService = async (id) => {
     try {

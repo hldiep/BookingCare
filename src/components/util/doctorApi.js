@@ -139,14 +139,16 @@ export const addDoctor = async (doctorData) => {
             },
             body: JSON.stringify(doctorData),
         });
-        const data = await response.json();
-        if (!response.ok || data.statusCode !== 201) {
-            console.error('Lỗi thêm bác sĩ:', data.message)
-        }
 
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error("Lỗi thêm bác sĩ:", data.message || response.statusText);
+            throw new Error(data.message || "Lỗi không xác định khi thêm bác sĩ.");
+        }
         return data;
     } catch (error) {
-        console.error('addDoctor error:', error);
+        console.error("addDoctor error:", error);
         throw error;
     }
 };

@@ -38,9 +38,7 @@ const DoctorCreate = () => {
         description: '',
         qualification: '',
     });
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
     const handleChange = (e) => {
         const { name, value, type } = e.target;
 
@@ -67,26 +65,23 @@ const DoctorCreate = () => {
     };
 
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
         const doctorData = {
             ...formData,
             createdAt: new Date().toISOString(),
-            birthday: new Date(formData.birthday).toISOString(),
+            birthday: formData.birthday,
         };
-
-        if (!formData.imageFile) {
-            delete doctorData.imageFile;
-        }
-
         try {
             const response = await addDoctor(doctorData);
-            console.log("Add success:", response);
+            alert(response.message || 'Thêm bác sĩ thành công!');
+            navigate('/doctor');
         } catch (error) {
-            console.error("Add failed:", error);
-        }
-    };
+            console.error("Lỗi:", error);
+        };
 
-
+    }
     return (
         <ClippedDrawer>
             <div>
@@ -230,10 +225,10 @@ const DoctorCreate = () => {
                                     value={formData.status}
                                     onChange={handleChange}
                                     required
+                                    disabled
                                     className="mt-1 block w-full rounded border p-2 text-sm outline-none"
                                 >
                                     <option value="ACTIVE">Hoạt động</option>
-                                    <option value="INACTIVE">Ngừng hoạt động</option>
                                 </select>
                             </div>
                             <div>
@@ -295,20 +290,13 @@ const DoctorCreate = () => {
                         <div className='px-6 py-3'>
                             <button
                                 type="submit"
-                                disabled={loading}
                                 className="px-3 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors disabled:bg-blue-300"
                             >
-                                {loading ? 'Đang lưu...' : 'Thêm bác sĩ'}
+                                Thêm bác sĩ
                             </button>
                         </div>
-
-                        {error && (
-                            <div className="text-red-600 font-semibold text-center">{error}</div>
-                        )}
-                        {successMsg && (
-                            <div className="text-green-600 font-semibold text-center">{successMsg}</div>
-                        )}
                     </form>
+
                 </div>
             </div>
         </ClippedDrawer>

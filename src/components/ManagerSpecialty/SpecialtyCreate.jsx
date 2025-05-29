@@ -32,7 +32,7 @@ const SpecialtyCreate = () => {
                 createdAt: new Date().toISOString(),
             });
             alert(result.message || 'Tạo chuyên khoa thành công!');
-            navigate('/service');
+            navigate('/specialty');
         } catch (error) {
             alert(`Lỗi: ${error.message}`);
         }
