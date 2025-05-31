@@ -9,7 +9,7 @@ const Doctors = () => {
     const [specialty, setSpecialty] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const doctorsPerPage = 4;
+    const doctorsPerPage = 6;
     const sectionRef = useRef(null);
 
     // useEffect(() => {
@@ -134,7 +134,7 @@ const Doctors = () => {
                             </div>
                         )}
                     </section>
-                    <section className="bg-gradient-to-r from-blue-50 via-white to-blue-50 px-6 py-14 rounded-xl shadow-lg mb-12 border border-blue-100">
+                    {/* <section className="bg-gradient-to-r from-blue-50 via-white to-blue-50 px-6 py-14 rounded-xl shadow-lg mb-12 border border-blue-100">
                         <div className="max-w-5xl mx-auto text-center space-y-6">
                             <h1 className="text-3xl font-bold text-logo ">Đội ngũ bác sĩ hàng đầu</h1>
                             <p className=" text-gray-700 leading-relaxed">
@@ -147,7 +147,7 @@ const Doctors = () => {
                                 Bạn có thể dễ dàng tìm hiểu và đặt lịch hẹn khám bệnh một cách thuận tiện, nhanh chóng.
                             </p>
                         </div>
-                    </section>
+                    </section> */}
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ const SectionDoctor = () => {
 
     return (
         <div><section className="py-10 px-4">
-            <div className="container mx-auto max-w-6xl">
+            <div className="container ">
                 <h2 className="text-highlight text-3xl font-bold text-center mb-8">Đội ngũ bác sĩ</h2>
                 {loading ? (
                     <div className="text-center text-gray-700 py-10">Đang tải dữ liệu...</div>
@@ -40,8 +40,8 @@ const SectionDoctor = () => {
                         {doctors.length === 0 ? (
                             <div className="text-center text-gray-500 py-8">Hiện chưa có bác sĩ nào.</div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {doctors.slice(0, 3).map((doctor, index) => (
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                                {doctors.slice(0, 4).map((doctor, index) => (
                                     <div
                                         key={index}
                                         className="bg-white rounded-lg shadow-md p-4 text-center hover:scale-[1.02] transition-all duration-300"

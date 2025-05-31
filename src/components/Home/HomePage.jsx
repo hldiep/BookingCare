@@ -8,6 +8,7 @@ import { Mail, PhoneCall, Truck } from 'lucide-react';
 import SectionDoctor from './SectionDoctor';
 import SectionIntro from './SectionIntro';
 import SectionFacilities from './SectionFacilities';
+import SectionContact from './SectionContact';
 
 const HomePage = () => {
     return (
@@ -47,35 +48,7 @@ const HomePage = () => {
                         </div>
                     </div>
                 </section>
-                <section className="px-12">
-                    <div className="rounded-xl mx-auto p-12 bg-[#f9f0eb] grid grid-cols-1 md:grid-cols-3 gap-6 text-gray-800">
-
-                        <div className="flex items-start gap-4 hover:scale-105 transition-all duration-300">
-                            <PhoneCall size={32} className="text-logo mt-1" />
-                            <div>
-                                <h3 className="text-lg font-bold">0984 234 207</h3>
-                                <p>Hotline liên hệ 24/7</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-4 hover:scale-105 transition-all duration-300">
-                            <Mail size={32} className="text-logo mt-1" />
-                            <div>
-                                <h3 className="text-lg font-bold">hlthcare@gmail.com</h3>
-                                <p>Email liên hệ</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-start gap-4 hover:scale-105 transition-all duration-300">
-                            <Truck size={54} className="text-logo mt-1" />
-                            <div>
-                                <h3 className="text-lg font-bold">Trung tâm khám bệnh HealthCare</h3>
-                                <p>97 Đường Man Thiện, Phường Hiệp Phú, Quận 9, TP. Hồ Chí Minh</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
+                {/* <SectionContact /> */}
 
                 <section className="text-center py-8 mb-8 text-black">
                     <div className="container mx-auto">

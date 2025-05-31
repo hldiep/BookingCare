@@ -90,8 +90,12 @@ const DoctorManager = () => {
         try {
             const response = await deleteDoctor(id);
             alert(response.data || 'Xóa thành công');
-            setLoading(true);
-            await loadData();
+
+            setDoctors(prevDoctors =>
+                prevDoctors.map(doc =>
+                    doc.id === id ? { ...doc, status: 'DELETED' } : doc
+                )
+            );
         } catch (err) {
             alert(err.message || 'Đã xảy ra lỗi khi xóa bác sĩ');
         }
@@ -99,7 +103,7 @@ const DoctorManager = () => {
 
     const handlePageClick = (pageNumber) => {
         setCurrentPage(pageNumber);
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     return (
@@ -174,32 +178,40 @@ const DoctorManager = () => {
                                                 <td className="p-3">{doc.phone}</td>
                                                 <td className="p-3">{doc.email}</td>
                                                 <td className="p-3 font-medium">
-                                                    {!(roles.includes('DOCTOR')) && (
+                                                    {!(roles.includes('DOCTOR')) ? (
                                                         <>
-                                                            {
-                                                                doc.status === 'ACTIVE' ? (
-                                                                    <span className="text-green-600 flex items-center">
-                                                                        <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="text-red-500 flex items-center">
-                                                                        <Ban className="w-4 h-4 mr-1" /> Ngừng hoạt động
-                                                                    </span>
-                                                                )
-                                                            }
+                                                            {doc.status === 'ACTIVE' && (
+                                                                <span className="text-green-600 flex items-center">
+                                                                    <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                                </span>
+                                                            )}
+                                                            {doc.status === 'BLOCKED' && (
+                                                                <span className="text-yellow-600 flex items-center">
+                                                                    <Ban className="w-4 h-4 mr-1" /> Bị khóa
+                                                                </span>
+                                                            )}
+                                                            {doc.status === 'DELETED' && (
+                                                                <span className="text-red-500 flex items-center">
+                                                                    <Ban className="w-4 h-4 mr-1" /> Đã xóa
+                                                                </span>
+                                                            )}
                                                         </>
+                                                    ) : (
+                                                        <span className="text-green-600 flex items-center">
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                        </span>
                                                     )}
-                                                    {(roles.includes('DOCTOR')) && (
-                                                        <>
-                                                            <span className="text-green-600 flex items-center">
-                                                                <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
-                                                            </span>
-                                                        </>
-                                                    )}
-
                                                 </td>
-                                                <td className="p-3 space-x-2 text-center">
-                                                    {!(roles.includes('DOCTOR')) && (
+
+                                                <td className="flex p-3 space-x-2 text-center">
+                                                    <button
+                                                        onClick={() => navigate(`/doctor/detail-manage/${doc.id}`)}
+                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                        title="Chi tiết"
+                                                    >
+                                                        <Info className="w-4 h-4 text-gray-700" />
+                                                    </button>
+                                                    {!(roles.includes('DOCTOR')) && doc.status !== 'DELETED' && (
                                                         <>
                                                             <button
                                                                 onClick={() => navigate(`/doctor/edit/${doc.id}`)}
@@ -217,15 +229,8 @@ const DoctorManager = () => {
                                                             </button>
                                                         </>
                                                     )}
-
-                                                    <button
-                                                        onClick={() => navigate(`/doctor/detail-manage/${doc.id}`)}
-                                                        className="p-1 border rounded hover:bg-gray-100"
-                                                        title="Chi tiết"
-                                                    >
-                                                        <Info className="w-4 h-4 text-gray-700" />
-                                                    </button>
                                                 </td>
+
 
                                             </tr>
                                         ))}

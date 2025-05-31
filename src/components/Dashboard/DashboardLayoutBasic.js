@@ -64,6 +64,7 @@ export default function ClippedDrawer({ children }) {
     try {
       logout();
       navigate('/');
+      window.location.reload();
       console.log('Logout thành công');
     } catch (error) {
       console.error('Logout failed:', error);
