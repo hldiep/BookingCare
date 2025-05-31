@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { Trash2, Edit } from 'lucide-react';
 import { fetchAllClinics } from '../util/clinicApi';
-import { fetchSchedulesById } from '../util/scheduleApi';
+import { fetchSchedulesByDoctor, fetchSchedulesById } from '../util/scheduleApi';
 
 const DoctorSchedule = () => {
     const [clinics, setClinics] = useState([]);
@@ -34,7 +34,7 @@ const DoctorSchedule = () => {
     useEffect(() => {
         const loadSchedule = async () => {
             try {
-                const data = await fetchSchedulesById(id);
+                const data = await fetchSchedulesByDoctor(id);
                 setSchedule(data);
             } catch (error) {
                 console.error('Lỗi khi tải lịch khám:', error);
@@ -44,6 +44,7 @@ const DoctorSchedule = () => {
         };
         loadSchedule();
     }, [id]);
+
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -58,7 +59,7 @@ const DoctorSchedule = () => {
                         <span>/</span>
                         <span className="text-gray-700 font-medium">Lịch trình</span>
                     </div>
-                    <h2 className="text-xl font-semibold p-4">Quản lý lịch khám</h2>
+                    <h2 className="text-xl font-semibold p-4">Quản lý lịch trình</h2>
                 </div>
 
                 <div className="min-h-screen bg-main p-6 space-y-6">

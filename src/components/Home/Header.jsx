@@ -46,7 +46,7 @@ const Header = () => {
                         </div>
 
                         {/* Desktop buttons */}
-                        <div className="hidden md:flex space-x-5 items-center">
+                        <div className=" flex space-x-5 items-center">
                             <button className='font-semibold text-highlight hover:text-black hover:scale-105 transition-all'>Hotline: 0984 234 207</button>
                             {!isAuthenticated && (
                                 <button onClick={() => navigate("/dat-lich")}
@@ -97,11 +97,8 @@ const Header = () => {
             </div>
 
             {/* Mobile/Top menu */}
-            {/* Mobile/Top menu */}
             <div
-                className={`w-full bg-logo transition-all duration-500 ease-in-out ${isOpen ? 'block' : 'hidden md:block'
-                    }`}
-                style={{ maxHeight: isOpen ? '300px' : '0', overflowY: 'auto' }}
+                className={`w-full bg-logo transition-all duration-500 ease-in-out ${isOpen ? 'block' : 'hidden md:block'}`}
             >
                 <div className="container mx-auto flex flex-col justify-start items-start gap-2 text-white font-bold px-4 md:flex-row md:justify-center md:items-center md:gap-6">
                     <Link
@@ -148,7 +145,7 @@ const Header = () => {
                     </Link>
 
                     {/* Mobile Auth Buttons */}
-                    <div className="flex flex-col md:hidden gap-2 w-full mt-2">
+                    {/* <div className="flex flex-col md:hidden gap-2 w-full mt-2">
                         {isAuthenticated ? (
                             <>
                                 {(roles.includes('MANAGER') || roles.includes('DOCTOR')) && (
@@ -167,7 +164,7 @@ const Header = () => {
                                         handleLogout();
                                         setIsOpen(false);
                                     }}
-                                    className="w-full font-bold px-4 py-2 border text-white border-white rounded-full hover:bg-white hover:text-logo transition-all duration-300"
+                                    className="mb-2 w-full font-bold px-4 py-2 border text-white border-white rounded-full hover:bg-white hover:text-logo transition-all duration-300"
                                 >
                                     Đăng xuất
                                 </button>
@@ -183,8 +180,9 @@ const Header = () => {
                                 Đăng nhập
                             </button>
                         )}
-                    </div>
+                    </div> */}
                 </div>
+
             </div>
 
         </header>

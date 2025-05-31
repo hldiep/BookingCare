@@ -9,7 +9,6 @@ const ScheduleManagement = () => {
     const [schedule, setSchedule] = useState([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState('');
-    const [doctorIdFilter, setDoctorIdFilter] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
     const schedulePerPage = 10;
@@ -29,14 +28,13 @@ const ScheduleManagement = () => {
 
             if (statusFilter) {
                 data = await fetchSchedulesByStatus(statusFilter);
-            } else if (doctorIdFilter) {
-                data = await fetchSchedulesByDoctor(doctorIdFilter);
+
             } else {
                 data = await fetchAllSchedule();
             }
 
             setSchedule(data);
-            setCurrentPage(1); // Reset trang khi lọc
+            setCurrentPage(1);
         } catch (err) {
             console.error("Lỗi khi lọc:", err);
         } finally {
@@ -54,7 +52,6 @@ const ScheduleManagement = () => {
             setLoading(true);
             const data = await fetchAllSchedule();
             setSchedule(data);
-            setDoctorIdFilter('');
             setStatusFilter('');
             setCurrentPage(1);
         } catch (e) {
@@ -79,19 +76,13 @@ const ScheduleManagement = () => {
                 </div>
                 <div className="p-6 max-w-7xl mx-auto space-y-6 bg-gray-50 min-h-[calc(100vh-80px)]">
                     <div className="flex flex-col md:flex-row gap-4 items-center">
-                        <input
-                            type="text"
-                            placeholder="Tìm theo mã bác sĩ..."
-                            value={doctorIdFilter}
-                            onChange={(e) => setDoctorIdFilter(e.target.value)}
-                            className="border px-3 py-2 rounded-md outline-none"
-                        />
+
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                             className="border px-3 py-2 rounded-md outline-none"
                         >
-                            <option value="">Trạng thái</option>
+                            <option value="">Tất cả</option>
                             <option value="PENDING">Pending</option>
                             <option value="ACTIVE">Active</option>
                             <option value="UPCOMING">Upcoming</option>

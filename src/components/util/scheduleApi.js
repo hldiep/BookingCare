@@ -70,9 +70,20 @@ export const fetchSchedulesByStatus = async (status) => {
     }
 };
 
-export const fetchSchedulesByDoctor = async (doctorId) => {
-    const res = await fetch(`${API_URL}/by_doctor/${doctorId}`);
-    if (!res.ok) throw new Error("Lỗi khi fetch theo doctor");
-    const data = await res.json();
-    return data.data;
+export const fetchSchedulesByDoctor = async (id) => {
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/by_doctor/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        const data = await res.json();
+        return data.data;
+    } catch (error) {
+        console.error('Lỗi fetchSchedulesByDoctor:', error);
+        throw error;
+    }
 };
