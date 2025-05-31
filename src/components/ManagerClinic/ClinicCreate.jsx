@@ -24,22 +24,6 @@ const ClinicCreate = () => {
         }));
     };
 
-    const handleImageChange = (index, value) => {
-        const updatedImages = [...clinic.images];
-        updatedImages[index] = value;
-        setClinic(prev => ({
-            ...prev,
-            images: updatedImages,
-        }));
-    };
-
-    const addImageField = () => {
-        setClinic(prev => ({
-            ...prev,
-            images: [...prev.images, ''],
-        }));
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -78,27 +62,9 @@ const ClinicCreate = () => {
 
                     <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
                         <p className="font-semibold text-center text-lg">Ảnh phòng khám</p>
-                        {clinic.images.map((img, index) => (
-                            <div key={index} className="space-y-2">
-                                <input
-                                    type="text"
-                                    value={img}
-                                    onChange={(e) => handleImageChange(index, e.target.value)}
-                                    placeholder={`Link ảnh ${index + 1}`}
-                                    className="w-full border px-3 py-2 rounded outline-none"
-                                />
-                                {img && (
-                                    <img
-                                        src={img}
-                                        alt={`Ảnh ${index + 1}`}
-                                        className="w-full h-40 object-cover rounded border"
-                                    />
-                                )}
-                            </div>
-                        ))}
+
                         <button
                             type="button"
-                            onClick={addImageField}
                             className="mt-2 w-full px-4 py-2 rounded border text-sm text-gray-700 hover:bg-gray-100"
                         >
                             + Thêm ảnh

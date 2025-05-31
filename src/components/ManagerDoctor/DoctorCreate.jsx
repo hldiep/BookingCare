@@ -222,13 +222,13 @@ const DoctorCreate = () => {
                                 <label className="block mb-1 font-medium">Trạng thái *</label>
                                 <select
                                     name="status"
-                                    value={formData.status}
+                                    value={formData.account.status}
                                     onChange={handleChange}
                                     required
-                                    disabled
                                     className="mt-1 block w-full rounded border p-2 text-sm outline-none"
                                 >
                                     <option value="ACTIVE">Hoạt động</option>
+                                    <option value="BLOCKED">Bị khóa</option>
                                 </select>
                             </div>
                             <div>

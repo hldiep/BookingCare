@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { BadgeCheck, Ban, CheckCircle, Delete, Info, Pencil } from 'lucide-react';
+import { ArchiveRestoreIcon, BadgeCheck, Ban, CheckCircle, Delete, Info, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteClinic, fetchAllClinics, fetchAllClinicsManager, fetchPageClinic, fetchPageClinicManager } from '../util/clinicApi';
+import { deleteClinic, fetchPageClinic, fetchPageClinicManager } from '../util/clinicApi';
 
 const ClinicManager = () => {
     const navigate = useNavigate();
@@ -91,8 +91,11 @@ const ClinicManager = () => {
         try {
             const response = await deleteClinic(id);
             alert(response.data || 'Xóa thành công');
-            setLoading(true);
-            await loadClinics();
+            setClinicList(prevClinic =>
+                prevClinic.map(clinic =>
+                    clinic.id === id ? { ...clinic, status: 'DELETED' } : clinic
+                )
+            );
         } catch (err) {
             alert(err.message || 'Đã xảy ra lỗi khi xóa phòng khám');
         }
@@ -202,20 +205,31 @@ const ClinicManager = () => {
                                                 <td className="p-3 space-x-2 text-center">
                                                     {!(roles.includes('DOCTOR')) && (
                                                         <>
-                                                            <button
-                                                                onClick={() => navigate(`/clinic/edit/${clinic.id}`)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Chỉnh sửa"
-                                                            >
-                                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDelete(clinic.id)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Xóa"
-                                                            >
-                                                                <Delete className="w-4 h-4 text-gray-700" />
-                                                            </button>
+                                                            {clinic.status !== 'DELETED' ? (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => navigate(`/clinic/edit/${clinic.id}`)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Chỉnh sửa"
+                                                                    >
+                                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDelete(clinic.id)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Xóa"
+                                                                    >
+                                                                        <Delete className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button
+                                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                                    title="Khôi phục"
+                                                                >
+                                                                    <ArchiveRestoreIcon className="w-4 h-4 text-green-600" />
+                                                                </button>
+                                                            )}
                                                         </>
                                                     )}
                                                 </td>

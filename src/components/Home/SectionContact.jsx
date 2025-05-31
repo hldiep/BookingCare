@@ -3,9 +3,9 @@ import React from 'react'
 
 const SectionContact = () => {
     return (
-        <div>
+        <div className='container'>
             <section className="py-10 px-4">
-                <div className="container rounded-xl p-12 bg-[#f9f0eb] grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="rounded-xl p-12 bg-[#f9f0eb] grid grid-cols-1 md:grid-cols-3 gap-6">
 
                     <div className="flex items-start gap-4 hover:scale-105 transition-all duration-300">
                         <PhoneCall size={32} className="text-logo mt-1" />

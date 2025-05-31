@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
+import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager, fetchPageDoctor, fetchPageDoctorManager } from '../util/doctorApi';
@@ -93,14 +93,25 @@ const DoctorManager = () => {
 
             setDoctors(prevDoctors =>
                 prevDoctors.map(doc =>
-                    doc.id === id ? { ...doc, status: 'DELETED' } : doc
+                    doc.id === id
+                        ? {
+                            ...doc,
+                            status: 'DELETED',
+                            account: {
+                                ...doc.account,
+                                status: 'DELETED'
+                            }
+                        }
+                        : doc
                 )
             );
         } catch (err) {
             alert(err.message || 'Đã xảy ra lỗi khi xóa bác sĩ');
         }
     };
+    const handleRestoreDoctor = async (id) => {
 
+    };
     const handlePageClick = (pageNumber) => {
         setCurrentPage(pageNumber);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -180,17 +191,17 @@ const DoctorManager = () => {
                                                 <td className="p-3 font-medium">
                                                     {!(roles.includes('DOCTOR')) ? (
                                                         <>
-                                                            {doc.status === 'ACTIVE' && (
+                                                            {doc?.account?.status === 'ACTIVE' && (
                                                                 <span className="text-green-600 flex items-center">
                                                                     <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
                                                                 </span>
                                                             )}
-                                                            {doc.status === 'BLOCKED' && (
+                                                            {doc?.account?.status === 'BLOCKED' && (
                                                                 <span className="text-yellow-600 flex items-center">
                                                                     <Ban className="w-4 h-4 mr-1" /> Bị khóa
                                                                 </span>
                                                             )}
-                                                            {doc.status === 'DELETED' && (
+                                                            {doc?.account?.status === 'DELETED' && (
                                                                 <span className="text-red-500 flex items-center">
                                                                     <Ban className="w-4 h-4 mr-1" /> Đã xóa
                                                                 </span>
@@ -211,24 +222,37 @@ const DoctorManager = () => {
                                                     >
                                                         <Info className="w-4 h-4 text-gray-700" />
                                                     </button>
-                                                    {!(roles.includes('DOCTOR')) && doc.status !== 'DELETED' && (
+                                                    {!(roles.includes('DOCTOR')) && (
                                                         <>
-                                                            <button
-                                                                onClick={() => navigate(`/doctor/edit/${doc.id}`)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Chỉnh sửa"
-                                                            >
-                                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDeleteDoctor(doc.id)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Xóa"
-                                                            >
-                                                                <Delete className="w-4 h-4 text-gray-700" />
-                                                            </button>
+                                                            {doc?.account?.status !== 'DELETED' ? (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => navigate(`/doctor/edit/${doc.id}`)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Chỉnh sửa"
+                                                                    >
+                                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDeleteDoctor(doc.id)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Xóa"
+                                                                    >
+                                                                        <Delete className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => handleRestoreDoctor(doc.id)}
+                                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                                    title="Khôi phục"
+                                                                >
+                                                                    <ArchiveRestoreIcon className="w-4 h-4 text-green-600" />
+                                                                </button>
+                                                            )}
                                                         </>
                                                     )}
+
                                                 </td>
 
 

@@ -48,7 +48,7 @@ const HomePage = () => {
                         </div>
                     </div>
                 </section>
-                {/* <SectionContact /> */}
+                <SectionContact />
 
                 <section className="text-center py-8 mb-8 text-black">
                     <div className="container mx-auto">

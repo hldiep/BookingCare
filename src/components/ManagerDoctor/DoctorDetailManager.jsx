@@ -135,7 +135,18 @@ const DoctorDetail = () => {
                             <InfoItem label="Số điện thoại" value={doctor.phone} />
                             <InfoItem label="Email" value={doctor.email} />
                             <InfoItem label="Địa chỉ" value={doctor.address} full />
-                            <InfoItem label="Trạng thái" value={doctor.status === 'ACTIVE' ? 'Đang hoạt động' : 'Ngừng hoạt động'} />
+                            <InfoItem
+                                label="Trạng thái"
+                                value={
+                                    doctor?.account?.status === 'ACTIVE'
+                                        ? 'Đang hoạt động'
+                                        : doctor?.account?.status === 'BLOCKED'
+                                            ? 'Bị khóa'
+                                            : doctor?.account?.status === 'DELETED'
+                                                ? 'Đã xóa'
+                                                : 'Không xác định'
+                                }
+                            />
                             <InfoItem label="Ngày tạo" value={formatDate(doctor.createdAt)} />
                         </form>
                     </div>
