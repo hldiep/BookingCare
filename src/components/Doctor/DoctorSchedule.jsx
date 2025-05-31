@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { Trash2, Edit } from 'lucide-react';
 import { fetchAllClinics } from '../util/clinicApi';
-import { fetchSchedulesByDoctorId } from '../util/scheduleApi';
+import { fetchSchedulesById } from '../util/scheduleApi';
 
-const DoctorSchedule = ({ doctorId = 1 }) => {
+const DoctorSchedule = () => {
     const [clinics, setClinics] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const { id } = useParams();
     useEffect(() => {
         const loadClinics = async () => {
             try {
@@ -34,7 +34,7 @@ const DoctorSchedule = ({ doctorId = 1 }) => {
     useEffect(() => {
         const loadSchedule = async () => {
             try {
-                const data = await fetchSchedulesByDoctorId(doctorId);
+                const data = await fetchSchedulesById(id);
                 setSchedule(data);
             } catch (error) {
                 console.error('Lỗi khi tải lịch khám:', error);
@@ -43,7 +43,7 @@ const DoctorSchedule = ({ doctorId = 1 }) => {
             }
         };
         loadSchedule();
-    }, [doctorId]);
+    }, [id]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });

@@ -102,7 +102,7 @@ export const sendOtpToEmail = async (email) => {
   return result;
 };
 export const verifyOtp = async (email, otp) => {
-  const response = fetch('/api/v1/p/auth/reset-password/verify-otp/email', {
+  const response = await fetch('/api/v1/p/auth/reset-password/verify-otp/email', {
     method: 'POST',
     headers: {
       "Content-Type": "application/json",
@@ -136,6 +136,26 @@ export const resetPassword = async (email, otp, newPass) => {
 
   return result;
 }
+
+export const newPassword = async (token, newPassword) => {
+  const res = await fetch('/api/v1/p/auth/reset-password', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ token, newPassword })
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    const errorMessage = result.data || result.message || "Không thể đặt lại mật khẩu.";
+    throw new Error(errorMessage);
+  }
+
+  return result;
+};
+
 
 export const changePassword = async (username, oldPassword, newPassword) => {
   const res = await fetch('/api/v1/sh/accounts/change-password', {

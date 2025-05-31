@@ -28,9 +28,9 @@ export const fetchScheduleById = async (id) => {
         throw new Error(error.message || 'Đã xảy ra lỗi khi lấy thông tin');
     }
 };
-export const fetchSchedulesByDoctorId = async (doctorId) => {
+export const fetchSchedulesById = async (id) => {
     try {
-        const response = await fetch(`${API_URL}/by_doctor/${doctorId}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             headers: {
                 'Content-Type': 'application/json',
             },

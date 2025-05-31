@@ -9,12 +9,15 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // NEW
     const navigate = useNavigate();
     const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true); // NEW
+
         try {
             await login(username, password);
 
@@ -29,17 +32,15 @@ const Login = () => {
                     : ''
             );
 
-            console.log('Roles:', roles);
-
-            if (roles.includes('MANAGER')) {
-                navigate('/admin');
-            } else if (roles.includes('DOCTOR')) {
+            if (roles.includes('MANAGER') || roles.includes('DOCTOR')) {
                 navigate('/admin');
             } else {
                 setError('Tài khoản không có quyền truy cập.');
             }
         } catch (err) {
             setError('Tên đăng nhập hoặc mật khẩu không đúng');
+        } finally {
+            setIsLoading(false); // NEW
         }
     };
 
@@ -110,9 +111,11 @@ const Login = () => {
 
                     <button
                         type="submit"
-                        className="w-full text-white font-semibold py-2 bg-logo rounded-full hover:bg-yellow-600 transition-all duration-300"
+                        disabled={isLoading}
+                        className={`w-full text-white font-semibold py-2 rounded-full transition-all duration-300 ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-logo hover:bg-yellow-600'
+                            }`}
                     >
-                        Đăng nhập
+                        {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                     </button>
                 </form>
             </div>

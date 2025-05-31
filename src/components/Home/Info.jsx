@@ -5,7 +5,7 @@ const Info = () => {
         <div className="min-h-screen pt-28 bg-main flex justify-center">
             <div className='container flex justify-center items-center pt-20 p-5'>
                 <div className='w-full max-w-5xl px-4'>
-                    <img src="https://bcp.cdnchinhphu.vn/334894974524682240/2024/8/29/thiet-bi-y-te-1724902570427126591732.jpg" alt="" className='h-[482px] w-[856px] px-10 mb-10' />
+                    <img src="https://bcp.cdnchinhphu.vn/334894974524682240/2024/8/29/thiet-bi-y-te-1724902570427126591732.jpg" alt="" className='h-[482px] w-full px-10 mb-10' />
                     <div className='px-10'>
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight">Các chuyên khoa chính</h2>
                         <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-start'>
@@ -19,7 +19,7 @@ const Info = () => {
                                     chúng tôi cam kết mang đến dịch vụ y tế chất lượng cao,
                                     chẩn đoán chính xác và điều trị hiệu quả cho từng bệnh nhân.</span>
                             </div>
-                            <img src="https://tamanhhospital.vn/wp-content/uploads/2020/12/banner-chuyen-gia-bac-si-mb.jpg" alt="" className='w-[500px] h-[300px] hover:scale-[1.01] transition-all duration-300' />
+                            <img src="https://tamanhhospital.vn/wp-content/uploads/2020/12/banner-chuyen-gia-bac-si-mb.jpg" alt="" className='w-full h-[300px] hover:scale-[1.01] transition-all duration-300' />
                         </div>
                     </div>
                     <div className='p-10'>
@@ -46,10 +46,10 @@ const Info = () => {
                     <div className='px-10'>
                         <h2 className="text-3xl font-bold mb-8 font-georgia text-highlight">Kinh nghiệm chuyên môn</h2>
                         <div className='flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-start'>
-                            <div>
+                            <div className='w-1/3'>
                                 <img src="https://cdn.thuvienphapluat.vn/uploads/laodongtienluong/20230301/LT/bs-1.jpg" alt="" className='w-[300px] h-[150px] hover:scale-[1.01] transition-all duration-300' />
                             </div>
-                            <div className='md:w-1/2 text-justify'>
+                            <div className='md:w-2/3 text-justify'>
                                 <span>Đội ngũ bác sĩ tại Trung tâm Khám bệnh đều là những chuyên gia có trình độ chuyên môn cao,
                                     với nhiều năm kinh nghiệm trong lĩnh vực khám và điều trị bệnh. Phần lớn bác sĩ đang công tác
                                     tại các bệnh viện tuyến trung ương như Bệnh viện Bạch Mai, Bệnh viện Đại học Y Hà Nội,
@@ -101,9 +101,9 @@ const Info = () => {
                         <p><strong>Xét nghiệm máu, nước tiểu, sinh hóa, miễn dịch...:</strong> Được thực hiện bằng hệ thống máy móc hiện đại, cho kết quả nhanh chóng và chính xác.</p>
                         <p><strong>Tư vấn và quản lý bệnh mạn tính lâu dài:</strong> Cá nhân hóa phác đồ điều trị, theo dõi sức khỏe định kỳ bằng phần mềm quản lý chuyên dụng.</p>
                         <div className='flex flex-wrap gap-4 justify-center mt-4'>
-                            <img src="https://cdn.diag.vn/2025/03/2b48b664-chuyen-khoa-noi-tong-quat-1.jpg" alt="" className='w-[280px] h-[200px] hover:scale-105 transition-all duration-300' />
-                            <img src="https://cdn.benhvienthucuc.vn/wp-content/uploads/2016/09/IMG_2703-2.jpg" alt="" className='w-[280px] h-[200px] hover:scale-105 transition-all duration-300' />
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjiTK23F9b1N8HuXaglkGpF6XB6hn33eI1gg&s" alt="" className='w-[280px] h-[200px] hover:scale-105 transition-all duration-300' />
+                            <img src="https://cdn.diag.vn/2025/03/2b48b664-chuyen-khoa-noi-tong-quat-1.jpg" alt="" className='w-[280px] h-[200px] hover:scale-[1.01] transition-all duration-300' />
+                            <img src="https://cdn.benhvienthucuc.vn/wp-content/uploads/2016/09/IMG_2703-2.jpg" alt="" className='w-[280px] h-[200px] hover:scale-[1.01] transition-all duration-300' />
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjiTK23F9b1N8HuXaglkGpF6XB6hn33eI1gg&s" alt="" className='w-[280px] h-[200px] hover:scale-[1.01] transition-all duration-300' />
                         </div>
                     </div>
                     <div className='p-10'>

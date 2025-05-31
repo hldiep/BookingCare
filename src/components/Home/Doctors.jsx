@@ -68,8 +68,8 @@ const Doctors = () => {
                 <div className='w-full max-w-5xl px-4'>
                     <section className="bg-gradient-to-r from-blue-100 to-white px-4 py-10 rounded-lg shadow-md mb-10">
                         <div className="text-center max-w-4xl mx-auto">
-                            <h1 className="text-4xl font-bold text-logo mb-4 font-georgia">Đội ngũ bác sĩ tận tâm và chuyên nghiệp</h1>
-                            <p className="text-lg text-gray-700 leading-relaxed">
+                            <h1 className="text-3xl font-bold text-logo mb-4 font-georgia">Đội ngũ bác sĩ tận tâm và chuyên nghiệp</h1>
+                            <p className=" text-gray-700 leading-relaxed">
                                 Chúng tôi tự hào mang đến cho bạn đội ngũ bác sĩ giỏi chuyên môn, giàu kinh nghiệm và luôn đặt sức khỏe của bạn lên hàng đầu.
                                 Tại đây, bạn có thể dễ dàng tìm kiếm thông tin và lựa chọn bác sĩ phù hợp với nhu cầu khám chữa bệnh của mình.
                             </p>
@@ -96,7 +96,7 @@ const Doctors = () => {
                                                 <div
                                                     key={index}
                                                     onClick={() => navigate(`/bac-si/detail/${doc.id}`)}
-                                                    className="flex rounded-xl shadow-xl bg-gray-100 flex-col md:flex-row items-stretch gap-0 h-[200px] overflow-hidden cursor-pointer hover:shadow-lg transition duration-300"
+                                                    className="flex rounded-xl shadow-xl bg-gray-100 flex-col md:flex-row items-stretch gap-0 h-[140px] overflow-hidden cursor-pointer hover:shadow-lg transition duration-300"
                                                 >
                                                     <div className="md:w-1/4 w-full h-full">
                                                         <img
@@ -106,7 +106,7 @@ const Doctors = () => {
                                                         />
                                                     </div>
                                                     <div className="md:w-3/4 p-6 overflow-auto h-full flex flex-col justify-center text-justify">
-                                                        <h2 className="text-2xl font-bold text-logo mb-4">{doc.name}</h2>
+                                                        <h2 className="text-lg font-bold text-logo mb-4">BS. {doc.name}</h2>
                                                         <p><strong>Chuyên khoa:</strong> {specialty[doc.medicalSpecialtyId] || 'Không xác định'}</p>
                                                         <p><strong>Email:</strong> {doc.email}</p>
                                                     </div>
