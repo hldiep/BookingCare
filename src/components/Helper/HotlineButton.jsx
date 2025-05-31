@@ -12,7 +12,7 @@ const HotlineButton = () => {
         <div>
             <div className="fixed bottom-24 left-6 z-50 flex items-center gap-2 bg-highlight text-white rounded-full shadow-lg cursor-pointer hover:scale-[1.01] transition-all">
                 <button onClick={() => navigate('/dat-lich')}
-                    className="text-sm font-bold px-4 py-4 rounded-full bg-highlight border border-transparent hover:bg-blue-800 hover:bg-transparent transition-all duration-300">
+                    className=" font-bold px-4 py-4 rounded-full bg-highlight border border-transparent hover:bg-blue-800 hover:bg-transparent transition-all duration-300">
                     Đặt lịch khám ngay
                 </button>
             </div>

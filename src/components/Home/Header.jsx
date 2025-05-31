@@ -19,15 +19,6 @@ const Header = () => {
             console.error('Logout thất bại:', error);
         }
     };
-
-    // useEffect(() => {
-    //     const handleScroll = () => {
-    //         setShowTopBar(window.scrollY <= 80);
-    //     };
-    //     window.addEventListener("scroll", handleScroll);
-    //     return () => window.removeEventListener("scroll", handleScroll);
-    // }, []);
-
     return (
         <header className="fixed top-0 left-0 w-full z-50 shadow-lg font-sans bg-white text-white">
             <div className="container mx-auto px-4">
@@ -46,7 +37,7 @@ const Header = () => {
                         </div>
 
                         {/* Desktop buttons */}
-                        <div className=" flex space-x-5 items-center">
+                        <div className="hidden md:flex space-x-5 items-center">
                             <button className='font-semibold text-highlight hover:text-black hover:scale-105 transition-all'>Hotline: 0984 234 207</button>
                             {!isAuthenticated && (
                                 <button onClick={() => navigate("/dat-lich")}
