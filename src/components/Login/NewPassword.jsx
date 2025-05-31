@@ -13,14 +13,22 @@ const NewPassword = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (password.length < 6) {
+            setError("Mật khẩu phải có ít nhất 6 ký tự.");
+            return;
+        }
+
         if (password !== confirmPassword) {
             setError("Mật khẩu không khớp, mời nhập lại!");
             return;
         }
+
         setError("");
-        alert("Mật khẩu đã được đặt lại! Vui lòng đăng nhập lại");
+        alert("Mật khẩu đã được đặt lại! Vui lòng đăng nhập.");
         navigate("/dang-nhap");
-    }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#e0f7fa] via-[#ffffff] to-[#e0f7fa] relative px-4">
             <button
@@ -34,9 +42,9 @@ const NewPassword = () => {
             <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl px-10 py-12 w-full max-w-md">
                 <h2 className="text-2xl font-bold text-center mb-4 text-logo font-serif">ĐẶT LẠI MẬT KHẨU</h2>
 
-                <form onSubmit={handleSubmit} >
+                <form onSubmit={handleSubmit}>
                     <label className="block text-sm text-left mt-4">
-                        <span className="block">Nhập mật khẩu mới</span>
+                        <span className="block mb-1">Nhập mật khẩu mới</span>
                         <div className="relative">
                             <input
                                 type={showPassword1 ? "text" : "password"}
@@ -57,7 +65,7 @@ const NewPassword = () => {
                     </label>
 
                     <label className="block text-sm text-left mt-4">
-                        <span className="block">Xác nhận lại mật khẩu mới</span>
+                        <span className="block mb-1">Xác nhận lại mật khẩu mới</span>
                         <div className="relative">
                             <input
                                 type={showPassword2 ? "text" : "password"}
@@ -83,14 +91,14 @@ const NewPassword = () => {
 
                     <button
                         type="submit"
-                        className="w-full text-white font-semibold py-2 mt-4 bg-logo rounded-full hover:bg-yellow-600 transition-all duration-300"
+                        className="w-full text-white font-semibold py-2 mt-6 bg-logo rounded-full hover:bg-yellow-600 transition-all duration-300"
                     >
                         Xác nhận
                     </button>
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default NewPassword
+export default NewPassword;

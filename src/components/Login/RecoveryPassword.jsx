@@ -1,18 +1,31 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
+import { sendOtpToEmail } from "../Helper/AuthContext";
 
 const RecoveryPassword = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
-
-    const handleSubmit = (e) => {
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (email.trim() === "") {
-            alert("Vui lòng nhập email.");
+        setError("");
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setError("Email không hợp lệ.");
             return;
         }
-        navigate("/ma-xac-minh");
+
+        try {
+            setLoading(true);
+            await sendOtpToEmail(email);
+            navigate("/ma-xac-minh", { state: { email } });
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -43,13 +56,18 @@ const RecoveryPassword = () => {
                             required
                         />
                     </label>
-
+                    {error && (
+                        <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+                    )}
                     <button
                         type="submit"
-                        className="w-full text-white font-semibold py-2 mt-4 bg-logo rounded-full hover:bg-yellow-600 transition-all duration-300"
+                        disabled={loading}
+                        className={`w-full text-white font-semibold py-2 mt-4 rounded-full transition-all duration-300 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-logo hover:bg-yellow-600'
+                            }`}
                     >
-                        GỬI MÃ XÁC MINH
+                        {loading ? "Đang gửi..." : "GỬI MÃ XÁC MINH"}
                     </button>
+
                 </form>
             </div>
         </div>

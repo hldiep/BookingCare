@@ -3,7 +3,7 @@ const API_URL = '/api/v1/m/doctors';
 
 export const fetchAllDoctors = async () => {
     try {
-        const response = await axios.get('/api/v1/p/doctors/active', {
+        const response = await axios.get('/api/v1/p/doctors/active/all', {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -180,3 +180,44 @@ export const deleteDoctor = async (id) => {
 //         return 0;
 //     }
 // }
+
+export const fetchPageDoctor = async (page = 0, size = 10, sortBy = 'id') => {
+    try {
+        const response = await axios.get(`/api/v1/p/doctors/active/page`, {
+            params: { page, size, sortBy },
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return response.data.data;
+    } catch (error) {
+        console.error('Lỗi:', error.error);
+        throw error;
+    }
+};
+
+export const fetchPageDoctorManager = async (page = 0, size = 10, sortBy = 'id') => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/page`, {
+            params: { page, size, sortBy },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const result = response.data;
+
+        return {
+            data: result.data.data || [],
+            totalPages: result.data.totalPages || 0,
+            totalItems: result.data.totalItems || 0,
+            currentPage: result.data.currentPage || 0,
+        };
+    } catch (error) {
+        console.error('Lỗi:', error.error);
+        throw error;
+    }
+};

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager } from '../util/doctorApi';
+import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager, fetchPageDoctor, fetchPageDoctorManager } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 
-const DoctorManagement = () => {
+const DoctorManager = () => {
     const navigate = useNavigate();
 
     const [doctors, setDoctors] = useState([]);
@@ -14,14 +14,13 @@ const DoctorManagement = () => {
     const [specialty, setSpecialty] = useState([]);
     const [roles, setRoles] = useState([]);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const doctorsPerPage = 10;
-    const indexOfLastDoctor = currentPage * doctorsPerPage;
-    const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
-    const currentDoctors = doctors.slice(indexOfFirstDoctor, indexOfLastDoctor);
-    const totalPages = Math.ceil(doctors.length / doctorsPerPage);
+    const [totalPages, setTotalPages] = useState(0);
+    const doctorPerPage = 10;
+    const [currentPage, setCurrentPage] = useState(0);
+
     const loadData = async () => {
         try {
+            setLoading(true);
             const token = localStorage.getItem('token');
             if (!token) {
                 setError('Không tìm thấy token.');
@@ -40,10 +39,16 @@ const DoctorManagement = () => {
             setRoles(extractedRoles);
 
             let doctorList = [];
+            let totalPageCount = 0;
+
             if (extractedRoles.includes('MANAGER')) {
-                doctorList = await fetchAllDoctorsManager();
+                const res = await fetchPageDoctorManager(currentPage);
+                doctorList = res.data;
+                totalPageCount = res.totalPages;
             } else if (extractedRoles.includes('DOCTOR')) {
-                doctorList = await fetchAllDoctors();
+                const res = await fetchPageDoctor(currentPage);
+                doctorList = res.data;
+                totalPageCount = res.totalPages;
             } else {
                 setError('Tài khoản không hợp lệ.');
                 setLoading(false);
@@ -58,6 +63,8 @@ const DoctorManagement = () => {
 
             setDoctors(doctorList);
             setSpecialty(specialtyMap);
+            setTotalPages(totalPageCount);
+            setError('');
         } catch (err) {
             console.error('Lỗi khi tải dữ liệu:', err);
             setError('Không thể tải dữ liệu.');
@@ -65,12 +72,15 @@ const DoctorManagement = () => {
             setLoading(false);
         }
     };
-
+    const indexOfFirst = currentPage * doctorPerPage;
     useEffect(() => {
-
         loadData();
     }, []);
-
+    useEffect(() => {
+        if (roles.includes('DOCTOR') || roles.includes('MANAGER')) {
+            loadData();
+        }
+    }, [currentPage]);
     const handleDeleteDoctor = async (id) => {
         const confirmDelete = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
         if (!confirmDelete) {
@@ -91,6 +101,7 @@ const DoctorManagement = () => {
         setCurrentPage(pageNumber);
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
     };
+
     return (
         <ClippedDrawer>
             <div>
@@ -149,7 +160,7 @@ const DoctorManagement = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentDoctors.map((doc) => (
+                                        {doctors.map((doc, index) => (
                                             <tr key={doc.id} className="border-t hover:bg-gray-50">
                                                 <td className="p-3">
                                                     <img
@@ -229,11 +240,8 @@ const DoctorManagement = () => {
                             {Array.from({ length: totalPages }, (_, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => handlePageClick(i + 1)}
-                                    className={`px-3 py-1 rounded border ${currentPage === i + 1
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-white text-gray-700 hover:bg-gray-100'
-                                        }`}
+                                    onClick={() => handlePageClick(i)}
+                                    className={`px-3 py-1 rounded border ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
                                 >
                                     {i + 1}
                                 </button>
@@ -246,4 +254,4 @@ const DoctorManagement = () => {
     );
 };
 
-export default DoctorManagement;
+export default DoctorManager;

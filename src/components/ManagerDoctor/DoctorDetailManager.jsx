@@ -9,13 +9,44 @@ const DoctorDetail = () => {
     const { id } = useParams();
     const [doctor, setDoctor] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [roles, setRoles] = useState([]);
 
     const [specialtyName, setSpecialtyName] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const doctorData = await fetchDoctorByIdManager(id);
+                setLoading(true);
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    setError('Không tìm thấy token.');
+                    setLoading(false);
+                    return;
+                }
+
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const user = JSON.parse(atob(base64));
+
+                const extractedRoles = (user?.role || []).map(r =>
+                    typeof r === 'object' && r.authority
+                        ? r.authority.replace('ROLE_', '')
+                        : ''
+                );
+                setRoles(extractedRoles);
+
+                let doctorData = null;
+                if (extractedRoles.includes('MANAGER')) {
+                    doctorData = await fetchDoctorByIdManager(id);
+                } else if (extractedRoles.includes('DOCTOR')) {
+                    doctorData = await fetchDoctorById(id);
+                } else {
+                    setError('Tài khoản không hợp lệ.');
+                    setLoading(false);
+                    return;
+                }
+
                 setDoctor(doctorData);
 
                 const specialties = await fetchAllSpecialty();
@@ -55,34 +86,38 @@ const DoctorDetail = () => {
     return (
         <ClippedDrawer>
             <div>
+                {/* Breadcrumb + Header */}
                 <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
                     <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
-                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">
-                            Dashboard
-                        </button>
+                        <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">Dashboard</button>
                         <span>/</span>
-                        <button onClick={() => navigate('/doctor')} className="hover:underline text-blue-600">
-                            Bác sĩ
-                        </button>
+                        <button onClick={() => navigate('/doctor')} className="hover:underline text-blue-600">Bác sĩ</button>
                         <span>/</span>
                         <span className="text-gray-700 font-medium">Thông tin</span>
                     </div>
                     <div className="flex justify-between items-center p-4">
                         <h2 className="text-xl font-semibold">Thông tin bác sĩ</h2>
-                        <button
-                            onClick={() => navigate(`/doctor/edit/${doctor.id}`)}
-                            className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 text-sm"
-                        >
-                            Chỉnh sửa
-                        </button>
+                        {!(roles.includes('DOCTOR')) && (
+                            <>
+                                {doctor && (
+                                    <button
+                                        onClick={() => navigate(`/doctor/edit/${doctor.id}`)}
+                                        className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 text-sm"
+                                    >
+                                        Chỉnh sửa
+                                    </button>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
+
                 {loading ? (
                     <div className="flex justify-center items-center py-10">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-r-transparent"></div>
                         <div className="ml-4 text-blue-600 font-medium text-lg">Đang tải dữ liệu...</div>
                     </div>
-                ) : (
+                ) : doctor ? (
                     <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
                         <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
                             <img
@@ -103,10 +138,14 @@ const DoctorDetail = () => {
                             <InfoItem label="Trạng thái" value={doctor.status === 'ACTIVE' ? 'Đang hoạt động' : 'Ngừng hoạt động'} />
                             <InfoItem label="Ngày tạo" value={formatDate(doctor.createdAt)} />
                         </form>
-                    </div>)}
+                    </div>
+                ) : (
+                    <div className="p-6 text-center text-red-500 font-semibold">Không tìm thấy thông tin bác sĩ.</div>
+                )}
             </div>
         </ClippedDrawer>
     );
+
 };
 
 export default DoctorDetail;

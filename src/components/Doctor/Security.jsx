@@ -2,6 +2,7 @@ import { KeyRound, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { Link } from 'react-router-dom';
+import { changePassword } from '../Helper/AuthContext';
 
 const Security = () => {
     const [form, setForm] = useState({
@@ -28,7 +29,7 @@ const Security = () => {
         setShowPassword({ ...showPassword, [field]: !showPassword[field] });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const { currentPassword, newPassword, confirmPassword } = form;
 
@@ -42,19 +43,31 @@ const Security = () => {
             return;
         }
 
-        console.log("Mật khẩu đã đổi:", form);
-        alert("Đổi mật khẩu thành công!");
-        setForm({
-            currentPassword: '',
-            newPassword: '',
-            confirmPassword: '',
-        });
+        try {
+            const storedUser = JSON.parse(localStorage.getItem("user"));
+            const username = storedUser?.account?.username;
+
+            if (!username) {
+                setError("Không tìm thấy tên người dùng.");
+                return;
+            }
+
+            await changePassword(username, currentPassword, newPassword);
+            alert("Đổi mật khẩu thành công!");
+
+            setForm({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+            });
+        } catch (err) {
+            setError(err.message);
+        }
     };
 
     return (
         <ClippedDrawer>
             <div>
-                {/* Breadcrumb */}
                 <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
                     <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
                         <Link to="/admin" className="hover:underline text-blue-600">Dashboard</Link>
@@ -64,7 +77,6 @@ const Security = () => {
                     <h2 className="text-xl font-semibold p-4">Đổi mật khẩu</h2>
                 </div>
 
-                {/* Form */}
                 <div className="min-h-screen bg-main py-6 px-4">
                     <form
                         onSubmit={handleSubmit}

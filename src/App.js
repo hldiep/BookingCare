@@ -45,6 +45,10 @@ import ProfileEdit from "./components/Doctor/ProfileEdit";
 import AppointmentSuccess from "./components/Form/AppointmentSuccess";
 import Tongquan from "./components/Dashboard/Tongquan";
 import ProtectedRoute from "./components/Helper/ProtectedRoute";
+import SpecialtyManage from "./components/ManagerSpecialty/SpecialtyMange";
+import ClinicManager from "./components/ManagerClinic/ClinicMangager";
+import ServiceManager from "./components/ManagerService/ServiceManager";
+import DoctorManager from "./components/ManagerDoctor/DoctorManager";
 function App() {
   return (
     <>
@@ -75,22 +79,22 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="doctor" element={<DoctorManagement />} />
+        <Route path="doctor" element={<DoctorManager />} />
         <Route path="doctor/detail-manage/:id" element={<DoctorDetailManager />} />
         <Route path="doctor/edit/:id" element={<DoctorEdit />} />
         <Route path="doctor/create" element={<DoctorCreate />} />
 
-        <Route path="service" element={<ServiceManagement />} />
+        <Route path="service" element={<ServiceManager />} />
         <Route path="service/detail" element={<ServiceDetail />} />
         <Route path="service/edit/:id" element={<ServiceEdit />} />
         <Route path="service/create" element={<ServiceCreate />} />
 
-        <Route path="clinic" element={<ClinicManagement />} />
+        <Route path="clinic" element={<ClinicManager />} />
         <Route path="clinic/edit/:id" element={<ClinicEdit />} />
         <Route path="clinic/detail" element={<ClinicDetail />} />
         <Route path="clinic/create" element={<ClinicCreate />} />
 
-        <Route path="specialty" element={<SpecialtyManagement />} />
+        <Route path="specialty" element={<SpecialtyManage />} />
         <Route path="specialty/detail" element={<SpecialtyDetail />} />
         <Route path="specialty/edit/:id" element={<SpecialtyEdit />} />
         <Route path="specialty/create" element={<SpecialtyCreate />} />

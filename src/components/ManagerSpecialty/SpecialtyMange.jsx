@@ -1,37 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil, Info, Delete, CheckCircle, Ban } from 'lucide-react';
+import { Pencil, Delete, CheckCircle, Ban } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteSpecialty, fetchAllSpecialty, fetchAllSpecialtyManager } from '../util/specialtyApi';
+import { deleteSpecialty, fetchAllSpecialtyManager, fetchPageSpecialty, fetchPageSpecialtyManager } from '../util/specialtyApi';
 import { fetchAllDoctors } from '../util/doctorApi';
 
-const SpecialtyManagement = () => {
+const SpecialtyManage = () => {
     const navigate = useNavigate();
 
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [roles, setRoles] = useState([]);
-
-    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
     const spPerPage = 10;
-    const indexOfLast = currentPage * spPerPage;
-    const indexOfFirst = indexOfLast - spPerPage;
-    const current = specialties.slice(indexOfFirst, indexOfLast);
-    const totalPages = Math.ceil(specialties.length / spPerPage);
+    const [currentPage, setCurrentPage] = useState(0);
 
-    const handlePageClick = (pageNumber) => {
-        setCurrentPage(pageNumber);
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn về đầu trang
-    };
     const loadData = async () => {
         try {
+            setLoading(true);
             const token = localStorage.getItem('token');
             if (!token) {
                 setError('Không tìm thấy token.');
                 setLoading(false);
                 return;
             }
+
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const user = JSON.parse(atob(base64));
@@ -44,16 +38,22 @@ const SpecialtyManagement = () => {
             setRoles(extractedRoles);
 
             let specialtyData = [];
+            let totalPageCount = 0;
 
             if (extractedRoles.includes('MANAGER')) {
-                specialtyData = await fetchAllSpecialtyManager();
+                const res = await fetchPageSpecialtyManager(currentPage, spPerPage);
+                specialtyData = res.data;
+                totalPageCount = res.totalPages;
             } else if (extractedRoles.includes('DOCTOR')) {
-                specialtyData = await fetchAllSpecialty();
+                const res = await fetchPageSpecialty(currentPage, spPerPage);
+                specialtyData = res.data;
+                totalPageCount = res.totalPages;
             } else {
                 setError('Không có quyền truy cập chuyên khoa.');
                 setLoading(false);
                 return;
             }
+
             const doctorData = await fetchAllDoctors();
             const specialtiesWithDoctors = specialtyData.map(specialty => {
                 const relatedDoctors = doctorData.filter(
@@ -66,16 +66,27 @@ const SpecialtyManagement = () => {
             });
 
             setSpecialties(specialtiesWithDoctors);
+            setTotalPages(totalPageCount);
+            setError('');
         } catch (error) {
             console.error("Lỗi tải dữ liệu:", error);
-        }
-        finally {
+            setError('Đã xảy ra lỗi khi tải dữ liệu.');
+        } finally {
             setLoading(false);
         }
-    }
+    };
+
+
     useEffect(() => {
         loadData();
     }, []);
+
+    useEffect(() => {
+        if (roles.includes('DOCTOR') || roles.includes('MANAGER')) {
+            loadData();
+        }
+    }, [currentPage]);
+
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm('Bạn có chắc muốn xóa chuyên khoa này không?');
         if (!confirmDelete) {
@@ -84,12 +95,21 @@ const SpecialtyManagement = () => {
         try {
             const response = await deleteSpecialty(id);
             alert(response.data || 'Xóa thành công');
-            setLoading(true);
             await loadData();
         } catch (err) {
             alert(err.message || 'Đã xảy ra lỗi khi xóa chuyên khoa');
         }
-    }
+    };
+
+    const handlePageClick = (page) => {
+        setCurrentPage(page - 1);
+    };
+
+
+    const indexOfLast = (currentPage + 1) * spPerPage;
+    const indexOfFirst = indexOfLast - spPerPage;
+    const current = specialties;
+
     return (
         <ClippedDrawer>
             <div>
@@ -113,12 +133,14 @@ const SpecialtyManagement = () => {
                         />
                         <div className="flex gap-2">
                             <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
-                            {!(roles.includes('DOCTOR')) && (<button
-                                onClick={() => navigate('/specialty/create')}
-                                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                            >
-                                Tạo mới
-                            </button>)}
+                            {!(roles.includes('DOCTOR')) && (
+                                <button
+                                    onClick={() => navigate('/specialty/create')}
+                                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                >
+                                    Tạo mới
+                                </button>
+                            )}
                         </div>
                     </div>
                     {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -139,6 +161,7 @@ const SpecialtyManagement = () => {
                                             <th className="p-3 border-r">Tên chuyên khoa</th>
                                             <th className="p-3 border-r">Mô tả</th>
                                             <th className="p-3 border-r">Bác sĩ</th>
+                                            <th className="p-3 border-r">Trạng thái</th>
                                             <th className="p-3 w-32 text-center">Tác vụ</th>
                                         </tr>
                                     </thead>
@@ -159,6 +182,31 @@ const SpecialtyManagement = () => {
                                                         <span className="text-gray-500 italic">Chưa có</span>
                                                     )}
                                                 </td>
+                                                <td className="p-3 font-medium">
+                                                    {!(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            {
+                                                                item.status === 'ACTIVE' ? (
+                                                                    <span className="text-green-600 flex items-center">
+                                                                        <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-red-500 flex items-center">
+                                                                        <Ban className="w-4 h-4 mr-1" /> Ngừng hoạt động
+                                                                    </span>
+                                                                )
+                                                            }
+                                                        </>
+                                                    )}
+                                                    {(roles.includes('DOCTOR')) && (
+                                                        <>
+                                                            <span className="text-green-600 flex items-center">
+                                                                <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                            </span>
+                                                        </>
+                                                    )}
+
+                                                </td>
                                                 <td className="p-3 text-center space-x-2">
                                                     {!(roles.includes('DOCTOR')) && (
                                                         <>
@@ -170,7 +218,7 @@ const SpecialtyManagement = () => {
                                                                 <Pencil className="w-4 h-4 text-gray-700" />
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDelete(specialties.id)}
+                                                                onClick={() => handleDelete(item.id)}
                                                                 className="p-1 border rounded hover:bg-gray-100"
                                                                 title="Xóa"
                                                             >
@@ -192,9 +240,7 @@ const SpecialtyManagement = () => {
                                 <button
                                     key={i}
                                     onClick={() => handlePageClick(i + 1)}
-                                    className={`px-3 py-1 rounded border ${currentPage === i + 1
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                                    className={`px-3 py-1 rounded border ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
                                         }`}
                                 >
                                     {i + 1}
@@ -208,4 +254,4 @@ const SpecialtyManagement = () => {
     );
 };
 
-export default SpecialtyManagement;
+export default SpecialtyManage;

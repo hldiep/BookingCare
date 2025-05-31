@@ -4,7 +4,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { fetchDoctorById, fetchDoctorByIdManager } from '../util/doctorApi';
 
 const DoctorProfile = () => {
-    const navigate = useNavigate();
     const [doctor, setDoctor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -96,18 +95,7 @@ const DoctorProfile = () => {
                         <div className="mt-6">
                             <h3 className="font-semibold text-gray-800 mb-2">Mô tả</h3>
                             <ul className="list-disc list-inside text-gray-700 space-y-1">
-                                {doctor.education?.map((item, index) => (
-                                    <li key={index}>{item}</li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="mt-6">
-                            <h3 className="font-semibold text-gray-800 mb-2">Quá trình công tác</h3>
-                            <ul className="list-disc list-inside text-gray-700 space-y-1">
-                                {doctor.experience?.map((item, index) => (
-                                    <li key={index}>{item}</li>
-                                ))}
+                                {doctor.description}
                             </ul>
                         </div>
 
@@ -115,17 +103,17 @@ const DoctorProfile = () => {
                             <div><span className="font-semibold">Trạng thái:</span> <span className="text-green-600">{doctor.status}</span></div>
                             <div><span className="font-semibold">Vai trò:</span> {doctor?.account?.role?.name}</div>
                             <div><span className="font-semibold">Khởi tạo:</span> {formatDate(doctor.createdAt)}</div>
-                            <div><span className="font-semibold">Cập nhật lần cuối:</span> {doctor.updatedAt}</div>
+                            {/* <div><span className="font-semibold">Cập nhật lần cuối:</span> {doctor.updatedAt}</div> */}
                         </div>
 
-                        <div className="mt-6 text-right">
+                        {/* <div className="mt-6 text-right">
                             <button
                                 onClick={() => navigate('/profile/edit')}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                             >
                                 Cập nhật thông tin
                             </button>
-                        </div>
+                        </div> */}
                     </div>)}
             </div>
         </ClippedDrawer>

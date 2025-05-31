@@ -62,12 +62,6 @@ export default function ClippedDrawer({ children }) {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:8089/api/v1/p/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
       logout();
       navigate('/');
       console.log('Logout thành công');

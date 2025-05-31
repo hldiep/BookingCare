@@ -1,32 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate, useLocation } from "react-router-dom";
+import { verifyOtp, sendOtpToEmail } from '../Helper/AuthContext';
 
 const VerifyCode = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const email = location.state?.email || "email của bạn";
+    const email = location.state?.email || "";
 
     const [verificationCode, setVerificationCode] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
+    const [countdown, setCountdown] = useState(60);
+    const [canResend, setCanResend] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    useEffect(() => {
+        let timer;
+        if (countdown > 0) {
+            setCanResend(false);
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        } else {
+            setCanResend(true);
+        }
+        return () => clearTimeout(timer);
+    }, [countdown]);
+
+    const handleVerify = async (e) => {
         e.preventDefault();
+        setError("");
 
-        if (!verificationCode) {
-            setError("Vui lòng nhập mã xác minh.");
-            setSuccess(false);
+        if (!verificationCode.trim()) {
+            setError("Vui lòng nhập mã OTP.");
             return;
         }
 
-        if (/^\d{6}$/.test(verificationCode)) {
+        try {
+            setLoading(true);
+            const token = await verifyOtp(email, verificationCode);
             setSuccess(true);
+            localStorage.setItem("reset_token", token);
+            setTimeout(() => {
+                navigate("/mat-khau-moi");
+            }, 1000);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        try {
             setError("");
-            setTimeout(() => navigate("/mat-khau-moi"), 1000);
-        } else {
-            setError("Mã xác minh phải gồm 6 chữ số.");
-            setSuccess(false);
+            setCountdown(60);
+            await sendOtpToEmail(email);
+        } catch (err) {
+            setError("Không thể gửi lại mã. Vui lòng thử lại sau.");
         }
     };
 
@@ -42,11 +72,11 @@ const VerifyCode = () => {
 
             <div className="bg-white/90 backdrop-blur-md shadow-2xl rounded-3xl px-10 py-12 w-full max-w-md">
                 <h2 className="text-2xl font-bold text-center mb-4 text-logo font-serif">XÁC MINH MÃ</h2>
-                <p className="text-sm mb-4 text-center">
+                <p className="text-sm mb-2 text-center">
                     Nhập mã xác minh đã gửi đến <strong>{email}</strong>
                 </p>
-                <form onSubmit={handleSubmit} >
 
+                <form onSubmit={handleVerify}>
                     <input
                         type="text"
                         maxLength={6}
@@ -58,15 +88,31 @@ const VerifyCode = () => {
                         onInvalid={(e) => e.target.setCustomValidity("Vui lòng không để trống ô này")}
                         onInput={(e) => e.target.setCustomValidity("")}
                     />
-                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-                    {success && <p className="text-green-700 text-sm mt-2">Mã hợp lệ! Đang chuyển hướng...</p>}
+
+                    {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+                    {success && <p className="text-green-700 text-sm mt-2 text-center">Mã hợp lệ! Đang chuyển hướng...</p>}
+
                     <button
                         type="submit"
-                        className="w-full text-white font-semibold py-2 mt-4 bg-logo rounded-full hover:bg-yellow-600 transition-all duration-300"
+                        disabled={loading}
+                        className={`w-full text-white font-semibold py-2 mt-4 rounded-full transition-all duration-300 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-logo hover:bg-yellow-600'}`}
                     >
-                        XÁC NHẬN
+                        {loading ? "Đang xác minh..." : "XÁC NHẬN"}
                     </button>
                 </form>
+
+                <div className="mt-4 text-center text-sm text-gray-700">
+                    {canResend ? (
+                        <button
+                            onClick={handleResendCode}
+                            className="text-blue-600 font-semibold hover:underline"
+                        >
+                            Gửi lại mã
+                        </button>
+                    ) : (
+                        <span className="text-gray-500">Gửi lại mã sau {countdown}s</span>
+                    )}
+                </div>
             </div>
         </div>
     );

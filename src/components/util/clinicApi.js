@@ -17,10 +17,9 @@ export const fetchAllClinicsManager = async () => {
 };
 export const fetchAllClinics = async () => {
     try {
-        // const token = localStorage.getItem('token');
-        const response = await axios.get('/api/v1/p/clinics/active', {
+        const response = await axios.get('/api/v1/p/clinics/active/all', {
             headers: {
-                // Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
             },
         });
         return response.data.data;
@@ -83,3 +82,64 @@ export const deleteClinic = async (id) => {
         throw err.response?.data || { message: 'Lỗi không xác định' };
     }
 }
+
+export const fetchPageClinic = async (page = 0, size = 10, sortBy = 'id') => {
+    try {
+        const response = await axios.get(`/api/v1/p/clinics/active/page`, {
+            params: { page, size, sortBy },
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return response.data.data;
+    } catch (error) {
+        if (error.response) {
+            const status = error.response.status;
+            const message = error.response.data?.message || 'Lỗi không xác định từ server';
+            console.error(`Lỗi từ server [${status}]:`, message);
+            throw new Error(`Lỗi server [${status}]: ${message}`);
+        } else if (error.request) {
+            console.error('Không nhận được phản hồi từ server:', error.request);
+            throw new Error('Không kết nối được đến server.');
+        } else {
+            console.error('Lỗi khác:', error.message);
+            throw new Error(`Lỗi không xác định: ${error.message}`);
+        }
+    }
+};
+
+export const fetchPageClinicManager = async (page = 0, size = 10, sortBy = 'id') => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/page`, {
+            params: { page, size, sortBy },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const result = response.data;
+
+        return {
+            data: result.data.data || [],
+            totalPages: result.data.totalPages || 0,
+            totalItems: result.data.totalItems || 0,
+            currentPage: result.data.currentPage || 0,
+        };
+    } catch (error) {
+        if (error.response) {
+            const status = error.response.status;
+            const message = error.response.data?.message || 'Lỗi không xác định từ server';
+            console.error(`Lỗi từ server [${status}]:`, message);
+            throw new Error(`Lỗi server [${status}]: ${message}`);
+        } else if (error.request) {
+            console.error('Không nhận được phản hồi từ server:', error.request);
+            throw new Error('Không kết nối được đến server.');
+        } else {
+            console.error('Lỗi khác:', error.message);
+            throw new Error(`Lỗi không xác định: ${error.message}`);
+        }
+    }
+};
