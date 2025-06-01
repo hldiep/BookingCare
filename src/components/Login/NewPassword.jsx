@@ -1,5 +1,5 @@
 import { Eye, EyeOff } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { newPassword } from '../Helper/AuthContext';
@@ -12,7 +12,13 @@ const NewPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        const token = localStorage.getItem('reset_token');
+        if (!token) {
 
+            navigate('/ma-xac-minh');
+        }
+    }, [navigate]);
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -36,7 +42,7 @@ const NewPassword = () => {
             }
 
             await newPassword(token, password);
-
+            localStorage.removeItem("reset_token");
             alert('Mật khẩu đã được đặt lại! Vui lòng đăng nhập.');
             navigate('/dang-nhap');
         } catch (err) {

@@ -3,10 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { addDoctor } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
+import { upload } from '../util/uploadFile';
 
 const DoctorCreate = () => {
     const navigate = useNavigate();
     const [specialties, setSpecialties] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [imageFile, setImageFile] = useState(null);
     useEffect(() => {
         const fetchSpecialties = async () => {
             try {
@@ -33,10 +37,10 @@ const DoctorCreate = () => {
         address: '',
         gender: true,
         status: 'ACTIVE',
-        imageFile: '',
         birthday: '',
         description: '',
         qualification: '',
+        link: '',
     });
     const [error, setError] = useState('');
     const handleChange = (e) => {
@@ -64,24 +68,60 @@ const DoctorCreate = () => {
         }
     };
 
+    const handleImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file) {
+            setImageFile(file);
+            setFormData({ ...formData, imageLink: URL.createObjectURL(file) });
+        }
+        setIsUploading(true);
+        try {
+            const imageUrl = await upload(file);
+            console.log("Link ảnh trả về từ upload:", imageUrl);
+            setFormData((prev) => {
+                console.log("Cập nhật formData.link:", imageUrl);
+                return {
+                    ...prev,
+                    link: imageUrl,
+                };
+            });
+            setError('');
+        } catch (err) {
+            console.error("Lỗi upload ảnh:", err);
+            setError("Không thể tải ảnh lên. Vui lòng thử lại.");
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        console.log("Link ảnh trước submit:", formData.link);
+        if (!formData.link) {
+            alert("Vui lòng tải ảnh đại diện trước khi gửi!");
+            return;
+        }
         const doctorData = {
             ...formData,
             createdAt: new Date().toISOString(),
             birthday: formData.birthday,
         };
+        setIsSubmitting(true);
         try {
             const response = await addDoctor(doctorData);
             alert(response.message || 'Thêm bác sĩ thành công!');
             navigate('/doctor');
         } catch (error) {
             console.error("Lỗi:", error);
-        };
-
+            setError("Không thể tạo bác sĩ. Vui lòng thử lại.");
+        } finally {
+            setIsSubmitting(false);
+        }
     }
+
+
     return (
         <ClippedDrawer>
             <div>
@@ -104,9 +144,9 @@ const DoctorCreate = () => {
 
                     <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
                         <img
-                            src={formData.imageFile || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
+                            src={formData.link || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
                             alt="Avatar bác sĩ"
-                            className="w-32 h-32 object-cover rounded-full border"
+                            className="w-32 h-32 object-cover rounded-full"
                         />
                         <div className="mt-4 font-semibold text-lg">
                             {formData.name ? `BS. ${formData.name}` : 'Ảnh đại diện'}
@@ -221,7 +261,7 @@ const DoctorCreate = () => {
                             <div>
                                 <label className="block mb-1 font-medium">Trạng thái *</label>
                                 <select
-                                    name="status"
+                                    name="account.status"
                                     value={formData.account.status}
                                     onChange={handleChange}
                                     required
@@ -243,15 +283,16 @@ const DoctorCreate = () => {
                             </div>
 
                             <div>
-                                <label className="block mb-1 font-medium">Ảnh đại diện (URL)</label>
+                                <label className="block mb-1 font-medium">Ảnh đại diện</label>
                                 <input
-                                    type="text"
-                                    name="imageFile"
-                                    value={formData.imageFile}
-                                    onChange={handleChange}
-                                    placeholder="URL hình ảnh"
-                                    className="mt-1 block w-full rounded border p-2 text-sm outline-none"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
                                 />
+                                {isUploading && (
+                                    <p className="text-blue-600 text-sm mt-1">Đang tải ảnh lên...</p>
+                                )}
+                                {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
                             </div>
                         </div>
                         <div className='px-6 py-3'>
@@ -291,8 +332,9 @@ const DoctorCreate = () => {
                             <button
                                 type="submit"
                                 className="px-3 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                                disabled={isSubmitting}
                             >
-                                Thêm bác sĩ
+                                {isSubmitting ? "Đang xử lý..." : "Thêm bác sĩ"}
                             </button>
                         </div>
                     </form>

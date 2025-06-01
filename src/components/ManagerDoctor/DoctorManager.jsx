@@ -179,11 +179,12 @@ const DoctorManager = () => {
                                             <tr key={doc.id} className="border-t hover:bg-gray-50">
                                                 <td className="p-3">
                                                     <img
-                                                        src={doc.account?.avatar && doc.account.avatar.trim() !== "" ? doc.account.avatar : 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png'}
+                                                        src={doc.imageLink}
                                                         alt="avatar"
                                                         className="w-9 h-9 rounded-full object-cover"
                                                     />
                                                 </td>
+
                                                 <td className="p-3">{doc.name}</td>
                                                 <td>{specialty[doc.medicalSpecialtyId] || 'Không xác định'}</td>
                                                 <td className="p-3">{doc.phone}</td>

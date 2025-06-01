@@ -41,7 +41,7 @@ export default function ClippedDrawer({ children }) {
   const accountItems = [
     { text: 'Thông tin tài khoản', icon: <PeopleIcon />, path: '/profile' },
     { text: 'Lịch khám cá nhân', icon: <CalendarMonthIcon />, path: '/my-schedule' },
-    { text: 'Lịch trình của tôi', icon: <ScheduleIcon />, path: '/my-appointments' },
+    { text: 'Lịch trình của tôi', icon: <ScheduleIcon />, path: `/my-appointments` },
     { text: 'Bảo mật', icon: <LockIcon />, path: '/security' },
   ];
   const [open, setOpen] = React.useState(() => {

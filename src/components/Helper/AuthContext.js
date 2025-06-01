@@ -109,15 +109,18 @@ export const verifyOtp = async (email, otp) => {
     },
     body: JSON.stringify({ email, otp }),
   });
-  const result = await response.json();
 
-  if (!response.ok || result.statusCode !== 200) {
+  const result = await response.json();
+  console.log("VERIFY OTP RESULT", result);
+
+  if (!response.ok || result.statusCode !== 200 || !result.data) {
     const errorMessage = result.message || "Xác minh OTP thất bại.";
     throw new Error(errorMessage);
   }
 
   return result.data;
 }
+
 
 export const resetPassword = async (email, otp, newPass) => {
   const res = await fetch('/api/v1/p/auth/reset-password', {

@@ -1,13 +1,20 @@
-import { useNavigate } from "react-router-dom";
-import React, { useState } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
 import { FaArrowLeft } from "react-icons/fa";
 import { sendOtpToEmail } from "../Helper/AuthContext";
 
 const RecoveryPassword = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!location.state?.fromLogin) {
+            navigate('/dang-nhap');
+        }
+    }, [location, navigate]);
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");

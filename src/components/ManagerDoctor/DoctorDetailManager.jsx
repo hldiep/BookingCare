@@ -121,7 +121,9 @@ const DoctorDetail = () => {
                     <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
                         <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
                             <img
-                                src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+                                src={doctor.imageLink && doctor.imageLink.trim() !== ""
+                                    ? doctor.imageLink
+                                    : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
                                 alt="Avatar bác sĩ"
                                 className="w-32 h-32 object-cover rounded-full border"
                             />

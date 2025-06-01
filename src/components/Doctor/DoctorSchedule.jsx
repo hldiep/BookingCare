@@ -4,11 +4,13 @@ import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { Trash2, Edit } from 'lucide-react';
 import { fetchAllClinics } from '../util/clinicApi';
 import { fetchSchedulesByDoctor, fetchSchedulesById } from '../util/scheduleApi';
+import { useAuth } from '../Helper/AuthContext';
 
 const DoctorSchedule = () => {
     const [clinics, setClinics] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { id } = useParams();
+    const { currentUser } = useAuth();
+    const id = currentUser?.id;
     useEffect(() => {
         const loadClinics = async () => {
             try {
@@ -24,10 +26,10 @@ const DoctorSchedule = () => {
     const [schedules, setSchedule] = useState([]);
     const [form, setForm] = useState({
         date: '',
-        time_start: '',
-        time_end: '',
-        max_booking: '',
-        clinic_id: ''
+        timeStart: '',
+        timeEnd: '',
+        maxBooking: '',
+        clinic: ''
     });
     const [editingId, setEditingId] = useState(null);
 
@@ -37,7 +39,7 @@ const DoctorSchedule = () => {
                 const data = await fetchSchedulesByDoctor(id);
                 setSchedule(data);
             } catch (error) {
-                console.error('Lỗi khi tải lịch khám:', error);
+                console.error('Lỗi khi tải lịch trình:', error);
             } finally {
                 setLoading(false);
             }
@@ -133,10 +135,10 @@ const DoctorSchedule = () => {
                                         schedules.map((s) => (
                                             <tr key={s.id} className="border-t">
                                                 <td className="p-2">{s.date}</td>
-                                                <td className="p-2">{s.time_start}</td>
-                                                <td className="p-2">{s.time_end}</td>
-                                                <td className="p-2">{s.max_booking}</td>
-                                                <td className="p-2">{s.clinic_id}</td>
+                                                <td className="p-2">{s.timeStart}</td>
+                                                <td className="p-2">{s.timeEnd}</td>
+                                                <td className="p-2">{s.maxBooking}</td>
+                                                <td className="p-2">{s.clinic?.name || 'N/A'}</td>
                                                 <td className="p-2">{s.status}</td>
                                                 <td className="p-2 space-x-2">
                                                     <button className="text-yellow-600 hover:underline"><Edit size={16} /></button>
@@ -146,6 +148,7 @@ const DoctorSchedule = () => {
                                         ))
                                     )}
                                 </tbody>
+
                             </table>
                         </div>
                     )}

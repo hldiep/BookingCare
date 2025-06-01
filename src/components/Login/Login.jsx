@@ -16,8 +16,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        setIsLoading(true); // NEW
-
+        setIsLoading(true);
         try {
             await login(username, password);
 
@@ -40,7 +39,7 @@ const Login = () => {
         } catch (err) {
             setError('Tên đăng nhập hoặc mật khẩu không đúng');
         } finally {
-            setIsLoading(false); // NEW
+            setIsLoading(false);
         }
     };
 
@@ -103,6 +102,7 @@ const Login = () => {
                     <div className="text-right mt-1 mb-4">
                         <Link
                             to="/quen-mat-khau"
+                            state={{ fromLogin: true }}
                             className="text-sm text-blue-600 hover:underline italic"
                         >
                             Quên mật khẩu?

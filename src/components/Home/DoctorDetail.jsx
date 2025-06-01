@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchAllDoctors } from '../util/doctorApi';
+import { fetchAllDoctors, fetchDoctorById } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorDetail = () => {
@@ -21,22 +21,12 @@ const DoctorDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [doctors, specialties] = await Promise.all([
-                    fetchAllDoctors(),
-                    fetchAllSpecialty()
-                ]);
+                const doctorData = await fetchDoctorById(id);
+                setDoctor(doctorData);
 
-                const targetDoctor = doctors.find(d => d.id === id);
-                if (targetDoctor) {
-                    setDoctor(targetDoctor);
-
-                    const matchedSpecialty = specialties.find(s => s.id === targetDoctor.medicalSpecialtyId);
-                    if (matchedSpecialty) {
-                        setSpecialtyName(matchedSpecialty.name);
-                    } else {
-                        setSpecialtyName("Không rõ");
-                    }
-                }
+                const specialties = await fetchAllSpecialty();
+                const matchedSpecialty = specialties.find(s => s.id === doctorData.medicalSpecialtyId);
+                setSpecialtyName(matchedSpecialty ? matchedSpecialty.name : 'Không rõ');
             } catch (error) {
                 console.log('Lỗi khi tải dữ liệu:', error);
             }
@@ -57,8 +47,9 @@ const DoctorDetail = () => {
                         <div>
                             <h2 className="text-2xl font-bold text-highlight">{doctor.name}</h2>
                             <p className="text-gray-700 mt-2">Chuyên khoa: {specialtyName}</p>
-                            <p className="text-gray-600">Bệnh viện Đại học Y Hà Nội</p>
-                            <p className="mt-2 text-sm text-gray-500">Kinh nghiệm hơn 20 năm trong nghề, chuyên khám và điều trị tăng huyết áp, tim mạch, tiểu đường...</p>
+                            <p className="mt-2 text-sm text-gray-700">{doctor.qualification}</p>
+                            <p className="text-sm text-gray-500">{doctor.description}</p>
+
                         </div>
                     </div>
 
@@ -77,16 +68,6 @@ const DoctorDetail = () => {
                             </select>
                         </div>
 
-                        {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {schedule[selectedDate]?.map((time, index) => (
-                                <div key={index} className="flex justify-between items-center border p-3 rounded-md shadow-sm hover:bg-blue-50">
-                                    <span className="text-gray-700">{time}</span>
-                                    <button className="bg-logo text-white px-4 py-1 rounded-full hover:bg-nav transition">
-                                        Chọn lịch hẹn
-                                    </button>
-                                </div>
-                            )) || <p className="text-gray-500">Không có lịch khám trong ngày này.</p>}
-                        </div> */}
                     </div>
                 </div>
             </div>

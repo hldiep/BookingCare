@@ -3,11 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { fetchDoctorByIdManager, updateDoctor } from '../util/doctorApi';
 import { fetchAllSpecialtyManager } from '../util/specialtyApi';
+import { upload } from '../util/uploadFile';
 
 const DoctorEdit = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [specialties, setSpecialties] = useState([]);
+    const [imageFile, setImageFile] = useState(null);
+    const [loadingUpload, setLoadingUpload] = useState(false);
     const [doctor, setDoctor] = useState({
         name: '',
         gender: true,
@@ -17,7 +20,7 @@ const DoctorEdit = () => {
         email: '',
         address: '',
         status: '',
-        image: '',
+        imageLink: '',
         createdAt: new Date().toISOString(),
     });
 
@@ -53,15 +56,30 @@ const DoctorEdit = () => {
 
         setDoctor({ ...doctor, [name]: newValue });
     };
-
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setDoctor({ ...doctor, imageLink: URL.createObjectURL(file) });
+        }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await updateDoctor(doctor);
+            setLoadingUpload(true);
+            let imageUrl = doctor.imageLink;
+
+            if (imageFile) {
+                imageUrl = await upload(imageFile);
+            }
+
+            await updateDoctor({ ...doctor, imageLink: imageUrl });
             alert("Cập nhật bác sĩ thành công!");
             navigate("/doctor");
         } catch (error) {
             alert("Lỗi khi cập nhật bác sĩ: " + error.message);
+        } finally {
+            setLoadingUpload(false);
         }
     };
 
@@ -86,7 +104,9 @@ const DoctorEdit = () => {
                 <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
                     <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
                         <img
-                            src=''
+                            src={doctor.imageLink?.trim()
+                                ? doctor.imageLink
+                                : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
                             alt="Avatar bác sĩ"
                             className="w-32 h-32 object-cover rounded-full border"
                         />
@@ -190,23 +210,28 @@ const DoctorEdit = () => {
                                 name="address"
                                 value={doctor.address}
                                 onChange={handleChange}
-                                required
                                 className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
                             />
                         </div>
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700">Link ảnh đại diện</label>
+                        <label className="mt-4 text-sm text-gray-600">
+                            Cập nhật ảnh đại diện:
                             <input
-                                type="text"
-                                name="image"
-                                value={doctor.image}
-                                onChange={handleChange}
-                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="block mt-1 text-sm"
                             />
-                        </div>
-
+                            {loadingUpload && (
+                                <p className="text-xs text-blue-500 mt-2">Đang tải ảnh lên...</p>
+                            )}
+                        </label>
                         <div className="md:col-span-2 flex justify-end">
-                            <button type="submit" className=" py-2 bg-blue-600 text-white px-4 rounded">Cập nhật</button>
+                            <button
+                                type="submit"
+                                className="py-2 px-4 rounded text-white bg-blue-600 disabled:bg-blue-300"
+                            >
+                                Cập nhật
+                            </button>
                         </div>
                     </form>
                 </div>

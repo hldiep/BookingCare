@@ -61,29 +61,26 @@ export const fetchSchedulesByStatus = async (status) => {
             const errorText = await response.text();
             throw new Error(errorText || 'Không tìm thấy lịch theo trạng thái');
         }
-
         const json = await response.json();
-        return json.data || [];
+        return json.data;
     } catch (error) {
         console.error('Lỗi khi gọi API theo status:', error);
         throw new Error(error.message || 'Đã xảy ra lỗi khi lấy lịch theo trạng thái');
     }
 };
 
-export const fetchSchedulesByDoctor = async (id) => {
+export const fetchSchedulesByDoctor = async (doctorId) => {
     try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`${API_URL}/by_doctor/${id}`, {
+        const res = await fetch(`${API_URL}/by_doctor/${doctorId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
             },
         });
         const data = await res.json();
         return data.data;
     } catch (error) {
-        console.error('Lỗi fetchSchedulesByDoctor:', error);
+        console.error('Lỗi', error);
         throw error;
     }
 };

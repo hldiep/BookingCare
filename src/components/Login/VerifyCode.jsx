@@ -14,7 +14,11 @@ const VerifyCode = () => {
     const [countdown, setCountdown] = useState(60);
     const [canResend, setCanResend] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    useEffect(() => {
+        if (!location.state?.email) {
+            navigate('/quen-mat-khau');
+        }
+    }, [location, navigate]);
     useEffect(() => {
         let timer;
         if (countdown > 0) {
