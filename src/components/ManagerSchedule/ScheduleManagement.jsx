@@ -83,9 +83,7 @@ const ScheduleManagement = () => {
                             className="border px-3 py-2 rounded-md outline-none"
                         >
                             <option value="">Tất cả</option>
-                            <option value="PENDING">Pending</option>
                             <option value="ACTIVE">Active</option>
-                            <option value="UPCOMING">Upcoming</option>
                             <option value="ONGOING">Ongoing</option>
                             <option value="PAUSED">Paused</option>
                             <option value="EXPIRED">Expired</option>
@@ -148,21 +146,13 @@ const ScheduleManagement = () => {
                                                 <td className="p-3">{item.timeEnd}</td>
                                                 <td className="p-3">{item.maxBooking}</td>
                                                 <td className="p-3 font-medium">
-                                                    {item.status === 'PENDING' && (
-                                                        <span className="text-yellow-600 flex items-center">
-                                                            <CheckCircle className="w-4 h-4 mr-1" /> Chờ duyệt
-                                                        </span>
-                                                    )}
+
                                                     {item.status === 'ACTIVE' && (
                                                         <span className="text-green-600 flex items-center">
                                                             <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
                                                         </span>
                                                     )}
-                                                    {item.status === 'UPCOMING' && (
-                                                        <span className="text-cyan-600 flex items-center">
-                                                            <CalendarDays className="w-4 h-4 mr-1" /> Sắp diễn ra
-                                                        </span>
-                                                    )}
+
                                                     {item.status === 'ONGOING' && (
                                                         <span className="text-blue-600 flex items-center">
                                                             <CheckCircle className="w-4 h-4 mr-1" /> Đang diễn ra

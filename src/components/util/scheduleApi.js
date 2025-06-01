@@ -84,3 +84,51 @@ export const fetchSchedulesByDoctor = async (doctorId) => {
         throw error;
     }
 };
+export const editSchedule = async (schedule) => {
+    try {
+        const token = localStorage.getItem('token');
+
+        const res = await fetch(`/api/v1/d/doctor-schedules/update`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(schedule)
+        });
+
+        if (!res.ok) {
+            throw new Error('Cập nhật lịch thất bại');
+        }
+
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error('Lỗi khi cập nhật lịch:', error);
+        throw error;
+    }
+};
+export const addSchedule = async (schedule) => {
+    try {
+        const token = localStorage.getItem('token');
+
+        const res = await fetch('/api/v1/d/doctor-schedules/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(schedule)
+        });
+
+        if (!res.ok) {
+            throw new Error('Thêm lịch thất bại');
+        }
+
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error('Lỗi khi thêm lịch:', error);
+        throw error;
+    }
+};

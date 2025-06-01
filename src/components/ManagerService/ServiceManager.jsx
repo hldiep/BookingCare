@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil, Info, Ban, CheckCircle, Delete } from 'lucide-react';
+import { Pencil, Info, Ban, CheckCircle, Delete, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { deleteService, fetchAllServices, fetchAllServicesManager, fetchPageService, fetchPageServiceManager } from '../util/serviceApi';
@@ -89,8 +89,11 @@ const ServiceManager = () => {
         try {
             const response = await deleteService(id);
             alert(response.data || 'Xóa thành công');
-            setLoading(true);
-            await loadService();
+            setServices(prevService =>
+                prevService.map(sv =>
+                    sv.id === id ? { ...sv, status: 'DELETED' } : sv
+                )
+            );
         } catch (err) {
             alert(err.message || 'Đã xảy ra lỗi khi xóa dịch vụ');
         }
@@ -158,11 +161,11 @@ const ServiceManager = () => {
                                                 <td className="p-3 font-medium">
                                                     {sv.status === 'ACTIVE' ? (
                                                         <span className="text-green-600 flex items-center">
-                                                            <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
+                                                            <CheckCircle className="w-4 h-4 mr-1" /> Đang hoạt động
                                                         </span>
                                                     ) : (
                                                         <span className="text-red-500 flex items-center">
-                                                            <Ban className="w-4 h-4 mr-1" /> Tạm dừng
+                                                            <Ban className="w-4 h-4 mr-1" /> Đã xóa
                                                         </span>
                                                     )}
                                                 </td>
@@ -170,20 +173,31 @@ const ServiceManager = () => {
                                                 <td className="p-3 space-x-2 text-center flex">
                                                     {!(roles.includes('DOCTOR')) && (
                                                         <>
-                                                            <button
-                                                                onClick={() => navigate(`/service/edit/${sv.id}`)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Chỉnh sửa"
-                                                            >
-                                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDelete(services.id)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Xóa"
-                                                            >
-                                                                <Delete className="w-4 h-4 text-gray-700" />
-                                                            </button>
+                                                            {sv.status !== 'DELETED' ? (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => navigate(`/service/edit/${sv.id}`)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Chỉnh sửa"
+                                                                    >
+                                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDelete(sv.id)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Xóa"
+                                                                    >
+                                                                        <Delete className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button
+                                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                                    title="Khôi phục"
+                                                                >
+                                                                    <ArchiveRestoreIcon className="w-4 h-4 text-green-600" />
+                                                                </button>
+                                                            )}
                                                         </>
                                                     )}
                                                 </td>

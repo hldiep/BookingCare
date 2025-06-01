@@ -137,7 +137,7 @@ const SpecialtyEdit = () => {
                                 className="text-sm outline-none block rounded border border-gray-300 bg-gray-100 p-2 shadow-sm"
                             >
                                 <option value="ACTIVE">Hoạt động</option>
-                                <option value="DELETING">Tạm dừng</option>
+                                <option value="DELETED">Xóa</option>
                             </select>
                         </div>
 

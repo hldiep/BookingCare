@@ -107,8 +107,8 @@ const translateStatus = (status) => {
     switch (status) {
         case 'ACTIVE':
             return 'Đang hoạt động';
-        case 'UPCOMING':
-            return 'Sắp diễn ra';
+        // case 'UPCOMING':
+        //     return 'Sắp diễn ra';
         case 'CANCELED':
             return 'Đã hủy';
         case 'PAUSED':

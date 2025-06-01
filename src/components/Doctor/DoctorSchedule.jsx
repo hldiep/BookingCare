@@ -1,57 +1,105 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { Trash2, Edit } from 'lucide-react';
 import { fetchAllClinics } from '../util/clinicApi';
-import { fetchSchedulesByDoctor, fetchSchedulesById } from '../util/scheduleApi';
+import { addSchedule, fetchSchedulesByDoctor, fetchSchedulesById } from '../util/scheduleApi';
 import { useAuth } from '../Helper/AuthContext';
 
 const DoctorSchedule = () => {
+    const navigate = useNavigate();
     const [clinics, setClinics] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { currentUser } = useAuth();
-    const id = currentUser?.id;
-    useEffect(() => {
-        const loadClinics = async () => {
-            try {
-                const data = await fetchAllClinics();
-                setClinics(data);
-            } catch (error) {
-                console.log("Lỗi tải danh sách phòng khám:", error);
-            }
-        };
-        loadClinics();
-    }, []);
-
-    const [schedules, setSchedule] = useState([]);
     const [form, setForm] = useState({
         date: '',
         timeStart: '',
         timeEnd: '',
         maxBooking: '',
-        clinic: ''
+        clinic_id: ''
     });
-    const [editingId, setEditingId] = useState(null);
-
+    const loadClinics = async () => {
+        try {
+            const data = await fetchAllClinics();
+            setClinics(data);
+        } catch (error) {
+            console.log("Lỗi tải danh sách phòng khám:", error);
+        }
+    };
     useEffect(() => {
-        const loadSchedule = async () => {
+        const loadData = async () => {
             try {
-                const data = await fetchSchedulesByDoctor(id);
-                setSchedule(data);
+                loadClinics();
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    const user = JSON.parse(storedUser);
+                    const idDoctor = user.id;
+
+                    const fetchedSchedules = await fetchSchedulesByDoctor(idDoctor);
+                    setSchedule(fetchedSchedules);
+                    setLoading(false);
+                } else {
+                    console.log("Không tìm thấy user trong localStorage");
+                    setLoading(false);
+                }
             } catch (error) {
-                console.error('Lỗi khi tải lịch trình:', error);
-            } finally {
+                console.error("Lỗi khi tải lịch trình:", error);
                 setLoading(false);
             }
         };
-        loadSchedule();
-    }, [id]);
+
+        loadData();
+    }, []);
+
+
+    const [schedules, setSchedule] = useState([]);
+    const [editingId, setEditingId] = useState(null);
 
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm({
+            ...form,
+            [name]: name === 'clinic_id' ? parseInt(value) : value
+        });
     };
+    const handleAddSchedule = async (e) => {
+        e.preventDefault();
+        try {
+            const storedUser = localStorage.getItem('user');
+            if (!storedUser) {
+                alert('Không tìm thấy thông tin đăng nhập!');
+                return;
+            }
 
+            const user = JSON.parse(storedUser);
+
+            const payload = {
+                date: form.date,
+                timeStart: form.timeStart,
+                timeEnd: form.timeEnd,
+                maxBooking: parseInt(form.maxBooking),
+                clinic: { id: form.clinic_id },
+                doctor: { id: user.id }
+            };
+
+            await addSchedule(payload);
+            alert('Thêm lịch thành công!');
+
+            setForm({
+                date: '',
+                timeStart: '',
+                timeEnd: '',
+                maxBooking: '',
+                clinic_id: ''
+            });
+
+            const fetchedSchedules = await fetchSchedulesByDoctor(user.id);
+            setSchedule(fetchedSchedules);
+        } catch (error) {
+            console.error('Lỗi khi thêm lịch:', error);
+            alert('Thêm lịch thất bại!');
+        }
+    };
     return (
         <ClippedDrawer>
             <div>
@@ -68,22 +116,22 @@ const DoctorSchedule = () => {
 
                     <div className="bg-white border shadow p-4 rounded max-w-3xl mx-auto">
                         <h3 className="font-semibold text-gray-800 mb-4">{editingId ? 'Cập nhật lịch' : 'Thêm lịch mới'}</h3>
-                        <form className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                        <form onSubmit={handleAddSchedule} className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
                             <div>
                                 <label className="block mb-1">Ngày</label>
                                 <input type="date" name="date" value={form.date} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
                             </div>
                             <div>
                                 <label className="block mb-1">Thời gian bắt đầu</label>
-                                <input type="time" name="time_start" value={form.time_start} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
+                                <input type="time" name="timeStart" value={form.timeStart} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
                             </div>
                             <div>
                                 <label className="block mb-1">Thời gian kết thúc</label>
-                                <input type="time" name="time_end" value={form.time_end} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
+                                <input type="time" name="timeEnd" value={form.timeEnd} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
                             </div>
                             <div>
                                 <label className="block mb-1">Số lượt khám tối đa</label>
-                                <input type="number" name="max_booking" value={form.max_booking} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
+                                <input type="number" name="maxBooking" value={form.maxBooking} onChange={handleChange} className="outline-none w-full p-2 border rounded" required />
                             </div>
                             <div>
                                 <label className="block mb-1">Phòng khám</label>
@@ -94,7 +142,7 @@ const DoctorSchedule = () => {
                                     className="outline-none w-full p-2 border rounded"
                                     required
                                 >
-                                    <option value="">-- Chọn phòng khám --</option>
+                                    <option value="">Chọn phòng khám</option>
                                     {clinics.map((clinic) => (
                                         <option key={clinic.id} value={clinic.id}>
                                             {clinic.name}
@@ -141,7 +189,8 @@ const DoctorSchedule = () => {
                                                 <td className="p-2">{s.clinic?.name || 'N/A'}</td>
                                                 <td className="p-2">{s.status}</td>
                                                 <td className="p-2 space-x-2">
-                                                    <button className="text-yellow-600 hover:underline"><Edit size={16} /></button>
+                                                    <button onClick={() => navigate(`/doctor-schedule/edit/${s.id}`)}
+                                                        className="text-yellow-600 hover:underline"><Edit size={16} /></button>
                                                     <button className="text-red-600 hover:underline"><Trash2 size={16} /></button>
                                                 </td>
                                             </tr>

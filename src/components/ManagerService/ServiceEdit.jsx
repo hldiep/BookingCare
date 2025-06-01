@@ -112,8 +112,8 @@ const ServiceEdit = () => {
                                     onChange={handleChange}
                                     className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 >
-                                    <option value="ACTIVE">Hoạt động</option>
-                                    <option value="DELETED">Tạm ngừng</option>
+                                    <option value="ACTIVE">Đang hoạt động</option>
+                                    <option value="DELETED">Bị xóa</option>
                                 </select>
                             </div>
                             <div>

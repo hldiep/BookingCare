@@ -49,6 +49,7 @@ import SpecialtyManage from "./components/ManagerSpecialty/SpecialtyMange";
 import ClinicManager from "./components/ManagerClinic/ClinicMangager";
 import ServiceManager from "./components/ManagerService/ServiceManager";
 import DoctorManager from "./components/ManagerDoctor/DoctorManager";
+import EditDoctorSchedule from "./components/Doctor/EditDoctorSchedule";
 function App() {
   return (
     <>
@@ -112,6 +113,7 @@ function App() {
         <Route path="my-schedule" element={<LichKham />} />
         <Route path="my-appointments" element={<DoctorSchedule />} />
         <Route path="my-schedule/detail" element={<LichKhamChiTiet />} />
+        <Route path="/doctor-schedule/edit/:id" element={<EditDoctorSchedule />} />
       </Routes>
     </>
 

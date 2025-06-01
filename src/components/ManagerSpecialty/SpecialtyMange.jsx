@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pencil, Delete, CheckCircle, Ban } from 'lucide-react';
+import { Pencil, Delete, CheckCircle, Ban, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { deleteSpecialty, fetchAllSpecialtyManager, fetchPageSpecialty, fetchPageSpecialtyManager } from '../util/specialtyApi';
@@ -95,7 +95,11 @@ const SpecialtyManage = () => {
         try {
             const response = await deleteSpecialty(id);
             alert(response.data || 'Xóa thành công');
-            await loadData();
+            setSpecialties(prevSp =>
+                prevSp.map(item =>
+                    item.id === id ? { ...item, status: 'DELETED' } : item
+                )
+            );
         } catch (err) {
             alert(err.message || 'Đã xảy ra lỗi khi xóa chuyên khoa');
         }
@@ -192,7 +196,7 @@ const SpecialtyManage = () => {
                                                                     </span>
                                                                 ) : (
                                                                     <span className="text-red-500 flex items-center">
-                                                                        <Ban className="w-4 h-4 mr-1" /> Ngừng hoạt động
+                                                                        <Ban className="w-4 h-4 mr-1" /> Đã xóa
                                                                     </span>
                                                                 )
                                                             }
@@ -210,20 +214,31 @@ const SpecialtyManage = () => {
                                                 <td className="p-3 text-center space-x-2">
                                                     {!(roles.includes('DOCTOR')) && (
                                                         <>
-                                                            <button
-                                                                onClick={() => navigate(`/specialty/edit/${item.id}`)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Chỉnh sửa"
-                                                            >
-                                                                <Pencil className="w-4 h-4 text-gray-700" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleDelete(item.id)}
-                                                                className="p-1 border rounded hover:bg-gray-100"
-                                                                title="Xóa"
-                                                            >
-                                                                <Delete className="w-4 h-4 text-gray-700" />
-                                                            </button>
+                                                            {item.status !== 'DELETED' ? (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => navigate(`/specialty/edit/${item.id}`)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Chỉnh sửa"
+                                                                    >
+                                                                        <Pencil className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handleDelete(item.id)}
+                                                                        className="p-1 border rounded hover:bg-gray-100"
+                                                                        title="Xóa"
+                                                                    >
+                                                                        <Delete className="w-4 h-4 text-gray-700" />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <button
+                                                                    className="p-1 border rounded hover:bg-gray-100"
+                                                                    title="Khôi phục"
+                                                                >
+                                                                    <ArchiveRestoreIcon className="w-4 h-4 text-green-600" />
+                                                                </button>
+                                                            )}
                                                         </>
                                                     )}
                                                 </td>
