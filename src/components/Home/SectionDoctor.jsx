@@ -47,7 +47,7 @@ const SectionDoctor = () => {
                                         className="bg-white rounded-lg shadow-md p-4 text-center hover:scale-[1.02] transition-all duration-300"
                                     >
                                         <img
-                                            src={doctor.image}
+                                            src={doctor.imageLink}
                                             alt={doctor.name}
                                             className="mx-auto h-40 w-40 object-cover rounded-full mb-4"
                                         />

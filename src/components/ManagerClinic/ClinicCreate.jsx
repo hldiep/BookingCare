@@ -5,6 +5,7 @@ import { addClinic } from '../util/clinicApi';
 
 const ClinicCreate = () => {
     const navigate = useNavigate();
+    const [imagesFile, setImagesFile] = useState([]);
 
     const [clinic, setClinic] = useState({
         name: '',
@@ -60,31 +61,40 @@ const ClinicCreate = () => {
 
                 <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
 
-                    <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
+                    {/* <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
                         <p className="font-semibold text-center text-lg">Ảnh phòng khám</p>
 
-                        <button
-                            type="button"
-                            className="mt-2 w-full px-4 py-2 rounded border text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                            + Thêm ảnh
-                        </button>
-                    </div>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                                const files = Array.from(e.target.files);
+                                setImagesFile(files);
+                                setClinic(prev => ({
+                                    ...prev,
+                                    images: files.map(file => URL.createObjectURL(file)),
+                                }));
+                            }}
+                            className="w-full text-sm text-gray-600"
+                        />
+
+                        <div className="grid grid-cols-2 gap-2 pt-2">
+                            {clinic.images.map((img, index) => (
+                                <img
+                                    key={index}
+                                    src={img}
+                                    alt={`Preview ${index}`}
+                                    className="w-full h-24 object-cover rounded border"
+                                />
+                            ))}
+                        </div>
+                    </div> */}
 
                     <form
                         onSubmit={handleSubmit}
-                        className="w-full md:w-2/3 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+                        className="w-full bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
                     >
-                        {/* <div>
-                            <label className="block text-sm font-medium text-gray-700">Mã phòng khám</label>
-                            <input
-                                type="text"
-                                name="id"
-                                value={clinic.id}
-                                readOnly
-                                className="bg-gray-100 cursor-not-allowed outline-none mt-1 block w-full rounded border-gray-300 shadow-sm"
-                            />
-                        </div> */}
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Tên phòng khám</label>
@@ -144,17 +154,6 @@ const ClinicCreate = () => {
                                 <option value="ACTIVE">Hoạt động</option>
                             </select>
                         </div>
-
-                        {/* <div>
-                            <label className="block text-sm font-medium text-gray-700">Ngày tạo</label>
-                            <input
-                                type="text"
-                                name="createdAt"
-                                value={clinic.createdAt}
-                                readOnly
-                                className="bg-gray-100 cursor-not-allowed outline-none mt-1 block w-full rounded border-gray-300 shadow-sm"
-                            />
-                        </div> */}
 
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700">Mô tả</label>

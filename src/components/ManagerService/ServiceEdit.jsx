@@ -69,31 +69,29 @@ const ServiceEdit = () => {
                     <h2 className="text-xl font-semibold p-4">Chỉnh sửa dịch vụ</h2>
                 </div>
                 <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
-                    <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
-                        <p className="font-semibold text-center">Ảnh dịch vụ</p>
-                    </div>
-                    <form onSubmit={handleSubmit} className="w-full md:w-2/3 bg-white rounded shadow p-6 gap-6">
-                        <p className="font-semibold text-center">Thông tin dịch vụ</p>
-                        <div className="space-y-4 col-span-1">
+
+                    <form onSubmit={handleSubmit} className="w-full bg-white rounded-lg shadow p-6 space-y-6">
+                        <h3 className="text-lg font-semibold text-center text-gray-700">Thông tin dịch vụ</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                             <div>
-                                <label className="block text-sm font-medium">Tên dịch vụ</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Tên dịch vụ</label>
                                 <input
                                     type="text"
                                     name="name"
                                     value={service.name}
                                     onChange={handleChange}
-                                    className="w-full p-2 text-sm outline-none mt-1 block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    className="text-sm outline-none w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                     required
                                 />
                             </div>
-                            <div className='flex space-x-4 items-center text-center'>
-                                <label className="block text-sm font-medium">Chuyên khoa</label>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Chuyên khoa</label>
                                 <select
                                     name="medicalSpecialtyId"
                                     value={service.medicalSpecialtyId}
                                     onChange={handleChange}
-                                    className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    className="text-sm outline-none w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                     required
                                 >
                                     <option value="">Chọn chuyên khoa</option>
@@ -104,37 +102,38 @@ const ServiceEdit = () => {
                                     ))}
                                 </select>
                             </div>
-                            <div className='flex space-x-4 items-center text-center'>
-                                <label className="block text-sm font-medium">Trạng thái</label>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
                                 <select
                                     name="status"
                                     value={service.status}
                                     onChange={handleChange}
-                                    className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                    className="text-sm outline-none w-full p-2 border border-gray-300 rounded-md shadow-sm"
                                 >
                                     <option value="ACTIVE">Đang hoạt động</option>
                                     <option value="DELETED">Bị xóa</option>
                                 </select>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium ">Mô tả</label>
-                                <textarea
-                                    name="description"
-                                    value={service.description}
-                                    onChange={handleChange}
-                                    className="p-2 text-sm outline-none mt-1 block w-full rounded border-gray-300 shadow-sm h-32 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                            <div className="md:col-span-2 flex justify-end">
-                                <button
-                                    type="submit"
-                                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                                >
-                                    Lưu thay đổi
-                                </button>
-                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+                            <textarea
+                                name="description"
+                                value={service.description}
+                                onChange={handleChange}
+                                className="outline-none text-sm w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            />
+                        </div>
+                        <div className="mt-6 flex justify-end">
+                            <button
+                                type="submit"
+                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                            >
+                                Lưu thay đổi
+                            </button>
                         </div>
                     </form>
+
                 </div>
 
             </div>

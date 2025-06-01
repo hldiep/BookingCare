@@ -143,3 +143,20 @@ export const fetchPageClinicManager = async (page = 0, size = 10, sortBy = 'id')
         }
     }
 };
+
+export const updateClinicStatus = async (id, status) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`/api/v1/m/clinics/update/status/${id}?status=${status}`, {
+        method: 'PUT',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Lỗi khi cập nhật trạng thái phòng khám');
+    }
+
+    return await response.json();
+};

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Delete, CheckCircle, Ban, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteSpecialty, fetchAllSpecialtyManager, fetchPageSpecialty, fetchPageSpecialtyManager } from '../util/specialtyApi';
+import { deleteSpecialty, fetchAllSpecialtyManager, fetchPageSpecialty, fetchPageSpecialtyManager, updateSpecialtyStatus } from '../util/specialtyApi';
 import { fetchAllDoctors } from '../util/doctorApi';
 
 const SpecialtyManage = () => {
@@ -93,18 +93,34 @@ const SpecialtyManage = () => {
             return;
         }
         try {
-            const response = await deleteSpecialty(id);
-            alert(response.data || 'Xóa thành công');
+            await updateSpecialtyStatus(id, 'DELETED');
+            alert("Đã xóa chuyên khoa!");
             setSpecialties(prevSp =>
-                prevSp.map(item =>
-                    item.id === id ? { ...item, status: 'DELETED' } : item
+                prevSp.map(sp =>
+                    sp.id === id ? { ...sp, status: 'DELETED' } : sp
                 )
             );
-        } catch (err) {
-            alert(err.message || 'Đã xảy ra lỗi khi xóa chuyên khoa');
+        } catch (error) {
+            alert("Lỗi: " + error.message);
         }
     };
-
+    const handleRestoreSpecialty = async (id) => {
+        const confirmRestore = window.confirm('Bạn có chắc muốn khôi phục chuyên khoa này không?');
+        if (!confirmRestore) {
+            return;
+        }
+        try {
+            await updateSpecialtyStatus(id, 'ACTIVE');
+            alert("Khôi phục trạng thái thành công!");
+            setSpecialties(prevSp =>
+                prevSp.map(sp =>
+                    sp.id === id ? { ...sp, status: 'ACTIVE' } : sp
+                )
+            );
+        } catch (error) {
+            alert("Lỗi: " + error.message);
+        }
+    };
     const handlePageClick = (page) => {
         setCurrentPage(page - 1);
     };
@@ -233,6 +249,7 @@ const SpecialtyManage = () => {
                                                                 </>
                                                             ) : (
                                                                 <button
+                                                                    onClick={() => handleRestoreSpecialty(item.id)}
                                                                     className="p-1 border rounded hover:bg-gray-100"
                                                                     title="Khôi phục"
                                                                 >

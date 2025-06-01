@@ -62,7 +62,7 @@ const ClinicEdit = () => {
                     <h2 className="text-xl font-semibold p-4">Chỉnh sửa phòng khám</h2>
                 </div>
                 <div className='p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6'>
-                    <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
+                    {/* <div className="w-full md:w-1/3 bg-white p-4 rounded shadow space-y-4">
                         <p className="font-semibold text-center text-lg">Ảnh phòng khám</p>
 
                         <button
@@ -71,8 +71,8 @@ const ClinicEdit = () => {
                         >
                             + Thêm ảnh
                         </button>
-                    </div>
-                    <form onSubmit={handleSubmit} className="w-full md:w-2/3 bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    </div> */}
+                    <form onSubmit={handleSubmit} className="w-full bg-white rounded shadow p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className='text-sm'>
                             <label className="block font-medium">Tên phòng khám</label>
                             <input

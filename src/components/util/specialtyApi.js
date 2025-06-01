@@ -142,3 +142,19 @@ export const fetchPageSpecialtyManager = async (page = 0, size = 10, sortBy = 'i
     }
 };
 
+export const updateSpecialtyStatus = async (id, status) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`/api/v1/m/medical-specialties/update/status/${id}?status=${status}`, {
+        method: 'PUT',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Lỗi khi cập nhật trạng thái chuyên khoa');
+    }
+
+    return await response.json();
+};

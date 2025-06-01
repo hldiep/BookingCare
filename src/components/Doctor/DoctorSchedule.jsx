@@ -4,7 +4,6 @@ import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
 import { Trash2, Edit } from 'lucide-react';
 import { fetchAllClinics } from '../util/clinicApi';
 import { addSchedule, fetchSchedulesByDoctor, fetchSchedulesById } from '../util/scheduleApi';
-import { useAuth } from '../Helper/AuthContext';
 
 const DoctorSchedule = () => {
     const navigate = useNavigate();
@@ -78,10 +77,9 @@ const DoctorSchedule = () => {
                 timeStart: form.timeStart,
                 timeEnd: form.timeEnd,
                 maxBooking: parseInt(form.maxBooking),
-                clinic: { id: form.clinic_id },
-                doctor: { id: user.id }
+                clinicId: form.clinic_id,
+                doctorId: user.id
             };
-
             await addSchedule(payload);
             alert('Thêm lịch thành công!');
 
@@ -191,7 +189,7 @@ const DoctorSchedule = () => {
                                                 <td className="p-2 space-x-2">
                                                     <button onClick={() => navigate(`/doctor-schedule/edit/${s.id}`)}
                                                         className="text-yellow-600 hover:underline"><Edit size={16} /></button>
-                                                    <button className="text-red-600 hover:underline"><Trash2 size={16} /></button>
+                                                    {/* <button className="text-red-600 hover:underline"><Trash2 size={16} /></button> */}
                                                 </td>
                                             </tr>
                                         ))

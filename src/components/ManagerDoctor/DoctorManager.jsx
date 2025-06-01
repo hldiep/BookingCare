@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager, fetchPageDoctor, fetchPageDoctorManager, searchDoctor } from '../util/doctorApi';
+import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager, fetchPageDoctor, fetchPageDoctorManager, searchDoctor, updateDoctorStatus } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorManager = () => {
@@ -110,8 +110,14 @@ const DoctorManager = () => {
             alert(err.message || 'Đã xảy ra lỗi khi xóa bác sĩ');
         }
     };
-    const handleRestoreDoctor = async (id) => {
 
+    const handleRestoreDoctor = async () => {
+        try {
+            const updatedDoctor = await updateDoctorStatus(doctors.id, 'ACTIVE');
+            alert("Cập nhật trạng thái thành công!");
+        } catch (error) {
+            alert("Lỗi: " + error.message);
+        }
     };
     const handlePageClick = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -221,11 +227,11 @@ const DoctorManager = () => {
                                                                     <CheckCircle className="w-4 h-4 mr-1" /> Hoạt động
                                                                 </span>
                                                             )}
-                                                            {doc?.account?.status === 'BLOCKED' && (
+                                                            {/* {doc?.account?.status === 'BLOCKED' && (
                                                                 <span className="text-yellow-600 flex items-center">
                                                                     <Ban className="w-4 h-4 mr-1" /> Bị khóa
                                                                 </span>
-                                                            )}
+                                                            )} */}
                                                             {doc?.account?.status === 'DELETED' && (
                                                                 <span className="text-red-500 flex items-center">
                                                                     <Ban className="w-4 h-4 mr-1" /> Đã xóa

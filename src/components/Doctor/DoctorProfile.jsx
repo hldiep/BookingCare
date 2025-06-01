@@ -76,7 +76,7 @@ const DoctorProfile = () => {
                         <div className="mt-4 flex flex-col md:flex-row gap-6">
                             <div className="flex justify-center md:block">
                                 <img
-                                    src={doctor.avatarUrl}
+                                    src={doctor.imageLink}
                                     alt="Doctor Avatar"
                                     className="w-40 h-40 object-cover rounded-full border-4 border-blue-500 shadow-md"
                                 />

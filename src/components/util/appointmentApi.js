@@ -1,14 +1,24 @@
-import axios from "axios";
-import { env } from "./Contrainst";
+export const addAppointments = async (appointment) => {
+    try {
+        const response = await fetch('/api/v1/p/appointments/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(appointment)
+        });
 
-const API_URL = `${env.url.API_BASE_URL}/api/appointment`;
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Lỗi từ backend:', response.status, errorText);
+            throw new Error(`Lỗi ${response.status}: ${errorText}`);
+        }
 
-// export const fetchSchedulesByDoctorId = async (doctorId) => {
-//     try {
-//         const response = await axios.get(`${API_URL}?doctor_id=${doctorId}`);
-//         return response.data.data;
-//     } catch (error) {
-//         console.error('Lỗi khi tải lịch khám theo bác sĩ:', error);
-//         throw error;
-//     }
-// };
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Lỗi khi gửi yêu cầu tạo lịch hẹn:', error);
+        throw error;
+    }
+};

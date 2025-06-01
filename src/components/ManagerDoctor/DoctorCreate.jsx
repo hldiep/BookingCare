@@ -71,10 +71,6 @@ const DoctorCreate = () => {
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file) {
-            setImageFile(file);
-            setFormData({ ...formData, imageLink: URL.createObjectURL(file) });
-        }
         setIsUploading(true);
         try {
             const imageUrl = await upload(file);

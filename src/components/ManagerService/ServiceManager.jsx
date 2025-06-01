@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Info, Ban, CheckCircle, Delete, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteService, fetchAllServices, fetchAllServicesManager, fetchPageService, fetchPageServiceManager } from '../util/serviceApi';
+import { deleteService, fetchAllServices, fetchAllServicesManager, fetchPageService, fetchPageServiceManager, updateServiceStatus } from '../util/serviceApi';
 
 const ServiceManager = () => {
     const navigate = useNavigate();
@@ -86,18 +86,46 @@ const ServiceManager = () => {
         if (!confirmDelete) {
             return;
         }
+        // try {
+        //     const response = await deleteService(id);
+        //     alert(response.data || 'Xóa thành công');
+        //     setServices(prevService =>
+        //         prevService.map(sv =>
+        //             sv.id === id ? { ...sv, status: 'DELETED' } : sv
+        //         )
+        //     );
+        // } catch (err) {
+        //     alert(err.message || 'Đã xảy ra lỗi khi xóa dịch vụ');
+        // }
         try {
-            const response = await deleteService(id);
-            alert(response.data || 'Xóa thành công');
+            await updateServiceStatus(id, 'DELETED');
+            alert("Đã xóa dịch vụ!");
             setServices(prevService =>
                 prevService.map(sv =>
                     sv.id === id ? { ...sv, status: 'DELETED' } : sv
                 )
             );
-        } catch (err) {
-            alert(err.message || 'Đã xảy ra lỗi khi xóa dịch vụ');
+        } catch (error) {
+            alert("Lỗi: " + error.message);
         }
     }
+    const handleRestoreService = async (id) => {
+        const confirmRestore = window.confirm('Bạn có chắc muốn khôi phục dịch vụ này không?');
+        if (!confirmRestore) {
+            return;
+        }
+        try {
+            await updateServiceStatus(id, 'ACTIVE');
+            alert("Khôi phục trạng thái thành công!");
+            setServices(prevService =>
+                prevService.map(sv =>
+                    sv.id === id ? { ...sv, status: 'ACTIVE' } : sv
+                )
+            );
+        } catch (error) {
+            alert("Lỗi: " + error.message);
+        }
+    };
     const indexOfFirst = currentPage * servicePerPage;
     return (
         <ClippedDrawer>
@@ -192,6 +220,7 @@ const ServiceManager = () => {
                                                                 </>
                                                             ) : (
                                                                 <button
+                                                                    onClick={() => handleRestoreService(sv.id)}
                                                                     className="p-1 border rounded hover:bg-gray-100"
                                                                     title="Khôi phục"
                                                                 >

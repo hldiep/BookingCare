@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArchiveRestoreIcon, BadgeCheck, Ban, CheckCircle, Delete, Info, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteClinic, fetchPageClinic, fetchPageClinicManager } from '../util/clinicApi';
+import { deleteClinic, fetchPageClinic, fetchPageClinicManager, updateClinicStatus } from '../util/clinicApi';
 
 const ClinicManager = () => {
     const navigate = useNavigate();
@@ -88,18 +88,46 @@ const ClinicManager = () => {
             return;
         }
 
+        // try {
+        //     const response = await deleteClinic(id);
+        //     alert(response.data || 'Xóa thành công');
+        //     setClinicList(prevClinic =>
+        //         prevClinic.map(clinic =>
+        //             clinic.id === id ? { ...clinic, status: 'DELETED' } : clinic
+        //         )
+        //     );
+        // } catch (err) {
+        //     alert(err.message || 'Đã xảy ra lỗi khi xóa phòng khám');
+        // }
         try {
-            const response = await deleteClinic(id);
-            alert(response.data || 'Xóa thành công');
+            await updateClinicStatus(id, 'DELETED');
+            alert("Đã xóa phòng khám!");
             setClinicList(prevClinic =>
                 prevClinic.map(clinic =>
                     clinic.id === id ? { ...clinic, status: 'DELETED' } : clinic
                 )
             );
-        } catch (err) {
-            alert(err.message || 'Đã xảy ra lỗi khi xóa phòng khám');
+        } catch (error) {
+            alert("Lỗi: " + error.message);
         }
     }
+    const handleRestoreClinic = async (id) => {
+        const confirmRestore = window.confirm('Bạn có chắc muốn khôi phục phòng khám này không?');
+        if (!confirmRestore) {
+            return;
+        }
+        try {
+            await updateClinicStatus(id, 'ACTIVE');
+            alert("Khôi phục trạng thái thành công!");
+            setClinicList(prevClinic =>
+                prevClinic.map(clinic =>
+                    clinic.id === id ? { ...clinic, status: 'ACTIVE' } : clinic
+                )
+            );
+        } catch (error) {
+            alert("Lỗi: " + error.message);
+        }
+    };
 
     const indexOfFirst = currentPage * clinicPerPage;
     return (
@@ -224,6 +252,7 @@ const ClinicManager = () => {
                                                                 </>
                                                             ) : (
                                                                 <button
+                                                                    onClick={() => handleRestoreClinic(clinic.id)}
                                                                     className="p-1 border rounded hover:bg-gray-100"
                                                                     title="Khôi phục"
                                                                 >

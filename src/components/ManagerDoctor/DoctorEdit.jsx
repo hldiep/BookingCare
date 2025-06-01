@@ -9,8 +9,9 @@ const DoctorEdit = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [specialties, setSpecialties] = useState([]);
-    const [imageFile, setImageFile] = useState(null);
+
     const [loadingUpload, setLoadingUpload] = useState(false);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [doctor, setDoctor] = useState({
         name: '',
         gender: true,
@@ -56,24 +57,28 @@ const DoctorEdit = () => {
 
         setDoctor({ ...doctor, [name]: newValue });
     };
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            setDoctor({ ...doctor, imageLink: URL.createObjectURL(file) });
+    const handleImageChange = async (e) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const lastFile = files[files.length - 1];
+
+        setUploadingImage(true);
+        try {
+            const imageUrl = await upload(lastFile);
+            setDoctor(prev => ({ ...prev, imageLink: imageUrl }));
+        } catch (err) {
+            alert("Không thể tải ảnh lên. Vui lòng thử lại.");
+        } finally {
+            setUploadingImage(false);
         }
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoadingUpload(true);
         try {
-            setLoadingUpload(true);
-            let imageUrl = doctor.imageLink;
-
-            if (imageFile) {
-                imageUrl = await upload(imageFile);
-            }
-
-            await updateDoctor({ ...doctor, imageLink: imageUrl });
+            await updateDoctor(doctor);
             alert("Cập nhật bác sĩ thành công!");
             navigate("/doctor");
         } catch (error) {
@@ -104,12 +109,13 @@ const DoctorEdit = () => {
                 <div className="p-6 max-w-7xl mx-auto bg-gray-50 min-h-[calc(100vh-80px)] flex flex-col md:flex-row md:space-x-6">
                     <div className="w-full md:w-1/5 flex flex-col items-center text-center bg-white p-4 rounded shadow">
                         <img
-                            src={doctor.imageLink?.trim()
+                            src={doctor.imageLink && doctor.imageLink.trim() !== ''
                                 ? doctor.imageLink
                                 : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
                             alt="Avatar bác sĩ"
                             className="w-32 h-32 object-cover rounded-full border"
                         />
+
                         <div className="mt-4 font-semibold text-lg">BS. {doctor.name}</div>
                     </div>
 
@@ -158,17 +164,7 @@ const DoctorEdit = () => {
                                 <option value="female">Nữ</option>
                             </select>
                         </div>
-                        {/* <div>
-                            <label className="block text-sm font-medium text-gray-700">Ngày sinh</label>
-                            <input
-                                type="date"
-                                name="birthday"
-                                value={doctor.birthday}
-                                onChange={handleChange}
-                                required
-                                className="p-2 text-sm mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 outline-none"
-                            />
-                        </div> */}
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
                             <input
@@ -199,7 +195,7 @@ const DoctorEdit = () => {
                                 onChange={handleChange}
                                 className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                 <option value="ACTIVE">Đang hoạt động</option>
-                                <option value="BLOCKED">Bị khóa</option>
+                                {/* <option value="BLOCKED">Bị khóa</option> */}
                                 <option value="DELETED">Đã xóa</option>
                             </select>
                         </div>
@@ -221,16 +217,17 @@ const DoctorEdit = () => {
                                 onChange={handleImageChange}
                                 className="block mt-1 text-sm"
                             />
-                            {loadingUpload && (
+                            {uploadingImage && (
                                 <p className="text-xs text-blue-500 mt-2">Đang tải ảnh lên...</p>
                             )}
                         </label>
                         <div className="md:col-span-2 flex justify-end">
                             <button
                                 type="submit"
+                                disabled={loadingUpload}
                                 className="py-2 px-4 rounded text-white bg-blue-600 disabled:bg-blue-300"
                             >
-                                Cập nhật
+                                {loadingUpload ? "Đang cập nhật..." : "Cập nhật"}
                             </button>
                         </div>
                     </form>

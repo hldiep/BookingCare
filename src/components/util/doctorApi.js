@@ -246,3 +246,22 @@ export const searchDoctor = async (keyword) => {
         throw error;
     }
 }
+
+export const updateDoctorStatus = async (id, status) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`/api/v1/m/doctors/update/status/${id}`, {
+        method: 'PUT',
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Lỗi khi cập nhật trạng thái bác sĩ');
+    }
+
+    return await response.json();
+};

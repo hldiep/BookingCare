@@ -17,7 +17,7 @@ export const upload = async (file) => {
         }
 
         const result = await response.json();
-        alert("Upload thành công!");
+        // alert("Upload thành công!");
         console.log("Server đã lưu ảnh:", result);
         console.log("Link ảnh trong data:", result.data);
 
