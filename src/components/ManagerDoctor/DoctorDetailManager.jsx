@@ -86,7 +86,6 @@ const DoctorDetail = () => {
     return (
         <ClippedDrawer>
             <div>
-                {/* Breadcrumb + Header */}
                 <div className="sticky top-16 z-10 bg-white border-b shadow-sm">
                     <div className="flex items-center text-sm text-gray-600 space-x-2 px-4 pt-2">
                         <button onClick={() => navigate('/admin')} className="hover:underline text-blue-600">Dashboard</button>

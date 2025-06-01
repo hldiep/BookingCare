@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BadgeCheck, Pencil, Info, Delete, CheckCircle, Ban, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager, fetchPageDoctor, fetchPageDoctorManager } from '../util/doctorApi';
+import { deleteDoctor, fetchAllDoctors, fetchAllDoctorsManager, fetchPageDoctor, fetchPageDoctorManager, searchDoctor } from '../util/doctorApi';
 import { fetchAllSpecialty } from '../util/specialtyApi';
 
 const DoctorManager = () => {
@@ -13,6 +13,7 @@ const DoctorManager = () => {
     const [error, setError] = useState('');
     const [specialty, setSpecialty] = useState([]);
     const [roles, setRoles] = useState([]);
+    const [keyword, setKeyword] = useState("");
 
     const [totalPages, setTotalPages] = useState(0);
     const doctorPerPage = 10;
@@ -116,6 +117,24 @@ const DoctorManager = () => {
         setCurrentPage(pageNumber);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
+    const handleSearch = async () => {
+        if (!keyword.trim()) {
+            loadData();
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const res = await searchDoctor(keyword.trim());
+            setDoctors(res);
+            setTotalPages(0);
+        } catch (err) {
+            console.error('Lỗi khi tìm kiếm:', err);
+            setError('Không thể tìm kiếm.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <ClippedDrawer>
@@ -136,11 +155,14 @@ const DoctorManager = () => {
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                         <input
                             type="text"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                             className="flex-1 border px-3 py-2 rounded-md outline-none"
                             placeholder="Nhập tìm kiếm..."
                         />
                         <div className="flex gap-2">
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
+                            <button onClick={handleSearch}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
                             {!(roles.includes('DOCTOR')) && (
                                 <button
                                     onClick={() => navigate('/doctor/create')}
@@ -179,7 +201,9 @@ const DoctorManager = () => {
                                             <tr key={doc.id} className="border-t hover:bg-gray-50">
                                                 <td className="p-3">
                                                     <img
-                                                        src={doc.imageLink}
+                                                        src={doc.imageLink?.trim()
+                                                            ? doc.imageLink
+                                                            : "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
                                                         alt="avatar"
                                                         className="w-9 h-9 rounded-full object-cover"
                                                     />
@@ -265,19 +289,21 @@ const DoctorManager = () => {
 
                         </div>
                     )}
-                    <div className="flex flex-col items-center gap-4 mt-10">
-                        <div className="flex gap-2 flex-wrap justify-center">
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => handlePageClick(i)}
-                                    className={`px-3 py-1 rounded border ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
+                    {totalPages > 1 && (
+                        <div className="flex flex-col items-center gap-4 mt-10">
+                            <div className="flex gap-2 flex-wrap justify-center">
+                                {Array.from({ length: totalPages }, (_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => handlePageClick(i)}
+                                        className={`px-3 py-1 rounded border ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </ClippedDrawer>

@@ -221,3 +221,28 @@ export const fetchPageDoctorManager = async (page = 0, size = 10, sortBy = 'id')
         throw error;
     }
 };
+
+export const searchDoctor = async (keyword) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Không tìm thấy token");
+
+        const response = await fetch(`${API_URL}/search?keyword=${encodeURIComponent(keyword)}`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!response.ok) {
+            throw new Error(`Lỗi khi tìm kiếm bác sĩ: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.data.data || [];
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

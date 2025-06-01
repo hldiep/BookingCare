@@ -195,10 +195,10 @@ const DoctorEdit = () => {
                             <label className="block font-medium text-sm">Trạng thái</label>
                             <select
                                 name="status"
-                                value={doctor.status}
+                                value={doctor?.account?.status}
                                 onChange={handleChange}
                                 className="p-1 text-sm outline-none block rounded border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="ACTIVE">Hoạt động</option>
+                                <option value="ACTIVE">Đang hoạt động</option>
                                 <option value="BLOCKED">Bị khóa</option>
                                 <option value="DELETED">Đã xóa</option>
                             </select>
