@@ -160,3 +160,27 @@ export const updateClinicStatus = async (id, status) => {
 
     return await response.json();
 };
+export const searchClinic = async (keyword) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Không tìm thấy token");
+
+        const response = await fetch(`${API_URL}/search?keyword=${encodeURIComponent(keyword)}`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        if (!response.ok) {
+            throw new Error(`Lỗi khi tìm kiếm phòng khám: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.data.data || [];
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

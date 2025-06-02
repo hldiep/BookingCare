@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Info, Ban, CheckCircle, Delete, ArchiveRestoreIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ClippedDrawer from '../Dashboard/DashboardLayoutBasic';
-import { deleteService, fetchAllServices, fetchAllServicesManager, fetchPageService, fetchPageServiceManager, updateServiceStatus } from '../util/serviceApi';
+import { deleteService, fetchAllServices, fetchAllServicesManager, fetchPageService, fetchPageServiceManager, searchService, updateServiceStatus } from '../util/serviceApi';
 
 const ServiceManager = () => {
     const navigate = useNavigate();
@@ -14,7 +14,7 @@ const ServiceManager = () => {
     const [totalPages, setTotalPages] = useState(0);
     const servicePerPage = 10;
     const [currentPage, setCurrentPage] = useState(0);
-
+    const [keyword, setKeyword] = useState("");
     const loadService = async () => {
         try {
             setLoading(true);
@@ -126,6 +126,24 @@ const ServiceManager = () => {
             alert("Lỗi: " + error.message);
         }
     };
+    const handleSearch = async () => {
+        if (!keyword.trim()) {
+            loadService();
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const res = await searchService(keyword.trim());
+            setServices(res);
+            setTotalPages(0);
+        } catch (err) {
+            console.error('Lỗi khi tìm kiếm:', err);
+            setError('Không thể tìm kiếm.');
+        } finally {
+            setLoading(false);
+        }
+    };
     const indexOfFirst = currentPage * servicePerPage;
     return (
         <ClippedDrawer>
@@ -145,11 +163,14 @@ const ServiceManager = () => {
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                         <input
                             type="text"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                             className="flex-1 border px-3 py-2 rounded-md outline-none"
                             placeholder="Nhập tìm kiếm..."
                         />
                         <div className="flex gap-2">
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
+                            <button onClick={handleSearch}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Tìm kiếm</button>
                             {!(roles.includes('DOCTOR')) && (<button
                                 onClick={() => navigate('/service/create')}
                                 className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
@@ -237,19 +258,20 @@ const ServiceManager = () => {
                             )}
                         </div>
                     )}
-                    <div className="flex flex-col items-center gap-4 mt-10">
-                        <div className="flex gap-2 flex-wrap justify-center">
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => handlePageClick(i)}
-                                    className={`px-3 py-1 rounded border ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
-                                >
-                                    {i + 1}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    {totalPages > 1 && (
+                        <div className="flex flex-col items-center gap-4 mt-10">
+                            <div className="flex gap-2 flex-wrap justify-center">
+                                {Array.from({ length: totalPages }, (_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => handlePageClick(i)}
+                                        className={`px-3 py-1 rounded border ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`}
+                                    >
+                                        {i + 1}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>)}
                 </div>
             </div>
         </ClippedDrawer>

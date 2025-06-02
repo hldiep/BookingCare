@@ -261,10 +261,11 @@ const DoctorCreate = () => {
                                     value={formData.account.status}
                                     onChange={handleChange}
                                     required
+                                    disabled
                                     className="mt-1 block w-full rounded border p-2 text-sm outline-none"
                                 >
                                     <option value="ACTIVE">Hoạt động</option>
-                                    <option value="BLOCKED">Bị khóa</option>
+                                    {/* <option value="BLOCKED">Bị khóa</option> */}
                                 </select>
                             </div>
                             <div>

@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addAppointments } from '../util/appointmentApi';
 import { fetchAllServices } from '../util/serviceApi';
+import { fetchAllSchedule } from '../util/scheduleApi';
 
 function AppointmentPage() {
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
         serviceId: '',
-        scheduleId: 10,
+        scheduleId: '',
         customer: {
             name: '',
             phone: '',
@@ -22,12 +23,14 @@ function AppointmentPage() {
     });
 
     const [services, setServices] = useState([]);
-
+    const [schedule, setSchedule] = useState([]);
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const serviceData = await fetchAllServices();
                 setServices(serviceData);
+                const scheduleData = await fetchAllSchedule();
+                setSchedule(scheduleData);
             } catch (err) {
                 console.error('Lỗi khi tải dữ liệu:', err);
             }
@@ -175,6 +178,22 @@ function AppointmentPage() {
                                     {services.map((sv) => (
                                         <option key={sv.id} value={sv.id}>
                                             {sv.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <p className="mb-2">Lịch khám</p>
+                                <select
+                                    name="scheduleId"
+                                    value={form.scheduleId}
+                                    onChange={handleChange}
+                                    className="w-full border p-2 rounded outline-none"
+                                >
+                                    <option value="">-- Chọn lịch khám --</option>
+                                    {schedule.map((sc) => (
+                                        <option key={sc.id} value={sc.id}>
+                                            {sc.date} | {sc.timeStart} - {sc.timeEnd}
                                         </option>
                                     ))}
                                 </select>

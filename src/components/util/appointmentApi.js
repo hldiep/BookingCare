@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const addAppointments = async (appointment) => {
     try {
         const response = await fetch('/api/v1/p/appointments/add', {
@@ -19,6 +21,31 @@ export const addAppointments = async (appointment) => {
         return data;
     } catch (error) {
         console.error('Lỗi khi gửi yêu cầu tạo lịch hẹn:', error);
+        throw error;
+    }
+};
+
+export const getPageAppointment = async (page = 0, size = 10, sortBy = 'id') => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`/api/v1/sh/appointments/page`, {
+            params: { page, size, sortBy },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        const result = response.data;
+
+        return {
+            data: result.data.data || [],
+            totalPages: result.data.totalPages || 0,
+            totalItems: result.data.totalItems || 0,
+            currentPage: result.data.currentPage || 0,
+        };
+    } catch (error) {
+        console.error('Lỗi:', error.error);
         throw error;
     }
 };

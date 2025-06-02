@@ -249,13 +249,14 @@ export const searchDoctor = async (keyword) => {
 
 export const updateDoctorStatus = async (id, status) => {
     const token = localStorage.getItem("token");
+
     const response = await fetch(`/api/v1/m/doctors/update/status/${id}`, {
         method: 'PUT',
         headers: {
             "Authorization": `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify(status),
     });
 
     if (!response.ok) {
@@ -265,3 +266,4 @@ export const updateDoctorStatus = async (id, status) => {
 
     return await response.json();
 };
+

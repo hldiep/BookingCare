@@ -82,41 +82,56 @@ const DoctorManager = () => {
             loadData();
         }
     }, [currentPage]);
+
+    const updateDoctorInList = (id, status) => {
+        setDoctors(prevDoctors =>
+            prevDoctors.map(doc =>
+                doc.id === id
+                    ? {
+                        ...doc,
+                        status: status,
+                        account: {
+                            ...doc.account,
+                            status: status
+                        }
+                    }
+                    : doc
+            )
+        );
+    };
     const handleDeleteDoctor = async (id) => {
-        const confirmDelete = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
-        if (!confirmDelete) {
+        const doctor = doctors.find(d => d.id === id);
+        if (!doctor) {
+            alert('Không tìm thấy bác sĩ.');
             return;
         }
 
-        try {
-            const response = await deleteDoctor(id);
-            alert(response.data || 'Xóa thành công');
+        if (doctor.status !== "ACTIVE" || doctor.account?.status !== "ACTIVE") {
+            alert("Chỉ có thể xóa bác sĩ đang hoạt động.");
+            return;
+        }
 
-            setDoctors(prevDoctors =>
-                prevDoctors.map(doc =>
-                    doc.id === id
-                        ? {
-                            ...doc,
-                            status: 'DELETED',
-                            account: {
-                                ...doc.account,
-                                status: 'DELETED'
-                            }
-                        }
-                        : doc
-                )
-            );
-        } catch (err) {
-            alert(err.message || 'Đã xảy ra lỗi khi xóa bác sĩ');
+        const confirmDelete = window.confirm('Bạn có chắc muốn xóa bác sĩ này?');
+        if (!confirmDelete) return;
+
+        try {
+            await updateDoctorStatus(id, "DELETED");
+            updateDoctorInList(id, "DELETED");
+            alert("Xóa bác sĩ thành công!");
+        } catch (error) {
+            alert("Lỗi khi xóa bác sĩ: " + error.message);
         }
     };
+    const handleRestoreDoctor = async (id) => {
+        const confirmRestore = window.confirm('Bạn có chắc muốn khôi phục bác sĩ này không?');
+        if (!confirmRestore) return;
 
-    const handleRestoreDoctor = async () => {
         try {
-            const updatedDoctor = await updateDoctorStatus(doctors.id, 'ACTIVE');
-            alert("Cập nhật trạng thái thành công!");
+            await updateDoctorStatus(id, "ACTIVE");
+            updateDoctorInList(id, "ACTIVE");
+            alert("Khôi phục trạng thái thành công!");
         } catch (error) {
-            alert("Lỗi: " + error.message);
+            alert("Lỗi khi khôi phục: " + error.message);
         }
     };
     const handlePageClick = (pageNumber) => {
